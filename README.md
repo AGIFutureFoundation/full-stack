@@ -59,18 +59,17 @@ Drawn to scale from [`recipe.toml`](recipe.toml) by [`tools/render.py`](tools/re
 ## From batter to plate
 
 ```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#FFE9D1','primaryBorderColor':'#2C002A','primaryTextColor':'#2C002A','lineColor':'#85687C','fontFamily':'Geist, Helvetica, Arial, sans-serif'}}}%%
-flowchart LR
-  A[Batter<br/>rest 60 min] --> B[Ring + fixed dose<br/>330–350 °F]
-  B --> C[Flip once]
-  C --> D[Cool flat<br/>5 min]
-  D --> E{Stack of 10<br/>1.45–1.75 in?}
+flowchart TD
+  A["Batter, rest 60 min"] --> B["Ring + fixed dose, 330-350 °F"]
+  B --> C["Flip once"]
+  C --> D["Cool flat 5 min"]
+  D --> E{"Stack of 10: 1.45 to 1.75 in?"}
   E -- no --> B
-  E -- yes --> F[Sort by size]
-  F --> G[Stack<br/>¼ turn each]
-  G --> H[Stop at 45 in]
-  H --> I[Hold 5 s<br/>measure]
-  I --> J[Eat or donate]
+  E -- yes --> F["Sort by size"]
+  F --> G["Stack, quarter turn each"]
+  G --> H["Stop at 45 in"]
+  H --> I["Hold 5 s, measure"]
+  I --> J["Eat or donate"]
 ```
 
 ## Calculator
