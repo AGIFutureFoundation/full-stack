@@ -337,6 +337,63 @@ def records(spec, plan) -> str:
     return "\n".join(parts)
 
 
+# ---------------------------------------------------------------- process strip
+def process(spec, plan) -> str:
+    W, H = 1280, 380
+    t, c = spec["target"], spec["cook"]
+    rows = [
+        [("Batter", f"rest {spec['batter']['rest_minutes']} min", "yellow"),
+         ("Ring + dose", f"{c['griddle_temp_f'][0]}–{c['griddle_temp_f'][1]} °F", "yellow"),
+         ("Flip once", "top goes matte", "yellow"),
+         ("Cool flat", f"{c['cool_flat_minutes']} min, on a rack", "yellow"),
+         ("Stack of 10", "1.45–1.75 in?", "check")],
+        [("Eat or donate", "nothing in the trash", "green"),
+         ("Hold, measure", f"{spec['rules']['hold_seconds']} s, hands off", "pink"),
+         ("Stop", f"at {t['build_to_in']:g} in", "pink"),
+         ("Stack", "¼ turn each", "purple"),
+         ("Sort", "by ring size", "purple")],
+    ]
+    parts = [svg_open(W, H, "From batter to plate: the process, step by step")]
+    parts.append(f'<rect width="{W}" height="{H}" rx="28" fill="{C["bg"]}"/>')
+    parts.append(text(56, 58, "FROM BATTER TO PLATE", 14, C["sub"], 600, MONO, extra=' letter-spacing="1.5"'))
+    bw, bh, gap = 196, 92, 46
+    x0 = (W - (5 * bw + 4 * gap)) / 2
+    ys = [96, 252]
+    fills = {"yellow": "yellow2", "check": "paper", "purple": "purple2", "pink": "pink2", "green": "faint"}
+    centers = {}
+    for r, row in enumerate(rows):
+        for i, (title, sub, kind) in enumerate(row):
+            x = x0 + i * (bw + gap)
+            y = ys[r]
+            stroke = C["ink"] if kind == "check" else "none"
+            dash = ' stroke-dasharray="6 4"' if kind == "check" else ""
+            parts.append(f'<rect x="{x:.0f}" y="{y}" width="{bw}" height="{bh}" rx="18" fill="{C[fills[kind]]}" stroke="{stroke}" stroke-width="1.5"{dash}/>')
+            parts.append(text(x + 20, y + 40, title, 20, C["ink"], 700))
+            parts.append(text(x + 20, y + 66, sub, 14, C["sub"], 500, MONO))
+            centers[(r, i)] = (x, y)
+    def arrow(x1, y1, x2, y2):
+        a = f'<line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" stroke="{C["ink"]}" stroke-width="2"/>'
+        if x2 > x1: head = f'<path d="M{x2:.0f} {y2:.0f} l-9 -5 v10 z" fill="{C["ink"]}"/>'
+        elif x2 < x1: head = f'<path d="M{x2:.0f} {y2:.0f} l9 -5 v10 z" fill="{C["ink"]}"/>'
+        else: head = f'<path d="M{x2:.0f} {y2:.0f} l-5 -9 h10 z" fill="{C["ink"]}"/>'
+        return a + head
+    for i in range(4):
+        x, y = centers[(0, i)]
+        parts.append(arrow(x + bw + 6, y + bh / 2, x + bw + gap - 6, y + bh / 2))
+        x, y = centers[(1, i + 1)]
+        parts.append(arrow(x - 6, y + bh / 2, x - gap + 6, y + bh / 2))
+    x, y = centers[(0, 4)]
+    parts.append(arrow(x + bw / 2, y + bh + 6, x + bw / 2, ys[1] - 6))
+    parts.append(text(x + bw / 2 + 10, y + bh + 36, "yes", 13, C["ink"], 700, MONO))
+    # "no" loop back to the dose
+    xd, yd = centers[(0, 1)]
+    parts.append(f'<path d="M{x + bw / 2:.0f} {y - 6} V{y - 26} H{xd + bw / 2:.0f} V{yd - 6}" fill="none" stroke="{C["pink4"]}" stroke-width="2" stroke-dasharray="6 4"/>')
+    parts.append(f'<path d="M{xd + bw / 2:.0f} {yd - 4} l-5 -9 h10 z" fill="{C["pink4"]}"/>')
+    parts.append(text((x + xd + bw) / 2, y - 34, "no: fix the dose", 13, C["pink4"], 700, MONO, "middle"))
+    parts.append("</svg>\n")
+    return "\n".join(parts)
+
+
 def page(spec, plan, recs, tower_svg) -> str:
     tpl = (ROOT / "site/index.template.html").read_text()
     data = json.dumps({"spec": spec, "plan": plan, "records": recs}, separators=(",", ":")).replace("</", "<\\/")
@@ -357,6 +414,7 @@ def outputs() -> dict[Path, str]:
         ROOT / "assets/hero.svg": hero(spec, plan),
         ROOT / "assets/tower.svg": tower_svg,
         ROOT / "assets/records.svg": records(spec, plan),
+        ROOT / "assets/process.svg": process(spec, plan),
         ROOT / "docs/spec.json": json.dumps({"spec": spec, "plan": plan, "records": recs}, indent=2) + "\n",
     }
 

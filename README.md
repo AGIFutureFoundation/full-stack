@@ -58,19 +58,9 @@ Drawn to scale from [`recipe.toml`](recipe.toml) by [`tools/render.py`](tools/re
 
 ## From batter to plate
 
-```mermaid
-flowchart TD
-  A["Batter, rest 60 min"] --> B["Ring + fixed dose, 330-350 °F"]
-  B --> C["Flip once"]
-  C --> D["Cool flat 5 min"]
-  D --> E{"Stack of 10: 1.45 to 1.75 in?"}
-  E -- no --> B
-  E -- yes --> F["Sort by size"]
-  F --> G["Stack, quarter turn each"]
-  G --> H["Stop at 45 in"]
-  H --> I["Hold 5 s, measure"]
-  I --> J["Eat or donate"]
-```
+<p align="center">
+  <img src="assets/process.svg" alt="Batter, ring and dose, flip once, cool flat, stack-of-10 check, sort, stack a quarter turn each, stop at 45 in, hold 5 s and measure, eat or donate" width="100%">
+</p>
 
 ## Calculator
 
@@ -113,7 +103,7 @@ STACKING.md        geometry, roles, build protocol
 RULES.md           the record rules, and what we're confirming
 TESTLOG.md         measured numbers that replace our guesses
 data/records.toml  record history, with sources
-tools/render.py    draws assets/*.svg and docs/spec.json from the spec
+tools/render.py    draws assets/*.svg and the page from the spec
 docs/              the page
 ```
 
