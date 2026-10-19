@@ -1,0 +1,19 @@
+name: Suggest a recipe variant
+description: A change to the batter, cooking or stacking you think beats ours.
+title: "Variant: "
+labels: [variant]
+body:
+  - type: textarea
+    id: change
+    attributes:
+      label: The change
+      description: Which field in recipe.toml, old value, new value.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it helps
+      description: Less settling, less lean, better thickness control. Measured numbers beat theory.
+    validations:
+      required: true

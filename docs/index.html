@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pancake Tower</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. Oct 29, 2026, San Francisco.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: a spec sheet you can scroll. Left-aligned bands, one live tower drawn to scale. */
+:root {
+  --bg: #FBF6F1;          /* page cream */
+  --paper: #FFFCF8;       /* cards, inputs */
+  --ink: #2C002A;         /* text, rules */
+  --sub: #85687C;         /* secondary text */
+  --line: #DDCFCD;        /* strokes */
+  --faint: #EFE4DC;       /* grids */
+  --accent: #E33A6A;      /* record, emphasis */
+  --accent-2: #8D43FD;    /* our target, links */
+  --pink: #FF7AA0; --pink-2: #FFBBC7; --pink-1: #FFD9DA;
+  --purple: #BA8BFF; --purple-2: #DEC3F5; --purple-1: #EFDDF1;
+  --yellow: #FFBD7A; --yellow-2: #FFDBB5; --yellow-1: #FFE9D1;
+  --green: #68CEA7; --blue: #4660E7;
+  --on-accent: #FFFCF8;
+  --sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --step--1: .875rem; --step-0: 1rem; --step-1: 1.25rem; --step-2: 1.75rem; --step-3: 2.5rem; --step-4: clamp(2.6rem, 6vw, 4.6rem);
+  --r-sm: 12px; --r-md: 18px; --r-lg: 24px;
+  --wrap: 1180px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1F0A1D; --paper: #2C002A; --ink: #FFF7EC; --sub: #BBA8AE; --line: #6C4B65; --faint: #3A1838;
+    --accent: #FF7AA0; --accent-2: #BA8BFF; --on-accent: #2C002A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1F0A1D; --paper: #2C002A; --ink: #FFF7EC; --sub: #BBA8AE; --line: #6C4B65; --faint: #3A1838;
+  --accent: #FF7AA0; --accent-2: #BA8BFF; --on-accent: #2C002A; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-0)/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: var(--accent-2); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; letter-spacing: -.02em; line-height: 1.05; }
+h2 { font-size: var(--step-3); font-weight: 800; }
+h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+p { margin: 0; max-width: 62ch; }
+.mono { font-family: var(--mono); }
+.num { font-variant-numeric: tabular-nums; }
+.eyebrow { font: 500 var(--step--1)/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sub); }
+.band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: clamp(56px, 8vw, 104px); }
+.band.alt { background: var(--paper); border-block: 1px solid var(--line); }
+.wrap { max-width: var(--wrap); margin: 0 auto; display: grid; gap: 40px; min-width: 0; }
+.head { display: grid; gap: 14px; }
+.head p { color: var(--sub); font-size: var(--step-1); line-height: 1.45; }
+
+/* nav */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.nav .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+.brand svg { height: 30px; width: auto; display: block; }
+.brand span { font: 500 var(--step--1) var(--mono); color: var(--sub); border-left: 1px solid var(--line); padding-left: 12px; }
+.nav ul { display: flex; gap: 22px; list-style: none; margin: 0 0 0 auto; padding: 0; }
+.nav ul a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: var(--step--1); }
+.nav ul a:hover { color: var(--accent-2); }
+@media (max-width: 760px) { .nav ul li:not(:last-child) { display: none; } }
+
+/* buttons, pills */
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 20px; border-radius: var(--r-md); font: 600 var(--step-0) var(--sans); text-decoration: none; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
+.btn.brand-btn { background: var(--pink); border-color: var(--pink); color: #2C002A; }
+.btn:hover { transform: translateY(-1px); }
+.btn.sm { height: 40px; padding: 0 16px; font-size: var(--step--1); }
+.pill { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); font: 500 .8125rem var(--mono); color: var(--ink); white-space: nowrap; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+/* hero */
+.hero { padding-block: clamp(40px, 6vw, 72px) 0; }
+.hero .wrap { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: end; gap: 24px; }
+.hero h1 { font-size: var(--step-4); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
+.hero h1 em { font-style: normal; color: var(--accent); display: block; }
+.hero .copy { display: grid; gap: 26px; padding-bottom: clamp(40px, 6vw, 80px); min-width: 0; }
+.hero .lede { font-size: var(--step-1); color: var(--sub); line-height: 1.45; max-width: 44ch; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.countdown { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ribbon { display: block; width: 100%; height: clamp(72px, 9vw, 128px); margin-top: clamp(24px, 4vw, 48px); }
+.stage { display: grid; justify-items: center; gap: 10px; min-width: 0; }
+.stage svg { width: 100%; max-width: 420px; height: auto; display: block; }
+.readout { display: flex; gap: 18px; font: 500 var(--step--1) var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 16px; align-items: center; }
+.readout b { font-weight: 700; }
+.readout .btn { height: 32px; padding: 0 14px; border-radius: 999px; }
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .hero .copy { padding-bottom: 8px; }
+}
+
+/* stat strip */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); }
+.stat { padding: 20px 20px 4px 0; display: grid; gap: 6px; border-right: 1px solid var(--line); padding-left: 20px; }
+.stat:first-child { padding-left: 0; }
+.stat:last-child { border-right: 0; }
+.stat b { font: 800 clamp(2rem, 4.4vw, 3.2rem)/1 var(--sans); letter-spacing: -.03em; }
+.stat b small { font: 600 .45em var(--mono); letter-spacing: 0; margin-left: 4px; color: var(--sub); }
+.stat span { color: var(--sub); font-size: var(--step--1); }
+@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(3) { padding-left: 0; } }
+
+/* failure modes */
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.mode { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 24px; border-radius: var(--r-lg); background: var(--bg); border: 1px solid var(--line); min-width: 0; }
+.mode svg { width: 100%; height: 92px; }
+.mode .fix { font: 500 var(--step--1)/1.45 var(--mono); color: var(--ink); border-top: 1px dashed var(--line); padding-top: 12px; }
+.mode .fix::before { content: "FIX  "; color: var(--accent-2); font-weight: 700; }
+.mode p { color: var(--sub); }
+@media (max-width: 860px) { .modes { grid-template-columns: 1fr; } }
+
+/* recipe */
+.recipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+.ratios { display: grid; gap: 10px; }
+.ratio { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 3.4rem; align-items: center; gap: 12px; font-size: var(--step--1); }
+.ratio .bar { height: 14px; border-radius: 4px; background: var(--yellow); min-width: 3px; }
+.ratio .why { grid-column: 1 / -1; color: var(--sub); font-size: .8125rem; margin-top: -6px; }
+.ratio .pct { font-family: var(--mono); text-align: right; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 12px; align-items: start; }
+.steps li::before { content: counter(s); font: 700 var(--step--1)/2rem var(--mono); width: 2rem; height: 2rem; text-align: center; border-radius: 50%; border: 1.5px solid var(--ink); }
+.steps b { display: block; }
+.steps span { color: var(--sub); }
+.doses { display: flex; flex-wrap: wrap; gap: 28px; align-items: end; }
+.dose { display: grid; justify-items: center; gap: 8px; text-align: center; }
+.dose .disc { border-radius: 50%; display: grid; place-items: center; font: 700 var(--step-0) var(--mono); color: #2C002A; }
+.dose small { font: 500 var(--step--1) var(--mono); color: var(--sub); }
+@media (max-width: 860px) { .recipe { grid-template-columns: 1fr; } }
+
+/* drawing */
+.figure { border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: #FBF6F1; }
+.scroll-x { overflow-x: auto; }
+.figure svg { display: block; width: 100%; height: auto; min-width: 640px; }
+.roles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.role { border-top: 1.5px solid var(--ink); padding-top: 12px; display: grid; gap: 6px; }
+.role span { color: var(--sub); font-size: var(--step--1); }
+@media (max-width: 860px) { .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* calculator */
+.calc { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 24px; align-items: start; }
+.controls, .results { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 24px; display: grid; gap: 22px; min-width: 0; }
+.field { display: grid; gap: 8px; }
+.field label { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
+.field label output { font: 700 var(--step-0) var(--mono); color: var(--accent-2); }
+.field small { color: var(--sub); font-size: .8125rem; }
+input[type=range] { width: 100%; accent-color: var(--accent-2); height: 28px; }
+.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: var(--r-sm); overflow: hidden; }
+.seg button { font: 600 var(--step--1) var(--sans); padding: 8px 14px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.gauge { display: grid; gap: 8px; }
+.gauge-track { position: relative; height: 40px; border-radius: 10px; background: var(--faint); overflow: hidden; }
+.gauge-fill { position: absolute; inset: 0 auto 0 0; background: var(--purple); border-radius: 10px; transition: width .4s cubic-bezier(.2,.8,.2,1); }
+.gauge-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; }
+.gauge-mark.rec { background: var(--accent); } .gauge-mark.stop { background: var(--ink); }
+.gauge-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font: 500 .8125rem var(--mono); color: var(--sub); }
+.verdict { font: 700 var(--step-1)/1.3 var(--sans); }
+.verdict.ok { color: var(--ink); } .verdict.bad { color: var(--accent); }
+table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+th, td { text-align: left; padding: 9px 8px 9px 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+th { font: 600 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--sub); }
+td.r, th.r { text-align: right; padding-right: 0; }
+td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: 0; }
+.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.totals div { display: grid; gap: 2px; }
+.totals b { font: 800 var(--step-2)/1.1 var(--sans); letter-spacing: -.02em; }
+.totals span { color: var(--sub); font-size: .8125rem; }
+.warn { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; color: var(--accent); font-weight: 600; font-size: var(--step--1); }
+@media (max-width: 860px) { .calc { grid-template-columns: 1fr; } }
+
+/* record chart */
+.chart { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 20px 20px 12px; }
+.chart svg { display: block; width: 100%; height: auto; min-width: 560px; overflow: visible; }
+.chart .bar { cursor: pointer; }
+.chart .bar:hover rect.fill, .chart .bar:focus rect.fill { fill: var(--accent); }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 12px; padding: 10px 12px; font-size: .8125rem; line-height: 1.4; max-width: 240px; box-shadow: 0 8px 24px rgba(44,0,42,.18); }
+.tip b { font-family: var(--mono); }
+details { border-top: 1px solid var(--line); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 600; }
+
+/* rules */
+.rules { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+.rules ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; }
+.rules ul li::marker { color: var(--accent-2); }
+.untested { display: grid; gap: 10px; padding: 20px; border-radius: var(--r-lg); background: var(--pink-1); color: #2C002A; border: 1px solid var(--pink-2); }
+.untested a { color: #2C002A; }
+@media (max-width: 860px) { .rules { grid-template-columns: 1fr; } }
+
+/* footer */
+footer .wrap { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 24px; }
+footer .mascot { width: 84px; height: auto; }
+footer p { color: var(--sub); }
+footer b { color: var(--ink); }
+@media (max-width: 760px) { footer .wrap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="https://pancake.ai" aria-label="Pancake">
+      <svg viewBox="0 0 422 166" aria-hidden="true"><path fill="currentColor" d="M318.116 9.17733C322.015 3.82624 327.3 -0.212597 333.318 0.00867186C339.855 0.249222 344.109 5.2716 346.075 11.2001C348.052 17.1614 348.283 25.2018 346.541 34.8696C343.758 50.3187 335.749 70.9712 319.701 96.3398C320.064 98.657 320.466 101.023 320.906 103.439C323.782 97.805 327.283 93.7008 331.185 91.0009C339.115 85.514 348.228 86.3193 353.997 91.567C356.827 94.1415 358.729 97.7143 359.101 101.775C359.476 105.865 358.272 110.084 355.536 113.942C352.678 117.969 348.175 121.607 341.859 124.63C355.431 143.67 374.26 153.904 396.156 153.904V165.071C369.298 165.071 346.575 151.84 331.068 128.657C329.695 129.053 328.269 129.428 326.788 129.781C327.717 133.264 328.982 137.817 330.285 142.473C332.416 150.085 334.647 157.982 335.222 160.587L324.317 162.994C323.831 160.79 321.744 153.387 319.532 145.482C317.43 137.974 315.203 129.967 314.531 126.778C313.07 120.896 311.812 115.23 310.74 109.778C309.1 112.12 307.397 114.498 305.627 116.91L296.624 110.302C300.819 104.588 304.613 99.0974 308.038 93.8374C304.407 68.1372 305.246 47.9882 308.437 33.1118C310.658 22.7627 314.067 14.7339 318.116 9.17733ZM85.7208 82.9906C101.219 82.9906 110.174 90.4529 110.174 104.344V127.879C110.174 130.863 111.207 131.667 113.848 131.667H116.258V142.459H109.829C102.138 142.459 99.268 139.129 99.1531 133.504C95.2498 139.244 89.1651 143.147 79.9809 143.147C67.2379 143.147 58.3979 136.833 58.3978 125.927C58.3978 113.758 67.008 107.099 83.3099 107.099H97.8899V103.54C97.8899 96.9966 93.1831 92.9785 85.1469 92.9785C77.9144 92.9785 73.0926 96.4228 72.1742 101.589H59.8902C61.2678 90.2235 70.9113 82.9906 85.7208 82.9906ZM210.227 82.9906C225.266 82.9906 234.68 91.3715 236.976 104.689H224.003C222.396 97.8005 217.46 93.5525 209.997 93.5524C200.124 93.5524 193.58 101.703 193.58 113.184C193.58 124.664 200.124 132.586 209.997 132.586C217.345 132.586 222.396 128.223 223.888 121.449H236.976C234.795 134.766 224.807 143.147 209.883 143.147C192.203 143.147 180.952 131.552 180.952 113.184C180.952 95.045 192.547 82.9907 210.227 82.9906ZM267.979 82.9906C283.478 82.9906 292.432 90.4529 292.432 104.344V127.879C292.432 130.863 293.465 131.667 296.106 131.667H298.517V142.459H292.088C284.396 142.459 281.526 139.129 281.411 133.504C277.508 139.244 271.423 143.147 262.239 143.147C249.496 143.147 240.656 136.833 240.656 125.927C240.656 113.758 249.266 107.099 265.568 107.099H280.148V103.54C280.148 96.9966 275.441 92.9785 267.405 92.9785C260.173 92.9785 255.351 96.4228 254.432 101.589H242.148C243.526 90.2235 253.17 82.9906 267.979 82.9906ZM393.043 82.9906C410.034 82.9906 421.284 93.7821 421.629 111.002C421.629 112.265 421.514 114.217 421.285 115.939H377.43V116.513C377.775 126.501 383.974 133.044 393.617 133.045C400.964 133.045 406.59 129.256 408.197 122.713H420.596C418.53 134.308 408.771 143.147 394.306 143.147C375.938 143.147 364.457 131.208 364.457 113.184C364.458 95.0449 375.938 82.9906 393.043 82.9906ZM30.652 62.0968C47.2984 62.0968 58.3197 72.0844 58.3197 87.6976C58.3196 103.196 47.2984 113.298 30.652 113.298H13.202V142.459H0V62.0968H30.652ZM151.733 82.9906C164.246 82.9906 174.694 89.7641 174.694 108.936V142.459H162.18V110.084C162.18 99.637 157.703 93.8971 148.863 93.8971C139.564 93.8971 133.939 100.67 133.939 112.036V142.459H121.54V83.6794H132.332L133.709 91.3712C137.153 86.7792 142.664 82.9906 151.733 82.9906ZM82.736 116.283C75.1591 116.283 70.9115 119.154 70.9115 125.123C70.9117 130.06 75.0446 133.504 81.7031 133.504C91.8056 133.504 97.8899 127.419 97.8899 118.579V116.283H82.736ZM264.994 116.283C257.417 116.283 253.17 119.154 253.17 125.123C253.17 130.06 257.303 133.504 263.961 133.504C274.064 133.504 280.148 127.419 280.148 118.579V116.283H264.994ZM346.482 99.8277C344.864 98.3563 341.545 97.4116 337.539 100.184C334.149 102.529 330.057 107.801 327.246 118.134C338.482 115.011 344.066 110.809 346.428 107.48C347.813 105.528 348.084 103.921 347.981 102.796C347.875 101.642 347.345 100.613 346.482 99.8277ZM393.158 92.9785C385.466 92.9785 378.808 98.2594 377.889 106.64H408.771C407.738 97.9151 401.768 92.9786 393.158 92.9785ZM13.202 101.818H29.0447C38.6881 101.818 44.8873 96.3078 44.8874 87.6976C44.8874 78.9726 38.6882 73.5766 29.1596 73.5766H13.202V101.818ZM332.907 11.1678C332.368 11.1481 330.155 11.6174 327.142 15.7532C324.277 19.6844 321.357 26.1241 319.355 35.4541C317.06 46.1528 316.039 60.3509 317.516 78.2562C328.126 59.4285 333.509 44.2226 335.551 32.8898C337.108 24.2465 336.651 18.261 335.475 14.7148C334.292 11.1477 332.935 11.1683 332.907 11.1678Z"/></svg>
+      <span>pancake-tower</span>
+    </a>
+    <ul>
+      <li><a href="#why">Why towers fall</a></li>
+      <li><a href="#recipe">Recipe</a></li>
+      <li><a href="#tower-sec">Tower</a></li>
+      <li><a href="#calculator">Calculator</a></li>
+      <li><a href="#record">Record</a></li>
+      <li><a class="btn sm" href="https://github.com/get-pancake/pancake-tower">GitHub</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+<section class="band hero" aria-labelledby="h1">
+  <div class="wrap">
+    <div class="copy">
+      <div class="countdown">
+        <span class="pill"><span class="dot"></span><span id="status">v0.1.0 · untested</span></span>
+        <span class="pill num" id="countdown">Oct 29, 2026 · San Francisco</span>
+      </div>
+      <h1 id="h1">We promised a world record. <em>Here’s the recipe.</em></h1>
+      <p class="lede">Pancake hit #1 on Product Hunt. So on Oct 29 we stack pancakes in San Francisco, live. Everything we know is open source first.</p>
+      <div class="cta">
+        <a class="btn brand-btn" href="#calculator">Run the numbers</a>
+        <a class="btn" href="https://github.com/get-pancake/pancake-tower">Fork the recipe</a>
+      </div>
+    </div>
+    <div class="stage">
+      <svg id="tower" viewBox="0 0 420 560" role="img" aria-label="The tower, to scale"></svg>
+      <div class="readout" aria-live="polite">
+        <span><b class="num" id="ro-h">45.0</b> in</span>
+        <span><b class="num" id="ro-n">296</b> pancakes</span>
+        <button class="btn sm" id="stack-btn" type="button">Watch it stack</button>
+      </div>
+    </div>
+  </div>
+</section>
+<svg class="ribbon" viewBox="0 0 1440 128" preserveAspectRatio="none" aria-hidden="true">
+  <g fill="none" stroke-linecap="butt" vector-effect="non-scaling-stroke">
+    <path d="M0 74 C 420 70, 900 44, 1440 4" stroke="#68CEA7" stroke-width="16" vector-effect="non-scaling-stroke"/>
+    <path d="M0 87 C 420 83, 900 57, 1440 17" stroke="#4660E7" stroke-width="7" vector-effect="non-scaling-stroke"/>
+    <path d="M0 98 C 420 94, 900 68, 1440 28" stroke="#BA8BFF" stroke-width="16" vector-effect="non-scaling-stroke"/>
+    <path d="M0 113 C 420 109, 900 83, 1440 43" stroke="#FF7AA0" stroke-width="16" vector-effect="non-scaling-stroke"/>
+    <path d="M0 128 C 420 124, 900 98, 1440 58" stroke="#FFBD7A" stroke-width="16" vector-effect="non-scaling-stroke"/>
+  </g>
+</svg>
+
+<section class="band" aria-label="Key numbers">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><b class="num" data-k="record">42.6<small>in</small></b><span>to beat. Sydney, 2025</span></div>
+      <div class="stat"><b class="num" data-k="stop">45<small>in</small></b><span>our stop line</span></div>
+      <div class="stat"><b class="num" data-k="count">~300</b><span>pancakes, three sizes</span></div>
+      <div class="stat"><b class="num">5<small>s</small></b><span>standing, hands off</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="why" aria-labelledby="why-h">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Failure modes</span>
+      <h2 id="why-h">Why towers fall</h2>
+      <p>Most attempts die on construction, not taste. Three ways it goes wrong, and what we do about each.</p>
+    </div>
+    <div class="modes">
+      <article class="mode">
+        <svg viewBox="0 0 240 92" aria-hidden="true">
+          <g fill="#FFBD7A"><rect x="70" y="10" width="100" height="16" rx="8"/><rect x="66" y="30" width="108" height="14" rx="7"/><rect x="62" y="48" width="116" height="11" rx="5.5"/><rect x="56" y="63" width="128" height="8" rx="4"/><rect x="50" y="75" width="140" height="6" rx="3"/></g>
+          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <h3>It squashes</h3>
+        <p>Fluffy pancakes compress under 40 in of weight, unevenly. The tower sinks and tilts while you build.</p>
+        <div class="fix">Thin, dense batter. 0.5% baking powder. 0.16 in cooked.</div>
+      </article>
+      <article class="mode">
+        <svg viewBox="0 0 240 92" aria-hidden="true">
+          <g fill="#BA8BFF"><rect x="78" y="70" width="84" height="10" rx="5"/><rect x="82" y="58" width="84" height="10" rx="5"/><rect x="87" y="46" width="84" height="10" rx="5"/><rect x="93" y="34" width="84" height="10" rx="5"/><rect x="100" y="22" width="84" height="10" rx="5"/><rect x="108" y="10" width="84" height="10" rx="5"/></g>
+          <line x1="120" x2="120" y1="4" y2="84" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 4"/>
+          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <h3>It leans</h3>
+        <p>Each pancake is a hair off. Three hundred hairs add up to a lean you can't fix at the top.</p>
+        <div class="fix">¼ turn per pancake. Two lasers. Drift called every 10.</div>
+      </article>
+      <article class="mode">
+        <svg viewBox="0 0 240 92" aria-hidden="true">
+          <g fill="#FF7AA0"><rect x="80" y="62" width="80" height="20" rx="6"/><rect x="84" y="40" width="72" height="20" rx="6"/><rect x="88" y="18" width="64" height="20" rx="6"/></g>
+          <rect x="128" y="2" width="54" height="13" rx="6" fill="#FF7AA0" transform="rotate(14 155 8)"/>
+          <line x1="20" x2="220" y1="22" y2="22" stroke="#E33A6A" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <h3>It gets greedy</h3>
+        <p>The record is in reach, so you add five more. The fifth one is the one that falls.</p>
+        <div class="fix">Slow at 44 in. Stop at 45 in. Hands off.</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="recipe" aria-labelledby="recipe-h">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Recipe</span>
+      <h2 id="recipe-h">A pancake built to carry weight</h2>
+      <p>Still a real pancake: edible, cooked on both sides, served after the attempt. Ratios by weight, flour = 100.</p>
+    </div>
+    <div class="recipe">
+      <div class="ratios" id="ratios"></div>
+      <ol class="steps">
+        <li><div><b>Mix and rest 60 min, cold.</b><span>The flour hydrates. Thickness gets consistent.</span></div></li>
+        <li><div><b>Griddle at 330–350 °F, wiped once.</b><span>No pooled fat. Fat between layers makes them slide.</span></div></li>
+        <li><div><b>Ring down, fixed dose in.</b><span>1/8 in of batter. Don't spread, don't press.</span></div></li>
+        <li><div><b>Flip once, when the top goes matte.</b><span>Pale golden, not brown.</span></div></li>
+        <li><div><b>Cool flat on a rack, 5 min.</b><span>Trapped steam turns into a slippery film.</span></div></li>
+        <li><div><b>Stack 10, measure.</b><span>Target 1.6 in. Accept 1.45 to 1.75 in.</span></div></li>
+      </ol>
+    </div>
+    <div class="head">
+      <h3>Doses, drawn to scale</h3>
+      <p>Same ring, same volume, same depth. Every time.</p>
+    </div>
+    <div class="doses" id="doses"></div>
+  </div>
+</section>
+
+<section class="band alt" id="tower-sec" aria-labelledby="tower-h">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Build protocol</span>
+      <h2 id="tower-h">The tower, to scale</h2>
+      <p>Nothing touches it but pancakes. Lasers read plumb. A freestanding gauge reads height.</p>
+    </div>
+    <div class="figure scroll-x"><svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1000" viewBox="0 0 1280 1000" role="img" aria-label="Pancake Tower elevation and plan, drawn to scale from recipe.toml">
+<title id="tower-title">Pancake Tower elevation and plan, drawn to scale from recipe.toml</title>
+
+<rect width="1280" height="1000" rx="28" fill="#FBF6F1"/>
+<g stroke="#EFE4DC" stroke-width="1"><line x1="72" x2="72" y1="72" y2="884" /><line x1="123" x2="123" y1="72" y2="884" /><line x1="174" x2="174" y1="72" y2="884" /><line x1="225" x2="225" y1="72" y2="884" /><line x1="276" x2="276" y1="72" y2="884" /><line x1="327" x2="327" y1="72" y2="884" /><line x1="378" x2="378" y1="72" y2="884" /><line x1="429" x2="429" y1="72" y2="884" /><line x1="480" x2="480" y1="72" y2="884" /><line x1="531" x2="531" y1="72" y2="884" /><line x1="582" x2="582" y1="72" y2="884" /><line x1="633" x2="633" y1="72" y2="884" /><line x1="684" x2="684" y1="72" y2="884" /><line x1="735" x2="735" y1="72" y2="884" /><line x1="72" x2="760" y1="884" y2="884" /><line x1="72" x2="760" y1="833" y2="833" /><line x1="72" x2="760" y1="782" y2="782" /><line x1="72" x2="760" y1="731" y2="731" /><line x1="72" x2="760" y1="680" y2="680" /><line x1="72" x2="760" y1="629" y2="629" /><line x1="72" x2="760" y1="578" y2="578" /><line x1="72" x2="760" y1="527" y2="527" /><line x1="72" x2="760" y1="476" y2="476" /><line x1="72" x2="760" y1="425" y2="425" /><line x1="72" x2="760" y1="374" y2="374" /><line x1="72" x2="760" y1="323" y2="323" /><line x1="72" x2="760" y1="272" y2="272" /><line x1="72" x2="760" y1="221" y2="221" /><line x1="72" x2="760" y1="170" y2="170" /><line x1="72" x2="760" y1="119" y2="119" /></g>
+<text x="72" y="56" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">ELEVATION</text>
+<text x="180" y="56" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="start">to scale · grid = 3 in</text>
+<rect x="355.5" y="754.8" width="153.0" height="129.2" rx="3" fill="#FF7AA0"/>
+<line x1="356.5" x2="507.5" y1="881.42" y2="881.42" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="878.83" y2="878.83" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="876.25" y2="876.25" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="873.66" y2="873.66" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="871.08" y2="871.08" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="868.50" y2="868.50" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="865.91" y2="865.91" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="863.33" y2="863.33" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="860.74" y2="860.74" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="858.16" y2="858.16" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="855.58" y2="855.58" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="852.99" y2="852.99" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="850.41" y2="850.41" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="847.82" y2="847.82" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="845.24" y2="845.24" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="842.66" y2="842.66" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="840.07" y2="840.07" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="837.49" y2="837.49" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="834.90" y2="834.90" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="832.32" y2="832.32" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="829.74" y2="829.74" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="827.15" y2="827.15" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="824.57" y2="824.57" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="821.98" y2="821.98" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="819.40" y2="819.40" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="816.82" y2="816.82" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="814.23" y2="814.23" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="811.65" y2="811.65" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="809.06" y2="809.06" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="806.48" y2="806.48" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="803.90" y2="803.90" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="801.31" y2="801.31" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="798.73" y2="798.73" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="796.14" y2="796.14" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="793.56" y2="793.56" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="790.98" y2="790.98" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="788.39" y2="788.39" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="785.81" y2="785.81" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="783.22" y2="783.22" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="780.64" y2="780.64" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="778.06" y2="778.06" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="775.47" y2="775.47" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="772.89" y2="772.89" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="770.30" y2="770.30" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="767.72" y2="767.72" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="765.14" y2="765.14" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="762.55" y2="762.55" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="759.97" y2="759.97" stroke="#FFBBC7" stroke-width="0.80"/>
+<line x1="356.5" x2="507.5" y1="757.38" y2="757.38" stroke="#FFBBC7" stroke-width="0.80"/>
+<rect x="364.0" y="238.0" width="136.0" height="516.8" rx="3" fill="#BA8BFF"/>
+<line x1="365.0" x2="499.0" y1="752.22" y2="752.22" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="749.63" y2="749.63" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="747.05" y2="747.05" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="744.46" y2="744.46" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="741.88" y2="741.88" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="739.30" y2="739.30" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="736.71" y2="736.71" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="734.13" y2="734.13" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="731.54" y2="731.54" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="728.96" y2="728.96" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="726.38" y2="726.38" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="723.79" y2="723.79" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="721.21" y2="721.21" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="718.62" y2="718.62" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="716.04" y2="716.04" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="713.46" y2="713.46" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="710.87" y2="710.87" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="708.29" y2="708.29" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="705.70" y2="705.70" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="703.12" y2="703.12" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="700.54" y2="700.54" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="697.95" y2="697.95" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="695.37" y2="695.37" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="692.78" y2="692.78" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="690.20" y2="690.20" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="687.62" y2="687.62" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="685.03" y2="685.03" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="682.45" y2="682.45" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="679.86" y2="679.86" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="677.28" y2="677.28" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="674.70" y2="674.70" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="672.11" y2="672.11" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="669.53" y2="669.53" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="666.94" y2="666.94" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="664.36" y2="664.36" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="661.78" y2="661.78" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="659.19" y2="659.19" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="656.61" y2="656.61" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="654.02" y2="654.02" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="651.44" y2="651.44" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="648.86" y2="648.86" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="646.27" y2="646.27" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="643.69" y2="643.69" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="641.10" y2="641.10" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="638.52" y2="638.52" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="635.94" y2="635.94" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="633.35" y2="633.35" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="630.77" y2="630.77" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="628.18" y2="628.18" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="625.60" y2="625.60" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="623.02" y2="623.02" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="620.43" y2="620.43" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="617.85" y2="617.85" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="615.26" y2="615.26" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="612.68" y2="612.68" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="610.10" y2="610.10" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="607.51" y2="607.51" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="604.93" y2="604.93" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="602.34" y2="602.34" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="599.76" y2="599.76" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="597.18" y2="597.18" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="594.59" y2="594.59" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="592.01" y2="592.01" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="589.42" y2="589.42" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="586.84" y2="586.84" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="584.26" y2="584.26" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="581.67" y2="581.67" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="579.09" y2="579.09" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="576.50" y2="576.50" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="573.92" y2="573.92" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="571.34" y2="571.34" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="568.75" y2="568.75" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="566.17" y2="566.17" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="563.58" y2="563.58" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="561.00" y2="561.00" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="558.42" y2="558.42" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="555.83" y2="555.83" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="553.25" y2="553.25" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="550.66" y2="550.66" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="548.08" y2="548.08" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="545.50" y2="545.50" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="542.91" y2="542.91" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="540.33" y2="540.33" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="537.74" y2="537.74" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="535.16" y2="535.16" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="532.58" y2="532.58" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="529.99" y2="529.99" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="527.41" y2="527.41" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="524.82" y2="524.82" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="522.24" y2="522.24" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="519.66" y2="519.66" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="517.07" y2="517.07" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="514.49" y2="514.49" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="511.90" y2="511.90" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="509.32" y2="509.32" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="506.74" y2="506.74" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="504.15" y2="504.15" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="501.57" y2="501.57" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="498.98" y2="498.98" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="496.40" y2="496.40" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="493.82" y2="493.82" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="491.23" y2="491.23" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="488.65" y2="488.65" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="486.06" y2="486.06" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="483.48" y2="483.48" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="480.90" y2="480.90" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="478.31" y2="478.31" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="475.73" y2="475.73" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="473.14" y2="473.14" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="470.56" y2="470.56" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="467.98" y2="467.98" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="465.39" y2="465.39" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="462.81" y2="462.81" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="460.22" y2="460.22" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="457.64" y2="457.64" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="455.06" y2="455.06" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="452.47" y2="452.47" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="449.89" y2="449.89" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="447.30" y2="447.30" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="444.72" y2="444.72" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="442.14" y2="442.14" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="439.55" y2="439.55" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="436.97" y2="436.97" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="434.38" y2="434.38" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="431.80" y2="431.80" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="429.22" y2="429.22" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="426.63" y2="426.63" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="424.05" y2="424.05" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="421.46" y2="421.46" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="418.88" y2="418.88" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="416.30" y2="416.30" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="413.71" y2="413.71" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="411.13" y2="411.13" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="408.54" y2="408.54" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="405.96" y2="405.96" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="403.38" y2="403.38" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="400.79" y2="400.79" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="398.21" y2="398.21" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="395.62" y2="395.62" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="393.04" y2="393.04" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="390.46" y2="390.46" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="387.87" y2="387.87" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="385.29" y2="385.29" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="382.70" y2="382.70" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="380.12" y2="380.12" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="377.54" y2="377.54" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="374.95" y2="374.95" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="372.37" y2="372.37" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="369.78" y2="369.78" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="367.20" y2="367.20" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="364.62" y2="364.62" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="362.03" y2="362.03" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="359.45" y2="359.45" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="356.86" y2="356.86" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="354.28" y2="354.28" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="351.70" y2="351.70" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="349.11" y2="349.11" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="346.53" y2="346.53" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="343.94" y2="343.94" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="341.36" y2="341.36" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="338.78" y2="338.78" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="336.19" y2="336.19" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="333.61" y2="333.61" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="331.02" y2="331.02" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="328.44" y2="328.44" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="325.86" y2="325.86" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="323.27" y2="323.27" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="320.69" y2="320.69" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="318.10" y2="318.10" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="315.52" y2="315.52" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="312.94" y2="312.94" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="310.35" y2="310.35" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="307.77" y2="307.77" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="305.18" y2="305.18" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="302.60" y2="302.60" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="300.02" y2="300.02" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="297.43" y2="297.43" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="294.85" y2="294.85" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="292.26" y2="292.26" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="289.68" y2="289.68" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="287.10" y2="287.10" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="284.51" y2="284.51" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="281.93" y2="281.93" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="279.34" y2="279.34" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="276.76" y2="276.76" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="274.18" y2="274.18" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="271.59" y2="271.59" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="269.01" y2="269.01" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="266.42" y2="266.42" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="263.84" y2="263.84" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="261.26" y2="261.26" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="258.67" y2="258.67" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="256.09" y2="256.09" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="253.50" y2="253.50" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="250.92" y2="250.92" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="248.34" y2="248.34" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="245.75" y2="245.75" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="243.17" y2="243.17" stroke="#DEC3F5" stroke-width="0.80"/>
+<line x1="365.0" x2="499.0" y1="240.58" y2="240.58" stroke="#DEC3F5" stroke-width="0.80"/>
+<rect x="381.0" y="119.1" width="102.0" height="118.9" rx="3" fill="#FFBD7A"/>
+<line x1="382.0" x2="482.0" y1="235.42" y2="235.42" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="232.83" y2="232.83" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="230.25" y2="230.25" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="227.66" y2="227.66" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="225.08" y2="225.08" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="222.50" y2="222.50" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="219.91" y2="219.91" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="217.33" y2="217.33" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="214.74" y2="214.74" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="212.16" y2="212.16" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="209.58" y2="209.58" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="206.99" y2="206.99" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="204.41" y2="204.41" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="201.82" y2="201.82" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="199.24" y2="199.24" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="196.66" y2="196.66" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="194.07" y2="194.07" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="191.49" y2="191.49" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="188.90" y2="188.90" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="186.32" y2="186.32" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="183.74" y2="183.74" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="181.15" y2="181.15" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="178.57" y2="178.57" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="175.98" y2="175.98" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="173.40" y2="173.40" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="170.82" y2="170.82" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="168.23" y2="168.23" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="165.65" y2="165.65" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="163.06" y2="163.06" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="160.48" y2="160.48" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="157.90" y2="157.90" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="155.31" y2="155.31" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="152.73" y2="152.73" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="150.14" y2="150.14" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="147.56" y2="147.56" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="144.98" y2="144.98" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="142.39" y2="142.39" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="139.81" y2="139.81" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="137.22" y2="137.22" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="134.64" y2="134.64" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="132.06" y2="132.06" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="129.47" y2="129.47" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="126.89" y2="126.89" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="124.30" y2="124.30" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="382.0" x2="482.0" y1="121.72" y2="121.72" stroke="#FFDBB5" stroke-width="0.80"/>
+<line x1="432" x2="432" y1="82" y2="890" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 5"/>
+<text x="440" y="92" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#8D43FD" text-anchor="start">LASER A · plumb</text>
+<line x1="347.5" x2="292" y1="819.4" y2="819.4" stroke="#2C002A" stroke-width="1"/>
+<circle cx="347.5" cy="819.4" r="2.5" fill="#2C002A"/>
+<text x="286" y="813.4" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#2C002A" text-anchor="end" letter-spacing="1.2">BASE</text>
+<text x="286" y="834.4" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="end">Ø 9 in · 50</text>
+<line x1="356.0" x2="292" y1="496.4" y2="496.4" stroke="#2C002A" stroke-width="1"/>
+<circle cx="356.0" cy="496.4" r="2.5" fill="#2C002A"/>
+<text x="286" y="490.3999999999999" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#2C002A" text-anchor="end" letter-spacing="1.2">BODY</text>
+<text x="286" y="511.3999999999999" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="end">Ø 8 in · 200</text>
+<line x1="373.0" x2="292" y1="178.6" y2="178.6" stroke="#2C002A" stroke-width="1"/>
+<circle cx="373.0" cy="178.6" r="2.5" fill="#2C002A"/>
+<text x="286" y="172.56799999999987" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#2C002A" text-anchor="end" letter-spacing="1.2">TOP</text>
+<text x="286" y="193.56799999999987" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="end">Ø 6 in · 46 of 50</text>
+<g stroke="#2C002A" stroke-width="1">
+<line x1="524" x2="524" y1="755.8" y2="883.0"/>
+<line x1="519" x2="529" y1="754.8" y2="754.8"/><line x1="519" x2="529" y1="884.0" y2="884.0"/>
+</g>
+<text x="533" y="824.4" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#2C002A" text-anchor="start">7.6</text>
+<g stroke="#2C002A" stroke-width="1">
+<line x1="524" x2="524" y1="239.0" y2="753.8"/>
+<line x1="519" x2="529" y1="238.0" y2="238.0"/><line x1="519" x2="529" y1="754.8" y2="754.8"/>
+</g>
+<text x="533" y="501.3999999999999" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#2C002A" text-anchor="start">30.4</text>
+<g stroke="#2C002A" stroke-width="1">
+<line x1="524" x2="524" y1="120.1" y2="237.0"/>
+<line x1="519" x2="529" y1="119.1" y2="119.1"/><line x1="519" x2="529" y1="238.0" y2="238.0"/>
+</g>
+<text x="533" y="183.56799999999987" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#2C002A" text-anchor="start">7.0</text>
+<g stroke="#2C002A" stroke-width="1">
+<line x1="582" x2="582" y1="120.1" y2="883.0"/>
+<line x1="577" x2="587" y1="119.1" y2="119.1"/><line x1="577" x2="587" y1="884.0" y2="884.0"/>
+</g>
+<text x="591" y="506.5679999999999" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#2C002A" text-anchor="start">45 in</text>
+<rect x="658" y="68" width="8" height="816" rx="2" fill="#FFFCF8" stroke="#2C002A"/>
+<rect x="634" y="878" width="56" height="6" rx="2" fill="#2C002A"/>
+<line x1="658" x2="668" y1="884" y2="884" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="833" y2="833" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="782" y2="782" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="731" y2="731" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="680" y2="680" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="629" y2="629" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="578" y2="578" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="527" y2="527" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="476" y2="476" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="425" y2="425" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="374" y2="374" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="323" y2="323" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="272" y2="272" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="221" y2="221" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="170" y2="170" stroke="#2C002A"/>
+<line x1="658" x2="664" y1="119" y2="119" stroke="#2C002A"/>
+<line x1="658" x2="668" y1="68" y2="68" stroke="#2C002A"/>
+<text x="662" y="54" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#85687C" text-anchor="middle" letter-spacing="1.2">GAUGE</text>
+<line x1="372" x2="658" y1="159.8" y2="159.8" stroke="#E33A6A" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="676" y="178.79999999999995" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#E33A6A" text-anchor="start">RECORD 42.6</text>
+<line x1="372" x2="658" y1="136.0" y2="136.0" stroke="#F38F43" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="676" y="143.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#F38F43" text-anchor="start">SLOW 44</text>
+<line x1="372" x2="658" y1="119.0" y2="119.0" stroke="#2C002A" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="676" y="114.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="start">STOP 45</text>
+<rect x="250" y="884" width="450" height="14" rx="3" fill="#2C002A"/>
+<rect x="270" y="898" width="10" height="56" fill="#2C002A"/><rect x="670" y="898" width="10" height="56" fill="#2C002A"/>
+<text x="475" y="980" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="middle">Heavy table · level &lt; 0.2° · printed Ø 9 in circle</text>
+<rect x="812" y="72" width="396" height="392" rx="18" fill="#FFFCF8" stroke="#DDCFCD"/>
+<text x="834" y="106" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">PLAN</text>
+<text x="882" y="106" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="start">from above · to scale</text>
+<circle cx="1010.0" cy="268" r="117.0" fill="#FF7AA0" stroke="#FFFCF8" stroke-width="2"/>
+<circle cx="1010.0" cy="268" r="104.0" fill="#BA8BFF" stroke="#FFFCF8" stroke-width="2"/>
+<circle cx="1010.0" cy="268" r="78.0" fill="#FFBD7A" stroke="#FFFCF8" stroke-width="2"/>
+<line x1="1010.0" x2="1010.0" y1="124" y2="446" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 5"/>
+<line x1="830" x2="1190" y1="268" y2="268" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 5"/>
+<text x="1018.0" y="136" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#8D43FD" text-anchor="start">A</text>
+<text x="1186" y="260" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#8D43FD" text-anchor="end">B</text>
+<path d="M1135.2 217.4 A135.0 135.0 0 0 0 1073.4 148.8" fill="none" stroke="#2C002A" stroke-width="1.5"/>
+<path d="M1073.4 148.8 l9 -3 l-3 9 z" fill="#2C002A"/>
+<text x="1188" y="134" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="500" fill="#2C002A" text-anchor="end">¼ turn per pancake</text>
+<rect x="834" y="430" width="14" height="14" rx="4" fill="#FF7AA0"/>
+<text x="854" y="442" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="500" fill="#2C002A" text-anchor="start">Ø 9 base</text>
+<rect x="932" y="430" width="14" height="14" rx="4" fill="#BA8BFF"/>
+<text x="952" y="442" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="500" fill="#2C002A" text-anchor="start">Ø 8 body</text>
+<rect x="1030" y="430" width="14" height="14" rx="4" fill="#FFBD7A"/>
+<text x="1050" y="442" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="500" fill="#2C002A" text-anchor="start">Ø 6 top</text>
+<text x="812" y="500" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">NOTES</text>
+<circle cx="824" cy="531" r="11" fill="none" stroke="#2C002A"/>
+<text x="824" y="536" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">1</text>
+<text x="846" y="536" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Nothing touches the tower but pancakes.</text>
+<circle cx="824" cy="565" r="11" fill="none" stroke="#2C002A"/>
+<text x="824" y="570" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">2</text>
+<text x="846" y="570" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Lower each one from an edge. Never slide.</text>
+<circle cx="824" cy="599" r="11" fill="none" stroke="#2C002A"/>
+<text x="824" y="604" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">3</text>
+<text x="846" y="604" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Spotters call drift every 10 pancakes.</text>
+<circle cx="824" cy="633" r="11" fill="none" stroke="#2C002A"/>
+<text x="824" y="638" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">4</text>
+<text x="846" y="638" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Slow at 44 in. Stop at 45 in.</text>
+<circle cx="824" cy="667" r="11" fill="none" stroke="#2C002A"/>
+<text x="824" y="672" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">5</text>
+<text x="846" y="672" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Hold 5 s, hands off. Then measure.</text>
+<rect x="812" y="720" width="396" height="214" rx="18" fill="#FFFCF8" stroke="#2C002A" stroke-width="1.5"/>
+<line x1="812" x2="1208" y1="804" y2="804" stroke="#2C002A"/>
+<line x1="1010.0" x2="1010.0" y1="804" y2="934" stroke="#2C002A"/>
+<line x1="812" x2="1208" y1="870" y2="870" stroke="#2C002A"/>
+<text x="834" y="770" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#2C002A" text-anchor="start" letter-spacing="-0.5">PANCAKE TOWER</text>
+<text x="834" y="792" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="start">Elevation &amp; plan · units: inches</text>
+<g transform="translate(1134 734) scale(0.1609) translate(-340 -362)"><path d="M486.604 708.842C517.164 708.842 564.826 709.521 594.424 691.269C630.578 668.974 648.925 632.463 649.265 599.843C649.934 535.667 589.721 475.79 509.577 475.79C472.983 475.79 431.2 483.476 404.158 500.475C371.974 520.705 347.456 547.546 347.456 590.4C347.456 659.698 394.127 708.842 486.604 708.842Z" fill="#FFBBC7"/>
+<path d="M487.339 672.046C515.989 672.046 560.672 672.618 588.42 657.248C622.315 638.473 639.514 607.727 639.833 580.257C640.46 526.214 584.011 475.792 508.875 475.792C474.569 475.792 435.398 482.263 410.045 496.578C379.873 513.615 356.887 536.217 356.887 572.305C356.887 630.661 400.641 672.046 487.339 672.046Z" fill="#FF7AA0"/>
+<g opacity="0.16">
+<path d="M505.183 669C565.842 669 647.245 623.569 647.798 576.799C648.395 526.205 594.596 479 522.988 479C490.292 479 455.343 487.995 431.181 501.396C402.426 517.346 378.135 535.57 378.135 569.355C378.136 623.987 437.018 669 505.183 669Z" fill="#2C002A"/>
+</g>
+<path d="M521.646 668.795C589.537 668.795 680.644 611.168 681.262 551.844C681.931 487.668 621.719 427.791 541.574 427.791C504.98 427.791 465.865 439.2 438.823 456.199C406.639 476.43 379.453 499.547 379.453 542.401C379.453 611.699 445.355 668.795 521.646 668.795Z" fill="#DEC3F5"/>
+<path d="M522.19 630.742C585.837 630.742 671.25 582.215 671.83 532.257C672.457 478.214 616.008 427.792 540.872 427.792C506.566 427.792 469.895 437.399 444.543 451.714C414.371 468.751 388.884 488.217 388.884 524.305C388.884 582.661 450.667 630.742 522.19 630.742Z" fill="#BA8BFF"/>
+<g opacity="0.16">
+<path d="M516.284 612C561.513 612 597.678 590.056 622.45 567.874C639.454 552.648 649.532 533.424 649.792 511.887C650.436 458.757 587.299 416 510.262 416C433.226 416 367.717 453.642 359.687 511.887C354.814 547.231 379.204 566.415 406.734 582.158C434.075 597.794 478.277 612 516.284 612Z" fill="#2C002A"/>
+</g>
+<path d="M510.635 612.795C557.627 612.795 595.202 585.813 620.941 558.537C638.608 539.815 649.079 516.177 649.35 489.695C650.018 424.365 584.419 371.791 504.379 371.791C424.338 371.791 356.274 418.076 347.931 489.695C342.869 533.154 368.21 556.743 396.813 576.101C425.22 595.327 471.146 612.795 510.635 612.795Z" fill="#FFDBB5"/>
+<path d="M509.867 574.742C553.922 574.742 589.149 552.02 613.279 529.051C629.841 513.285 639.658 493.379 639.912 471.079C640.539 416.064 579.04 371.792 504.002 371.792C428.963 371.792 365.154 410.768 357.333 471.079C352.586 507.676 376.344 527.54 403.159 543.842C429.791 560.032 472.846 574.742 509.867 574.742Z" fill="#FFBD7A"/>
+<path d="M385.97 472.633C385.97 455.175 390.67 442.714 403.92 442.715C417.171 442.714 421.871 455.175 421.871 472.633C421.871 490.09 417.171 502.551 403.92 502.55C390.67 502.551 385.97 490.09 385.97 472.633Z" fill="#2C002A"/>
+<path d="M486.034 465.869C486.034 442.529 492.319 425.868 510.034 425.869C527.75 425.868 534.034 442.529 534.034 465.869C534.034 489.21 527.75 505.87 510.034 505.869C492.319 505.87 486.034 489.21 486.034 465.869Z" fill="#2C002A"/></g>
+<text x="834.0" y="828" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.2">SPEC</text>
+<text x="834.0" y="854" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" fill="#2C002A" text-anchor="start">v0.1.0</text>
+<text x="1032.0" y="828" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.2">STATUS</text>
+<text x="1032.0" y="854" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" fill="#E33A6A" text-anchor="start">UNTESTED</text>
+<text x="834.0" y="894" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.2">TOWER</text>
+<text x="834.0" y="920" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="18" font-weight="700" fill="#2C002A" text-anchor="start">296 pancakes</text>
+<text x="1032.0" y="894" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.2">BUILT BY</text>
+<path transform="translate(1032.0 902) scale(0.1896)" d="M318.116 9.17733C322.015 3.82624 327.3 -0.212597 333.318 0.00867186C339.855 0.249222 344.109 5.2716 346.075 11.2001C348.052 17.1614 348.283 25.2018 346.541 34.8696C343.758 50.3187 335.749 70.9712 319.701 96.3398C320.064 98.657 320.466 101.023 320.906 103.439C323.782 97.805 327.283 93.7008 331.185 91.0009C339.115 85.514 348.228 86.3193 353.997 91.567C356.827 94.1415 358.729 97.7143 359.101 101.775C359.476 105.865 358.272 110.084 355.536 113.942C352.678 117.969 348.175 121.607 341.859 124.63C355.431 143.67 374.26 153.904 396.156 153.904V165.071C369.298 165.071 346.575 151.84 331.068 128.657C329.695 129.053 328.269 129.428 326.788 129.781C327.717 133.264 328.982 137.817 330.285 142.473C332.416 150.085 334.647 157.982 335.222 160.587L324.317 162.994C323.831 160.79 321.744 153.387 319.532 145.482C317.43 137.974 315.203 129.967 314.531 126.778C313.07 120.896 311.812 115.23 310.74 109.778C309.1 112.12 307.397 114.498 305.627 116.91L296.624 110.302C300.819 104.588 304.613 99.0974 308.038 93.8374C304.407 68.1372 305.246 47.9882 308.437 33.1118C310.658 22.7627 314.067 14.7339 318.116 9.17733ZM85.7208 82.9906C101.219 82.9906 110.174 90.4529 110.174 104.344V127.879C110.174 130.863 111.207 131.667 113.848 131.667H116.258V142.459H109.829C102.138 142.459 99.268 139.129 99.1531 133.504C95.2498 139.244 89.1651 143.147 79.9809 143.147C67.2379 143.147 58.3979 136.833 58.3978 125.927C58.3978 113.758 67.008 107.099 83.3099 107.099H97.8899V103.54C97.8899 96.9966 93.1831 92.9785 85.1469 92.9785C77.9144 92.9785 73.0926 96.4228 72.1742 101.589H59.8902C61.2678 90.2235 70.9113 82.9906 85.7208 82.9906ZM210.227 82.9906C225.266 82.9906 234.68 91.3715 236.976 104.689H224.003C222.396 97.8005 217.46 93.5525 209.997 93.5524C200.124 93.5524 193.58 101.703 193.58 113.184C193.58 124.664 200.124 132.586 209.997 132.586C217.345 132.586 222.396 128.223 223.888 121.449H236.976C234.795 134.766 224.807 143.147 209.883 143.147C192.203 143.147 180.952 131.552 180.952 113.184C180.952 95.045 192.547 82.9907 210.227 82.9906ZM267.979 82.9906C283.478 82.9906 292.432 90.4529 292.432 104.344V127.879C292.432 130.863 293.465 131.667 296.106 131.667H298.517V142.459H292.088C284.396 142.459 281.526 139.129 281.411 133.504C277.508 139.244 271.423 143.147 262.239 143.147C249.496 143.147 240.656 136.833 240.656 125.927C240.656 113.758 249.266 107.099 265.568 107.099H280.148V103.54C280.148 96.9966 275.441 92.9785 267.405 92.9785C260.173 92.9785 255.351 96.4228 254.432 101.589H242.148C243.526 90.2235 253.17 82.9906 267.979 82.9906ZM393.043 82.9906C410.034 82.9906 421.284 93.7821 421.629 111.002C421.629 112.265 421.514 114.217 421.285 115.939H377.43V116.513C377.775 126.501 383.974 133.044 393.617 133.045C400.964 133.045 406.59 129.256 408.197 122.713H420.596C418.53 134.308 408.771 143.147 394.306 143.147C375.938 143.147 364.457 131.208 364.457 113.184C364.458 95.0449 375.938 82.9906 393.043 82.9906ZM30.652 62.0968C47.2984 62.0968 58.3197 72.0844 58.3197 87.6976C58.3196 103.196 47.2984 113.298 30.652 113.298H13.202V142.459H0V62.0968H30.652ZM151.733 82.9906C164.246 82.9906 174.694 89.7641 174.694 108.936V142.459H162.18V110.084C162.18 99.637 157.703 93.8971 148.863 93.8971C139.564 93.8971 133.939 100.67 133.939 112.036V142.459H121.54V83.6794H132.332L133.709 91.3712C137.153 86.7792 142.664 82.9906 151.733 82.9906ZM82.736 116.283C75.1591 116.283 70.9115 119.154 70.9115 125.123C70.9117 130.06 75.0446 133.504 81.7031 133.504C91.8056 133.504 97.8899 127.419 97.8899 118.579V116.283H82.736ZM264.994 116.283C257.417 116.283 253.17 119.154 253.17 125.123C253.17 130.06 257.303 133.504 263.961 133.504C274.064 133.504 280.148 127.419 280.148 118.579V116.283H264.994ZM346.482 99.8277C344.864 98.3563 341.545 97.4116 337.539 100.184C334.149 102.529 330.057 107.801 327.246 118.134C338.482 115.011 344.066 110.809 346.428 107.48C347.813 105.528 348.084 103.921 347.981 102.796C347.875 101.642 347.345 100.613 346.482 99.8277ZM393.158 92.9785C385.466 92.9785 378.808 98.2594 377.889 106.64H408.771C407.738 97.9151 401.768 92.9786 393.158 92.9785ZM13.202 101.818H29.0447C38.6881 101.818 44.8873 96.3078 44.8874 87.6976C44.8874 78.9726 38.6882 73.5766 29.1596 73.5766H13.202V101.818ZM332.907 11.1678C332.368 11.1481 330.155 11.6174 327.142 15.7532C324.277 19.6844 321.357 26.1241 319.355 35.4541C317.06 46.1528 316.039 60.3509 317.516 78.2562C328.126 59.4285 333.509 44.2226 335.551 32.8898C337.108 24.2465 336.651 18.261 335.475 14.7148C334.292 11.1477 332.935 11.1683 332.907 11.1678Z" fill="#2C002A"/>
+</svg>
+</div>
+    <div class="roles">
+      <div class="role"><h3>Stacker</h3><span>Places every pancake. Same person at every rehearsal.</span></div>
+      <div class="role"><h3>Passer</h3><span>Hands each one over on a thin spatula, at stack height.</span></div>
+      <div class="role"><h3>Spotters ×2</h3><span>One per laser. Call the drift every 10 pancakes.</span></div>
+      <div class="role"><h3>Zone guard</h3><span>Silence. No traffic, no robot, nobody near the table.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="calculator" aria-labelledby="calc-h">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Calculator</span>
+      <h2 id="calc-h">Run the numbers</h2>
+      <p>Same math as <span class="mono">calc.py</span>. Change your measured thickness and watch the plan move.</p>
+    </div>
+    <div class="calc">
+      <form class="controls" id="calc-form">
+        <div class="field">
+          <label for="thick">Cooked thickness <output id="thick-o" class="num">0.160 in</output></label>
+          <input type="range" id="thick" min="0.130" max="0.180" step="0.005" value="0.160">
+          <small>From your stack-of-10 test, divided by 10.</small>
+        </div>
+        <div class="field">
+          <label for="settle">Settling while stacking <output id="settle-o" class="num">5%</output></label>
+          <input type="range" id="settle" min="0" max="10" step="1" value="5">
+          <small>Height lost to compression. Measure it at the rehearsal.</small>
+        </div>
+        <div class="field">
+          <label for="spare">Spares <output id="spare-o" class="num">30%</output></label>
+          <input type="range" id="spare" min="10" max="60" step="5" value="30">
+          <small>Rejects, tests, and one dropped tray.</small>
+        </div>
+        <div class="field">
+          <label for="attempts-seg">Attempts to cook for <output id="attempts-o" class="num">1</output></label>
+          <div class="seg" id="attempts-seg" role="group" aria-label="Attempts">
+            <button type="button" data-v="1" aria-pressed="true">1</button>
+            <button type="button" data-v="2" aria-pressed="false">2</button>
+            <button type="button" data-v="3" aria-pressed="false">3</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="units-seg">Units</label>
+          <div class="seg" id="units-seg" role="group" aria-label="Units">
+            <button type="button" data-v="us" aria-pressed="true">US</button>
+            <button type="button" data-v="metric" aria-pressed="false">Metric</button>
+          </div>
+        </div>
+      </form>
+      <div class="results" aria-live="polite">
+        <div class="gauge">
+          <div class="verdict" id="verdict"></div>
+          <div class="gauge-track"><div class="gauge-fill" id="g-fill"></div><div class="gauge-mark rec" id="g-rec"></div><div class="gauge-mark stop" id="g-stop"></div></div>
+          <div class="gauge-legend"><span>0 in</span><span id="g-leg"></span><span>50 in</span></div>
+        </div>
+        <div class="totals">
+          <div><b class="num" id="t-cook">390</b><span>pancakes to cook</span></div>
+          <div><b class="num" id="t-batter">10.3 gal</b><span>of batter</span></div>
+          <div><b class="num" id="t-stop">297</b><span>to reach the stop line</span></div>
+        </div>
+        <div class="scroll-x"><table id="t-sizes"></table></div>
+        <div class="scroll-x"><table id="t-shop"></table></div>
+        <div id="warns"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="record" aria-labelledby="rec-h">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">History</span>
+      <h2 id="rec-h">Every record since 2012</h2>
+      <p>Tallest stack of pancakes, height in inches. Hover a stack for who, where and how many.</p>
+    </div>
+    <div class="chart scroll-x" id="chart"><svg id="rec-svg" viewBox="0 0 1000 400" role="img" aria-label="Record heights from 2012 to 2025, and our target"></svg><div class="tip" id="tip" hidden></div></div>
+    <details><summary>Show as a table</summary><div class="scroll-x"><table id="rec-table"></table></div></details>
+  </div>
+</section>
+
+<section class="band" id="rules" aria-labelledby="rules-h">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Rules</span>
+      <h2 id="rules-h">Inside the rules, with margin</h2>
+    </div>
+    <div class="rules">
+      <ul>
+        <li>Each pancake 4.9 to 9.84 in across. Some reports say 5.5 to 10 in. We use 6 to 9 in.</li>
+        <li>0.39 in thick at most. Ours are 0.16 in.</li>
+        <li>Freestanding. No support inside or out, nothing holding layers together.</li>
+        <li>Stands 5 seconds after the last pancake.</li>
+        <li>Edible, and eaten or donated. Nothing in the trash.</li>
+      </ul>
+      <div class="untested">
+        <b>v0.1.0 is untested.</b>
+        <p>Every number here is an engineering estimate until our rehearsal. Measured values land in the <a href="https://github.com/get-pancake/pancake-tower/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="band alt">
+  <div class="wrap">
+    <svg class="mascot" viewBox="340 362 348 352" aria-hidden="true"><path d="M486.604 708.842C517.164 708.842 564.826 709.521 594.424 691.269C630.578 668.974 648.925 632.463 649.265 599.843C649.934 535.667 589.721 475.79 509.577 475.79C472.983 475.79 431.2 483.476 404.158 500.475C371.974 520.705 347.456 547.546 347.456 590.4C347.456 659.698 394.127 708.842 486.604 708.842Z" fill="#FFBBC7"/>
+<path d="M487.339 672.046C515.989 672.046 560.672 672.618 588.42 657.248C622.315 638.473 639.514 607.727 639.833 580.257C640.46 526.214 584.011 475.792 508.875 475.792C474.569 475.792 435.398 482.263 410.045 496.578C379.873 513.615 356.887 536.217 356.887 572.305C356.887 630.661 400.641 672.046 487.339 672.046Z" fill="#FF7AA0"/>
+<g opacity="0.16">
+<path d="M505.183 669C565.842 669 647.245 623.569 647.798 576.799C648.395 526.205 594.596 479 522.988 479C490.292 479 455.343 487.995 431.181 501.396C402.426 517.346 378.135 535.57 378.135 569.355C378.136 623.987 437.018 669 505.183 669Z" fill="#2C002A"/>
+</g>
+<path d="M521.646 668.795C589.537 668.795 680.644 611.168 681.262 551.844C681.931 487.668 621.719 427.791 541.574 427.791C504.98 427.791 465.865 439.2 438.823 456.199C406.639 476.43 379.453 499.547 379.453 542.401C379.453 611.699 445.355 668.795 521.646 668.795Z" fill="#DEC3F5"/>
+<path d="M522.19 630.742C585.837 630.742 671.25 582.215 671.83 532.257C672.457 478.214 616.008 427.792 540.872 427.792C506.566 427.792 469.895 437.399 444.543 451.714C414.371 468.751 388.884 488.217 388.884 524.305C388.884 582.661 450.667 630.742 522.19 630.742Z" fill="#BA8BFF"/>
+<g opacity="0.16">
+<path d="M516.284 612C561.513 612 597.678 590.056 622.45 567.874C639.454 552.648 649.532 533.424 649.792 511.887C650.436 458.757 587.299 416 510.262 416C433.226 416 367.717 453.642 359.687 511.887C354.814 547.231 379.204 566.415 406.734 582.158C434.075 597.794 478.277 612 516.284 612Z" fill="#2C002A"/>
+</g>
+<path d="M510.635 612.795C557.627 612.795 595.202 585.813 620.941 558.537C638.608 539.815 649.079 516.177 649.35 489.695C650.018 424.365 584.419 371.791 504.379 371.791C424.338 371.791 356.274 418.076 347.931 489.695C342.869 533.154 368.21 556.743 396.813 576.101C425.22 595.327 471.146 612.795 510.635 612.795Z" fill="#FFDBB5"/>
+<path d="M509.867 574.742C553.922 574.742 589.149 552.02 613.279 529.051C629.841 513.285 639.658 493.379 639.912 471.079C640.539 416.064 579.04 371.792 504.002 371.792C428.963 371.792 365.154 410.768 357.333 471.079C352.586 507.676 376.344 527.54 403.159 543.842C429.791 560.032 472.846 574.742 509.867 574.742Z" fill="#FFBD7A"/>
+<path d="M385.97 472.633C385.97 455.175 390.67 442.714 403.92 442.715C417.171 442.714 421.871 455.175 421.871 472.633C421.871 490.09 417.171 502.551 403.92 502.55C390.67 502.551 385.97 490.09 385.97 472.633Z" fill="#2C002A"/>
+<path d="M486.034 465.869C486.034 442.529 492.319 425.868 510.034 425.869C527.75 425.868 534.034 442.529 534.034 465.869C534.034 489.21 527.75 505.87 510.034 505.869C492.319 505.87 486.034 489.21 486.034 465.869Z" fill="#2C002A"/></svg>
+    <div class="head">
+      <p><b>Pancake gives your agent the brain, the data and the tools to run your go-to-market.</b></p>
+      <p><a href="https://pancake.ai">pancake.ai</a> · <a href="https://github.com/get-pancake/pancake-tower">Source on GitHub</a> · Code MIT, recipe CC BY 4.0</p>
+    </div>
+    <span class="eyebrow">Flip it till you make it</span>
+  </div>
+</footer>
+
+<script id="spec" type="application/json">{"spec":{"meta":{"version":"0.1.0","status":"untested"},"target":{"record_height_in":42.6,"slow_down_at_in":44.0,"build_to_in":45.0,"settle_ratio":0.05},"batter":{"flour_all_purpose":100,"whole_milk":120,"eggs":25,"sugar":4,"salt":1.5,"baking_powder":0.5,"neutral_oil":2,"density_g_per_ml":1.1,"rest_minutes":60},"cook":{"griddle_temp_f":[330,350],"raw_depth_in":0.125,"target_cooked_thickness_in":0.16,"reject_below_in":0.13,"reject_above_in":0.18,"cool_flat_minutes":5,"spare_ratio":0.3,"egg_weight_g":50},"size":[{"name":"base","ring_in":9,"in_tower":50},{"name":"body","ring_in":8,"in_tower":200},{"name":"top","ring_in":6,"in_tower":50}],"rules":{"max_diameter_in":9.84,"min_diameter_in":5.5,"max_thickness_in":0.39,"hold_seconds":5},"experimental":{"xanthan_gum":0.0,"methylcellulose":0.0,"vital_wheat_gluten":0.0}},"plan":{"attempts":1,"spare_ratio":0.3,"thickness_in":0.16,"sizes":[{"name":"base","ring_in":9,"in_tower":50,"to_cook":65,"dose_ml":130.3,"dose_fl_oz":4.41,"dose_g":143.3,"tier_height_in":7.6},{"name":"body","ring_in":8,"in_tower":200,"to_cook":260,"dose_ml":103.0,"dose_fl_oz":3.48,"dose_g":113.3,"tier_height_in":30.4},{"name":"top","ring_in":6,"in_tower":50,"to_cook":65,"dose_ml":57.9,"dose_fl_oz":1.96,"dose_g":63.7,"tier_height_in":7.6}],"pancakes_in_tower":300,"pancakes_to_cook":390,"batter_l":39.0,"batter_gal":10.3,"batter_kg":42.9,"shopping":[{"key":"flour_all_purpose","pct":100,"g":16959},{"key":"whole_milk","pct":120,"g":20351,"l":19.8,"gal":5.2},{"key":"eggs","pct":25,"g":4240,"count":85},{"key":"sugar","pct":4,"g":678},{"key":"salt","pct":1.5,"g":254},{"key":"baking_powder","pct":0.5,"g":85},{"key":"neutral_oil","pct":2,"g":339}],"height_in":45.6,"pancakes_to_stop_line":297,"warnings":[]},"records":[{"year":2012,"cm":76.0,"pancakes":60,"place":"Melbourne","holder":"Andy Wrobel, Pancake Parlour","source":"https://www.rnz.co.nz/news/world/99066/new-record-for-pancake-stack"},{"year":2014,"cm":87.0,"place":"Fukuoka","holder":"Fukuoka Visionary Arts","source":"https://www.worldrecordacademy.com/food/tallest_pancake_stack_TNT_breaks_Guinness_World_Records_record_214084.html"},{"year":2014,"cm":87.4,"place":"New York","holder":"TNT, Times Square","source":"https://nexttv.com/news/tnt-stunt-makes-pancake-history-384385"},{"year":2014,"cm":91.2,"pancakes":242,"place":"Kaatsheuvel","holder":"Efteling","source":"https://www.efteling.com/en/press/efteling-breaks-the-guinness-world-records-title-for-the-tallest-stack-of-pancakes/"},{"year":2016,"cm":101.8,"pancakes":213,"place":"Rufford","holder":"Center Parcs Sherwood Forest","source":"https://www.guinnessworldrecords.com/news/2016/2/center-parcs-breaks-record-for-tallest-stack-of-pancakes-415871"},{"year":2025,"cm":108.3,"pancakes":230,"place":"Sydney","holder":"Pancakes On The Rocks","source":"https://www.guinnessworldrecords.com/world-records/tallest-stack-of-pancakes"}]}</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("spec").textContent);
+  const S = D.spec, P = D.plan;
+  const T = S.target;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) { const v = String(attrs[k]); if (v.startsWith("var(")) e.style.setProperty(k, v); else e.setAttribute(k, v); } if (parent) parent.appendChild(e); return e; };
+  const TIER = { base: ["#FF7AA0", "#FFBBC7"], body: ["#BA8BFF", "#DEC3F5"], top: ["#FFBD7A", "#FFDBB5"] };
+  const fmt = (n, d = 1) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  /* ---------- status + countdown ---------- */
+  document.getElementById("status").textContent = `v${S.meta.version} · ${S.meta.status}`;
+  const doors = new Date("2026-10-29T17:00:00-07:00");
+  const cd = document.getElementById("countdown");
+  const tick = () => {
+    const ms = doors - Date.now();
+    if (ms <= 0) { cd.textContent = Date.now() - doors < 6 * 3600e3 ? "Live now · San Francisco" : "Oct 29, 2026 · San Francisco"; return; }
+    const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
+    cd.textContent = `Attempt in ${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m · SF`;
+  };
+  tick(); setInterval(tick, 30e3);
+
+  /* ---------- hero tower, to scale ---------- */
+  const svg = document.getElementById("tower");
+  const W = 420, H = 560, base = 520, scale = 10, cx = 250;
+  const layer = P.thickness_in * (1 - T.settle_ratio) * scale;
+  const g = el("g", {}, svg);
+  // ruler
+  const rx = 132;
+  el("line", { x1: rx, x2: rx, y1: base, y2: base - 48 * scale, stroke: "currentColor", "stroke-width": 1.5, opacity: .55 }, g);
+  for (let i = 0; i <= 48; i += 6) {
+    el("line", { x1: rx - 8, x2: rx, y1: base - i * scale, y2: base - i * scale, stroke: "currentColor", "stroke-width": 1.5, opacity: .55 }, g);
+    const t = el("text", { x: rx - 14, y: base - i * scale + 4, "text-anchor": "end", "font-family": "var(--mono)", "font-size": 12, fill: "currentColor", opacity: .7 }, g); t.textContent = i;
+  }
+  // pancakes
+  const cakes = [];
+  let y = base;
+  for (const z of P.sizes) {
+    let n = z.in_tower;
+    if (z.name === "top") n = Math.min(n, Math.round((T.build_to_in * scale - (base - y)) / layer));
+    const w = z.ring_in * scale;
+    for (let i = 0; i < n; i++) {
+      y -= layer;
+      const r = el("rect", { x: cx - w / 2, y: y, width: w, height: layer + .35, rx: 1.5, fill: i % 10 === 9 ? TIER[z.name][1] : TIER[z.name][0] }, g);
+      cakes.push({ r, h: (base - y) / scale });
+    }
+  }
+  el("rect", { x: cx - 80, y: base, width: 236, height: 7, rx: 3.5, fill: "currentColor" }, g);
+  // lines
+  const lines = [[T.record_height_in, "var(--accent)", "record"], [T.build_to_in, "currentColor", "stop line"]];
+  for (const [v, c, lab] of lines) {
+    const yy = base - v * scale;
+    el("line", { x1: rx, x2: cx + 60, y1: yy, y2: yy, stroke: c, "stroke-width": 2, "stroke-dasharray": "6 5" }, g);
+    const t1 = el("text", { x: cx + 66, y: yy + (lab === "record" ? 16 : -4), "font-family": "var(--mono)", "font-size": 14, "font-weight": 700, fill: c }, g);
+    t1.textContent = `${v} in`;
+    const t2 = el("text", { x: cx + 66, y: yy + (lab === "record" ? 32 : 12), "font-family": "var(--mono)", "font-size": 12, fill: c }, g);
+    t2.textContent = lab;
+  }
+  const m = el("g", { transform: `translate(${cx + 52} ${base - 88}) scale(${88 / 348}) translate(-340 -362)` }, g);
+  m.innerHTML = document.querySelector("footer .mascot").innerHTML;
+  svg.style.color = "var(--ink)";
+
+  const roH = document.getElementById("ro-h"), roN = document.getElementById("ro-n"), btn = document.getElementById("stack-btn");
+  const setReadout = (k) => { roN.textContent = k; roH.textContent = fmt(k ? cakes[k - 1].h : 0); };
+  setReadout(cakes.length);
+  let running = false;
+  btn.addEventListener("click", () => {
+    if (running) return;
+    if (reduce) { setReadout(cakes.length); return; }
+    running = true; btn.disabled = true;
+    cakes.forEach(c => c.r.style.opacity = 0);
+    const dur = 4200, t0 = performance.now();
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const k = Math.round(cakes.length * (1 - Math.pow(1 - p, 1.6)));
+      for (let i = 0; i < k; i++) cakes[i].r.style.opacity = 1;
+      setReadout(k);
+      if (p < 1) requestAnimationFrame(step); else { running = false; btn.disabled = false; btn.textContent = "Stack it again"; }
+    };
+    requestAnimationFrame(step);
+  });
+
+  /* ---------- stats ---------- */
+  document.querySelector('[data-k="count"]').textContent = `~${P.pancakes_in_tower}`;
+
+  /* ---------- ratios + doses ---------- */
+  const why = { flour_all_purpose: "Structure", whole_milk: "Thin batter that levels itself in the ring", eggs: "Sets the crumb so it doesn't crush", sugar: "Color and taste, kept low", salt: "Taste", baking_powder: "Barely any lift, on purpose", neutral_oil: "Just enough to release" };
+  const ratios = document.getElementById("ratios");
+  const keys = ["flour_all_purpose", "whole_milk", "eggs", "sugar", "salt", "baking_powder", "neutral_oil"];
+  for (const k of keys) {
+    const v = S.batter[k];
+    const row = document.createElement("div"); row.className = "ratio";
+    row.innerHTML = `<span>${k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase())}</span><span class="bar" style="width:${(v / 120) * 100}%"></span><span class="pct num">${v}</span><span class="why">${why[k]}</span>`;
+    ratios.appendChild(row);
+  }
+  const doses = document.getElementById("doses");
+  for (const z of P.sizes) {
+    const px = z.ring_in * 18;
+    const d = document.createElement("div"); d.className = "dose";
+    d.innerHTML = `<div class="disc" style="width:min(${px}px, 28vw);aspect-ratio:1;background:${TIER[z.name][0]}">${z.ring_in} in</div><b>${fmt(z.dose_fl_oz)} fl oz</b><small>${Math.round(z.dose_ml)} ml · ${Math.round(z.dose_g)} g · ${z.name}</small>`;
+    doses.appendChild(d);
+  }
+
+  /* ---------- calculator (port of calc.py) ---------- */
+  const state = { thick: P.thickness_in, settle: T.settle_ratio, spare: S.cook.spare_ratio, attempts: 1, units: "us" };
+  const compute = () => {
+    const c = S.cook, b = S.batter, settled = state.thick * (1 - state.settle);
+    let ml = 0, cook = 0, tower = 0;
+    const sizes = S.size.map(z => {
+      const dose = Math.PI * (z.ring_in / 2) ** 2 * c.raw_depth_in * 16.387064;
+      const n = Math.ceil(z.in_tower * state.attempts * (1 + state.spare));
+      ml += dose * n; cook += n; tower += z.in_tower;
+      return { ...z, n, dose };
+    });
+    const pct = keys.reduce((a, k) => a + b[k], 0);
+    const flour = ml * b.density_g_per_ml / pct * 100;
+    return { sizes, ml, cook, tower, flour, height: tower * settled, toStop: Math.ceil(T.build_to_in / settled) };
+  };
+  const lbOz = g => { const oz = g / 28.3495; const lb = Math.floor(oz / 16); return lb ? `${lb} lb ${Math.round(oz % 16)} oz` : `${fmt(oz)} oz`; };
+  const render = () => {
+    const r = compute();
+    document.getElementById("thick-o").textContent = `${state.thick.toFixed(3)} in`;
+    document.getElementById("settle-o").textContent = `${Math.round(state.settle * 100)}%`;
+    document.getElementById("spare-o").textContent = `${Math.round(state.spare * 100)}%`;
+    document.getElementById("attempts-o").textContent = state.attempts;
+    const max = 50;
+    document.getElementById("g-fill").style.width = `${Math.min(100, r.height / max * 100)}%`;
+    document.getElementById("g-rec").style.left = `${T.record_height_in / max * 100}%`;
+    document.getElementById("g-stop").style.left = `${T.build_to_in / max * 100}%`;
+    document.getElementById("g-leg").textContent = `record ${T.record_height_in} · stop ${T.build_to_in}`;
+    const v = document.getElementById("verdict");
+    const ok = r.height >= T.build_to_in;
+    v.className = "verdict " + (ok ? "ok" : "bad");
+    v.textContent = ok ? `${r.tower} pancakes reach ${fmt(r.height)} in. You stop at ${T.build_to_in}.`
+                       : `${r.tower} pancakes only reach ${fmt(r.height)} in. You need ${r.toStop}.`;
+    document.getElementById("t-cook").textContent = r.cook;
+    document.getElementById("t-batter").textContent = state.units === "us" ? `${fmt(r.ml / 3785.41)} gal` : `${fmt(r.ml / 1000)} L`;
+    document.getElementById("t-stop").textContent = r.toStop;
+    const us = state.units === "us";
+    document.getElementById("t-sizes").innerHTML = `<thead><tr><th>Ring</th><th class="r">In tower</th><th class="r">To cook</th><th class="r">Dose</th></tr></thead><tbody>` +
+      r.sizes.map(z => `<tr><td><span class="sw" style="background:${TIER[z.name][0]}"></span>${z.ring_in} in ${z.name}</td><td class="r num">${z.in_tower * state.attempts}</td><td class="r num">${z.n}</td><td class="r num">${us ? fmt(z.dose / 29.5735) + " fl oz" : Math.round(z.dose) + " ml"}</td></tr>`).join("") + "</tbody>";
+    const shop = keys.map(k => {
+      const gr = r.flour * S.batter[k] / 100;
+      let q;
+      if (k === "whole_milk") q = us ? `${fmt(gr / 1.03 / 3785.41)} gal` : `${fmt(gr / 1.03 / 1000)} L`;
+      else if (k === "eggs") q = `${Math.ceil(gr / S.cook.egg_weight_g)} large`;
+      else q = us ? lbOz(gr) : (gr >= 1000 ? `${fmt(gr / 1000, 2)} kg` : `${Math.round(gr)} g`);
+      return `<tr><td>${k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase())}</td><td class="r num">${q}</td></tr>`;
+    }).join("");
+    document.getElementById("t-shop").innerHTML = `<thead><tr><th>Shopping list</th><th class="r">Amount</th></tr></thead><tbody>${shop}</tbody>`;
+    const warns = [];
+    if (state.thick > S.cook.reject_above_in || state.thick < S.cook.reject_below_in) warns.push("Outside the accepted thickness band. Fix the dose before you cook 390 of them.");
+    document.getElementById("warns").innerHTML = warns.map(w => `<p class="warn">${w}</p>`).join("");
+  };
+  const bindRange = (id, key, f = x => x) => { const i = document.getElementById(id); i.addEventListener("input", () => { state[key] = f(+i.value); render(); }); state[key] = f(+i.value); };
+  bindRange("thick", "thick");
+  bindRange("settle", "settle", x => x / 100);
+  bindRange("spare", "spare", x => x / 100);
+  const bindSeg = (id, key, f = x => x) => document.querySelectorAll(`#${id} button`).forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll(`#${id} button`).forEach(o => o.setAttribute("aria-pressed", o === b)); state[key] = f(b.dataset.v); render();
+  }));
+  bindSeg("attempts-seg", "attempts", Number);
+  bindSeg("units-seg", "units");
+  document.getElementById("calc-form").addEventListener("submit", e => e.preventDefault());
+  render();
+
+  /* ---------- record chart ---------- */
+  const recs = D.records, rs = document.getElementById("rec-svg"), tip = document.getElementById("tip"), chart = document.getElementById("chart");
+  const X0 = 50, X1 = 990, YB = 340, YT = 30, sc = (YB - YT) / 48;
+  rs.style.color = "var(--ink)";
+  for (let v = 0; v <= 48; v += 12) {
+    el("line", { x1: X0, x2: X1, y1: YB - v * sc, y2: YB - v * sc, stroke: v ? "var(--line)" : "currentColor", "stroke-width": v ? 1 : 1.5 }, rs);
+    const t = el("text", { x: X0 - 10, y: YB - v * sc + 4, "text-anchor": "end", "font-family": "var(--mono)", "font-size": 12, fill: "var(--sub)" }, rs); t.textContent = v;
+  }
+  const all = [...recs.map(r => ({ ...r, h: r.cm / 2.54 })), { year: 2026, place: "San Francisco", holder: "Pancake", h: T.build_to_in, ours: true }];
+  const band = (X1 - X0) / all.length, bw = Math.min(64, band * .55);
+  const best = Math.max(...recs.map(r => r.cm));
+  all.forEach((r, i) => {
+    const x = X0 + band * (i + .5), hh = r.h * sc;
+    const gB = el("g", { class: "bar", tabindex: 0, role: "img", "aria-label": `${r.year}, ${r.place}: ${fmt(r.h)} in` }, rs);
+    if (r.ours) el("rect", { x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 9, fill: "var(--purple-1)", stroke: "var(--accent-2)", "stroke-width": 2, "stroke-dasharray": "7 5" }, gB);
+    else el("rect", { class: "fill", x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 9, fill: "var(--pink)" }, gB);
+    const vt = el("text", { x, y: r.ours ? YB - hh - 10 : YB - hh + 22, "text-anchor": "middle", "font-family": "var(--mono)", "font-size": 13, "font-weight": r.cm === best || r.ours ? 700 : 500, fill: r.ours ? "var(--accent-2)" : "#2C002A" }, gB);
+    vt.textContent = r.ours ? `${r.h}?` : fmt(r.h);
+    const yt = el("text", { x, y: YB + 22, "text-anchor": "middle", "font-family": "var(--mono)", "font-size": 13, "font-weight": 700, fill: r.ours ? "var(--accent-2)" : "currentColor" }, rs); yt.textContent = r.ours ? "Oct 29, 2026" : r.year;
+    const pt = el("text", { x, y: YB + 40, "text-anchor": "middle", "font-family": "var(--sans)", "font-size": 12, fill: "var(--sub)" }, rs); pt.textContent = r.place;
+    const show = () => {
+      tip.innerHTML = r.ours ? `<b>Oct 29, 2026 · ${T.build_to_in} in?</b><br>Pancake, San Francisco. Our stop line.` :
+        `<b>${r.year} · ${fmt(r.h)} in</b> (${r.cm} cm)<br>${r.holder}, ${r.place}${r.pancakes ? `<br>${r.pancakes} pancakes` : ""}`;
+      tip.hidden = false;
+      const box = chart.getBoundingClientRect(), b = gB.getBoundingClientRect();
+      tip.style.left = `${Math.min(box.width - 250, Math.max(8, b.left - box.left + chart.scrollLeft + b.width / 2 - 110))}px`;
+      tip.style.top = `${b.top - box.top - tip.offsetHeight - 10}px`;
+    };
+    gB.addEventListener("mouseenter", show); gB.addEventListener("focus", show);
+    gB.addEventListener("mouseleave", () => tip.hidden = true); gB.addEventListener("blur", () => tip.hidden = true);
+  });
+  const ry = YB - T.record_height_in * sc;
+  el("line", { x1: X0, x2: X1, y1: ry, y2: ry, stroke: "var(--accent)", "stroke-width": 1.5, "stroke-dasharray": "6 5" }, rs);
+  const rl = el("text", { x: X0 + 6, y: ry - 8, "font-family": "var(--mono)", "font-size": 12, "font-weight": 700, fill: "var(--accent)" }, rs);
+  rl.textContent = `record to beat · ${T.record_height_in} in`;
+  document.getElementById("rec-table").innerHTML = `<thead><tr><th>Year</th><th>Where</th><th>Who</th><th class="r">Height</th><th class="r">Pancakes</th></tr></thead><tbody>` +
+    recs.map(r => `<tr><td class="num">${r.year}</td><td>${r.place}</td><td><a href="${r.source}">${r.holder}</a></td><td class="r num">${fmt(r.cm / 2.54)} in</td><td class="r num">${r.pancakes ?? "–"}</td></tr>`).join("") + "</tbody>";
+})();
+</script>
+</body>
+</html>

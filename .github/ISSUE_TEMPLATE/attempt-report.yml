@@ -1,0 +1,40 @@
+name: Report an attempt
+description: You built a tower with this recipe. Share the numbers.
+title: "Attempt: <city>, <height> in"
+labels: [attempt]
+body:
+  - type: input
+    id: height
+    attributes:
+      label: Height reached
+      description: Measured from the table surface, in inches.
+      placeholder: "43.1"
+    validations:
+      required: true
+  - type: input
+    id: count
+    attributes:
+      label: Pancakes in the tower
+      placeholder: "288"
+  - type: input
+    id: thickness
+    attributes:
+      label: Stack-of-10 measurement
+      description: Ten cooled pancakes, stacked, in inches.
+      placeholder: "1.58"
+  - type: dropdown
+    id: stood
+    attributes:
+      label: Did it stand 5 seconds?
+      options: ["Yes", "No, it fell at the height above"]
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: What you changed
+      description: Recipe, ring sizes, temperature, stacking. The diff from recipe.toml is perfect.
+  - type: input
+    id: video
+    attributes:
+      label: Photo or video link

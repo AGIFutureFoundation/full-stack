@@ -1,0 +1,48 @@
+# Tallest stack of pancakes: how the record moved.
+# Heights as reported by the record organization or the press at the time.
+
+[[record]]
+year = 2012
+cm = 76.0
+pancakes = 60
+place = "Melbourne"
+holder = "Andy Wrobel, Pancake Parlour"
+source = "https://www.rnz.co.nz/news/world/99066/new-record-for-pancake-stack"
+
+[[record]]
+year = 2014
+cm = 87.0
+place = "Fukuoka"
+holder = "Fukuoka Visionary Arts"
+source = "https://www.worldrecordacademy.com/food/tallest_pancake_stack_TNT_breaks_Guinness_World_Records_record_214084.html"
+
+[[record]]
+year = 2014
+cm = 87.4
+place = "New York"
+holder = "TNT, Times Square"
+source = "https://nexttv.com/news/tnt-stunt-makes-pancake-history-384385"
+
+[[record]]
+year = 2014
+cm = 91.2
+pancakes = 242
+place = "Kaatsheuvel"
+holder = "Efteling"
+source = "https://www.efteling.com/en/press/efteling-breaks-the-guinness-world-records-title-for-the-tallest-stack-of-pancakes/"
+
+[[record]]
+year = 2016
+cm = 101.8
+pancakes = 213
+place = "Rufford"
+holder = "Center Parcs Sherwood Forest"
+source = "https://www.guinnessworldrecords.com/news/2016/2/center-parcs-breaks-record-for-tallest-stack-of-pancakes-415871"
+
+[[record]]
+year = 2025
+cm = 108.3
+pancakes = 230
+place = "Sydney"
+holder = "Pancakes On The Rocks"
+source = "https://www.guinnessworldrecords.com/world-records/tallest-stack-of-pancakes"

@@ -1,0 +1,199 @@
+{
+  "spec": {
+    "meta": {
+      "version": "0.1.0",
+      "status": "untested"
+    },
+    "target": {
+      "record_height_in": 42.6,
+      "slow_down_at_in": 44.0,
+      "build_to_in": 45.0,
+      "settle_ratio": 0.05
+    },
+    "batter": {
+      "flour_all_purpose": 100,
+      "whole_milk": 120,
+      "eggs": 25,
+      "sugar": 4,
+      "salt": 1.5,
+      "baking_powder": 0.5,
+      "neutral_oil": 2,
+      "density_g_per_ml": 1.1,
+      "rest_minutes": 60
+    },
+    "cook": {
+      "griddle_temp_f": [
+        330,
+        350
+      ],
+      "raw_depth_in": 0.125,
+      "target_cooked_thickness_in": 0.16,
+      "reject_below_in": 0.13,
+      "reject_above_in": 0.18,
+      "cool_flat_minutes": 5,
+      "spare_ratio": 0.3,
+      "egg_weight_g": 50
+    },
+    "size": [
+      {
+        "name": "base",
+        "ring_in": 9,
+        "in_tower": 50
+      },
+      {
+        "name": "body",
+        "ring_in": 8,
+        "in_tower": 200
+      },
+      {
+        "name": "top",
+        "ring_in": 6,
+        "in_tower": 50
+      }
+    ],
+    "rules": {
+      "max_diameter_in": 9.84,
+      "min_diameter_in": 5.5,
+      "max_thickness_in": 0.39,
+      "hold_seconds": 5
+    },
+    "experimental": {
+      "xanthan_gum": 0.0,
+      "methylcellulose": 0.0,
+      "vital_wheat_gluten": 0.0
+    }
+  },
+  "plan": {
+    "attempts": 1,
+    "spare_ratio": 0.3,
+    "thickness_in": 0.16,
+    "sizes": [
+      {
+        "name": "base",
+        "ring_in": 9,
+        "in_tower": 50,
+        "to_cook": 65,
+        "dose_ml": 130.3,
+        "dose_fl_oz": 4.41,
+        "dose_g": 143.3,
+        "tier_height_in": 7.6
+      },
+      {
+        "name": "body",
+        "ring_in": 8,
+        "in_tower": 200,
+        "to_cook": 260,
+        "dose_ml": 103.0,
+        "dose_fl_oz": 3.48,
+        "dose_g": 113.3,
+        "tier_height_in": 30.4
+      },
+      {
+        "name": "top",
+        "ring_in": 6,
+        "in_tower": 50,
+        "to_cook": 65,
+        "dose_ml": 57.9,
+        "dose_fl_oz": 1.96,
+        "dose_g": 63.7,
+        "tier_height_in": 7.6
+      }
+    ],
+    "pancakes_in_tower": 300,
+    "pancakes_to_cook": 390,
+    "batter_l": 39.0,
+    "batter_gal": 10.3,
+    "batter_kg": 42.9,
+    "shopping": [
+      {
+        "key": "flour_all_purpose",
+        "pct": 100,
+        "g": 16959
+      },
+      {
+        "key": "whole_milk",
+        "pct": 120,
+        "g": 20351,
+        "l": 19.8,
+        "gal": 5.2
+      },
+      {
+        "key": "eggs",
+        "pct": 25,
+        "g": 4240,
+        "count": 85
+      },
+      {
+        "key": "sugar",
+        "pct": 4,
+        "g": 678
+      },
+      {
+        "key": "salt",
+        "pct": 1.5,
+        "g": 254
+      },
+      {
+        "key": "baking_powder",
+        "pct": 0.5,
+        "g": 85
+      },
+      {
+        "key": "neutral_oil",
+        "pct": 2,
+        "g": 339
+      }
+    ],
+    "height_in": 45.6,
+    "pancakes_to_stop_line": 297,
+    "warnings": []
+  },
+  "records": [
+    {
+      "year": 2012,
+      "cm": 76.0,
+      "pancakes": 60,
+      "place": "Melbourne",
+      "holder": "Andy Wrobel, Pancake Parlour",
+      "source": "https://www.rnz.co.nz/news/world/99066/new-record-for-pancake-stack"
+    },
+    {
+      "year": 2014,
+      "cm": 87.0,
+      "place": "Fukuoka",
+      "holder": "Fukuoka Visionary Arts",
+      "source": "https://www.worldrecordacademy.com/food/tallest_pancake_stack_TNT_breaks_Guinness_World_Records_record_214084.html"
+    },
+    {
+      "year": 2014,
+      "cm": 87.4,
+      "place": "New York",
+      "holder": "TNT, Times Square",
+      "source": "https://nexttv.com/news/tnt-stunt-makes-pancake-history-384385"
+    },
+    {
+      "year": 2014,
+      "cm": 91.2,
+      "pancakes": 242,
+      "place": "Kaatsheuvel",
+      "holder": "Efteling",
+      "source": "https://www.efteling.com/en/press/efteling-breaks-the-guinness-world-records-title-for-the-tallest-stack-of-pancakes/"
+    },
+    {
+      "year": 2016,
+      "cm": 101.8,
+      "pancakes": 213,
+      "place": "Rufford",
+      "holder": "Center Parcs Sherwood Forest",
+      "source": "https://www.guinnessworldrecords.com/news/2016/2/center-parcs-breaks-record-for-tallest-stack-of-pancakes-415871"
+    },
+    {
+      "year": 2025,
+      "cm": 108.3,
+      "pancakes": 230,
+      "place": "Sydney",
+      "holder": "Pancakes On The Rocks",
+      "source": "https://www.guinnessworldrecords.com/world-records/tallest-stack-of-pancakes"
+    }
+  ]
+}
