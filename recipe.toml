@@ -1,0 +1,66 @@
+# Pancake Tower — recipe & build spec
+# Single source of truth. calc.py reads this file; every number in the docs comes from here.
+# Units: US first (in, °F, fl oz), metric where cooks need it.
+
+[meta]
+version = "0.1.0"
+status = "untested"          # set to "validated" once the rehearsal numbers are in TESTLOG.md
+
+[target]
+record_height_in = 42.6       # 108.3 cm, the height to beat
+slow_down_at_in = 44.0        # stacker slows down, last ~10 top pancakes
+build_to_in = 45.0            # STOP line. Stop on height, never on pancake count
+settle_ratio = 0.05           # expected height loss while stacking (measure it)
+
+[batter]
+# Baker's percentages: flour weight = 100
+flour_all_purpose = 100
+whole_milk = 120
+eggs = 25                     # whole eggs, out of shell (~50 g per large egg)
+sugar = 4
+salt = 1.5
+baking_powder = 0.5           # low on purpose: fluffy pancakes compress unpredictably
+neutral_oil = 2
+density_g_per_ml = 1.10       # guess, weigh 1 cup of batter and update
+rest_minutes = 60
+
+[cook]
+griddle_temp_f = [330, 350]
+raw_depth_in = 0.125          # 1/8 in of batter in the ring
+target_cooked_thickness_in = 0.16
+reject_below_in = 0.13
+reject_above_in = 0.18
+cool_flat_minutes = 5         # on a rack, before stacking or storing
+spare_ratio = 0.30            # cook 30% more than the tower needs
+egg_weight_g = 50
+
+# The tower: three ring sizes, biggest at the bottom
+[[size]]
+name = "base"
+ring_in = 9
+in_tower = 50
+
+[[size]]
+name = "body"
+ring_in = 8
+in_tower = 200
+
+[[size]]
+name = "top"
+ring_in = 6
+in_tower = 50
+
+[rules]
+# Width limits as publicly reported. Sources disagree, so we design inside both.
+# Confirm the exact limits and how they are measured with the adjudicator.
+max_diameter_in = 9.84        # 25 cm
+min_diameter_in = 5.5         # stricter of 12.5 cm (4.9 in) and 5.5 in
+max_thickness_in = 0.39       # 1 cm
+hold_seconds = 5
+
+# Optional texturizers. OFF by default.
+# Only switch one on after written approval from the adjudicator and an allergen check.
+[experimental]
+xanthan_gum = 0.0             # try 0.1 to 0.2
+methylcellulose = 0.0         # try 0.3 to 0.5
+vital_wheat_gluten = 0.0      # try 2 to 3
