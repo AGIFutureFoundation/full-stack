@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360" role="img" aria-label="Tallest pancake stack record history, inches, 2012 to 2026 target">
+<rect width="800" height="360" fill="#fff8ec"/>
+<text x="40" y="32" font-family="sans-serif" font-size="20" font-weight="bold" fill="#2c002a">Tallest stack of pancakes — inches</text>
+<text x="40" y="56" font-family="sans-serif" font-size="13" fill="#555">2012–2025 publicly reported, 2026 is tonight's 45 in target at Corgi Cafe</text>
+<g font-family="sans-serif" font-size="12" fill="#2c002a">
+<text x="40" y="300" text-anchor="middle">2012</text><rect x="55" y="120" width="50" height="180" fill="#e2b55c"/><text x="80" y="112" text-anchor="middle">29.9</text>
+<text x="150" y="300" text-anchor="middle">2014</text><rect x="165" y="96" width="50" height="204" fill="#e2b55c"/><text x="190" y="88" text-anchor="middle">34.3</text>
+<text x="260" y="300" text-anchor="middle">2014</text><rect x="275" y="94" width="50" height="206" fill="#e2b55c"/><text x="300" y="86" text-anchor="middle">34.4</text>
+<text x="370" y="300" text-anchor="middle">2014</text><rect x="385" y="86" width="50" height="214" fill="#e2b55c"/><text x="410" y="78" text-anchor="middle">35.9</text>
+<text x="480" y="300" text-anchor="middle">2016</text><rect x="495" y="60" width="50" height="240" fill="#6fd3c1"/><text x="520" y="52" text-anchor="middle">40.1</text>
+<text x="590" y="300" text-anchor="middle">2025</text><rect x="605" y="46" width="50" height="254" fill="#6fd3c1"/><text x="630" y="38" text-anchor="middle">42.6</text>
+<text x="700" y="300" text-anchor="middle">2026*</text><rect x="715" y="30" width="50" height="270" fill="#e33a6a"/><text x="740" y="22" text-anchor="middle">45.0</text>
+</g>
+<line x1="40" y1="300" x2="780" y2="300" stroke="#2c002a" stroke-width="2"/>
+<text x="40" y="335" font-family="sans-serif" font-size="12" fill="#555">* Target, not yet a record. Record to beat: 42.6 in, Sydney 2025, 230 pancakes.</text>
+</svg>

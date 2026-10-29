@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360" role="img" aria-label="Tonight's tower: 145 nine-inch pancakes base, 7-inch top, to 45 inches">
+<rect width="800" height="360" fill="#fff8ec"/>
+<text x="40" y="32" font-family="sans-serif" font-size="20" font-weight="bold" fill="#2c002a">Tonight's tower — to 45 inches</text>
+<g font-family="sans-serif" font-size="13" fill="#2c002a">
+<rect x="200" y="60" width="180" height="110" fill="#6fd3c1"/><text x="290" y="118" text-anchor="middle">Top: 7 in</text><text x="290" y="138" text-anchor="middle">up to 125 pancakes</text>
+<rect x="150" y="170" width="280" height="130" fill="#e2b55c"/><text x="290" y="228" text-anchor="middle">Base: 9 in</text><text x="290" y="248" text-anchor="middle">145 pancakes, ~25.6 in</text>
+<line x1="450" y1="60" x2="520" y2="60" stroke="#e33a6a" stroke-width="2"/><text x="530" y="65">45 in — STOP</text>
+<line x1="450" y1="100" x2="520" y2="100" stroke="#555" stroke-width="1" stroke-dasharray="4 4"/><text x="530" y="105">42.6 in — record, ~pancake 242</text>
+<text x="40" y="335">~255 pancakes to the stop line · 296 to cook · 72 batches · ~30 min at ~7 s per pancake</text>
+</g>
+</svg>
