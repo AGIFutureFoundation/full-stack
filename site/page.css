@@ -347,6 +347,9 @@ html:has(.menu[open]) { overflow: hidden; }
   .hero-art { top: .3vw; width: 163.33vw; margin-left: -4.82vw; }
   /* the phone artboard rotates the same rings 15 degrees and mirrors them, about their common centre */
   .hero-art .rainbow { transform-origin: 52.95% 102.79%; transform: rotate(15deg) scaleX(-1); }
+  /* the tilt brings the artboard's top corner on screen, and the turning rings sweep past it: let them through */
+  .hero-art .rainbow { overflow: visible; }
+  .hero-art .rainbow [clip-path] { clip-path: none; }
   .hero-inner { flex: 1; justify-content: flex-end; gap: 23px; padding: 61.44vw max(24px, env(safe-area-inset-right)) 48px max(24px, env(safe-area-inset-left)); }
   .hero-title { max-width: none; font-size: clamp(30px, 8.846vw, 35.559px); line-height: 1.12; }
 }
@@ -695,6 +698,17 @@ html.motion [data-reveal].in { animation: rise .7s var(--ease-spring) backwards;
   html.motion .hero-art .rainbow { transform-origin: 52.95% 102.79%; animation: dawn 2.4s var(--ease-out) backwards; }
 }
 html.motion .menu[open] { animation: rise .35s var(--ease-out); }
+/* pancake.ai's arcs: every ring (and the cream core) turns about its own centre once every 20 s,
+   neighbours in opposite directions, so the bands breathe against each other. Rings are in palette
+   order, odd ones turn with --spin. The exported art bakes in pancake.ai's pose: where that pose is
+   mirrored (hero, right sliver) the same turn reads the other way on screen. */
+@keyframes spin { to { rotate: var(--turn); } }
+:is(.rainbow, .sliver) g > path { transform-box: fill-box; transform-origin: center; }
+html.motion :is(.rainbow, .sliver) g > path { --turn: var(--spin, 1turn); animation: spin 20s linear infinite; }
+html.motion :is(.rainbow, .sliver) g > path:nth-child(even) { --turn: calc(-1 * var(--spin, 1turn)); }
+html.motion :is(.hero-art .rainbow, .sliver-r) { --spin: -1turn; }
+html.motion .sliver-l g > path { animation-delay: -7.3s; }
+html.motion [data-offstage] g > path { animation-play-state: paused; }
 
 /* ---------- stronger contrast, forced colours ---------- */
 @media (prefers-contrast: more) {
