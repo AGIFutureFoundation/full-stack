@@ -482,6 +482,11 @@
     addEventListener("scroll", onSweep, { passive: true });
     addEventListener("load", sweep);
   }
+  /* ---------- the turning rainbows rest while off screen ---------- */
+  if (!reduce && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => entries.forEach(e => e.target.toggleAttribute("data-offstage", !e.isIntersecting)));
+    $$(".hero-art, .sliver, .foot-art").forEach(it => io.observe(it));
+  }
   addEventListener("beforeprint", () => {
     reveal($$("[data-reveal].pending"), false);
     $$("details").forEach(d => { d.open = true; });
