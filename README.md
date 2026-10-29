@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="https://get-pancake.github.io/pancake-tower/"><b>The page</b></a> ·
+  <a href="https://get-pancake.github.io/full-stack/"><b>The page</b></a> ·
   <a href="RECIPE.md">Recipe</a> ·
   <a href="STACKING.md">Build protocol</a> ·
   <a href="#calculator">Calculator</a> ·
@@ -24,7 +24,7 @@
 
 Pancake hit #1 Product of the Day on Product Hunt on Oct 14, 2026. We'd promised a world record if it did.
 
-So on Oct 29 we stack pancakes in San Francisco, live. Everything we know goes here first: the recipe, the build protocol, the math. Copy it. Beat us.
+So we're open-sourcing our full stack. On Oct 29 we stack pancakes in San Francisco, live, and everything we know goes here first: the recipe, the build protocol, the math. Copy it. Beat us.
 
 > [!IMPORTANT]
 > **v2.0.0 is our chef's sheet**, the quantities we cook on Oct 29. Thickness is his estimate until the stack-of-10 on the day; measured numbers land in [TESTLOG.md](TESTLOG.md).
@@ -84,7 +84,7 @@ Shopping list for one attempt: 18 kg (39.7 lb) all-purpose flour, 72 eggs, 216 t
 
 </details>
 
-The [page](https://get-pancake.github.io/pancake-tower/) runs the same math in your browser.
+The [page](https://get-pancake.github.io/full-stack/) runs the same math in your browser.
 
 ## The record so far
 
