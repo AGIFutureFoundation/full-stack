@@ -5,6 +5,12 @@
       "status": "chef-sheet",
       "source": "Chef's quantity sheet, Oct 28, 2026 (Candido Blanco)"
     },
+    "event": {
+      "start": "2026-10-29T17:00:00-07:00",
+      "date": "Oct 29, 2026",
+      "place": "San Francisco",
+      "live_hours": 6
+    },
     "target": {
       "record_height_in": 42.6,
       "slow_down_at_in": 44.0,
