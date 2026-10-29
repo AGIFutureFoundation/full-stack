@@ -5,7 +5,7 @@
 <text x="56" y="58" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">FROM BATTER TO PLATE</text>
 <rect x="58" y="96" width="196" height="92" rx="18" fill="#FFDBB5" stroke="none" stroke-width="1.5"/>
 <text x="78.0" y="136" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2C002A" text-anchor="start">Batter</text>
-<text x="78.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">rest 60 min</text>
+<text x="78.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">rest 20 min</text>
 <rect x="300" y="96" width="196" height="92" rx="18" fill="#FFDBB5" stroke="none" stroke-width="1.5"/>
 <text x="320.0" y="136" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2C002A" text-anchor="start">Ring + dose</text>
 <text x="320.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">330–350 °F</text>
@@ -14,10 +14,10 @@
 <text x="562.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">top goes matte</text>
 <rect x="784" y="96" width="196" height="92" rx="18" fill="#FFDBB5" stroke="none" stroke-width="1.5"/>
 <text x="804.0" y="136" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2C002A" text-anchor="start">Cool flat</text>
-<text x="804.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">5 min, on a rack</text>
+<text x="804.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">18 min, on a rack</text>
 <rect x="1026" y="96" width="196" height="92" rx="18" fill="#FFFCF8" stroke="#2C002A" stroke-width="1.5" stroke-dasharray="6 4"/>
 <text x="1046.0" y="136" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2C002A" text-anchor="start">Stack of 10</text>
-<text x="1046.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">1.45–1.75 in?</text>
+<text x="1046.0" y="162" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">≈ 1.9 in?</text>
 <rect x="58" y="252" width="196" height="92" rx="18" fill="#EFE4DC" stroke="none" stroke-width="1.5"/>
 <text x="78.0" y="292" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2C002A" text-anchor="start">Eat or donate</text>
 <text x="78.0" y="318" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#85687C" text-anchor="start">nothing in the trash</text>

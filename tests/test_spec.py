@@ -40,11 +40,26 @@ class SpecTest(unittest.TestCase):
         self.assertGreater(t["slow_down_at_in"], t["record_height_in"])
         self.assertGreater(t["build_to_in"], t["slow_down_at_in"])
 
-    def test_dose_matches_raw_depth(self):
-        depth = self.spec["cook"]["raw_depth_in"]
+    def test_whole_batches_only(self):
         for z in self.plan["sizes"]:
-            area = math.pi * (z["ring_in"] / 2) ** 2
-            self.assertAlmostEqual(z["dose_ml"], area * depth * 16.387064, delta=0.1)
+            self.assertEqual(z["to_cook"], z["batches"] * z["per_batch"], z["name"])
+
+    def test_matches_chef_sheet(self):
+        """The chef's sheet of Oct 28: 156 x 9 in + 140 x 7 in, 72 batches."""
+        cooked = {z["ring_in"]: z["to_cook"] for z in self.plan["sizes"]}
+        self.assertEqual(cooked, {9: 156, 7: 140})
+        totals = {s["key"]: s["total"] for s in self.plan["shopping"]}
+        self.assertEqual(self.plan["batches"], 72)
+        self.assertEqual(totals["flour_all_purpose"], 18000)
+        self.assertEqual(totals["eggs"], 72)
+        self.assertEqual(totals["sugar"], 216)
+        self.assertEqual(totals["whole_milk"], 108)
+        self.assertEqual(totals["water"], 36)
+
+    def test_dose_under_thickness_limit(self):
+        limit_mm = self.spec["rules"]["max_thickness_in"] * 25.4
+        for z in self.plan["sizes"]:
+            self.assertLess(z["raw_depth_mm"], limit_mm, z["name"])
 
     def test_spares_cover_the_tower(self):
         for z in self.plan["sizes"]:

@@ -263,7 +263,7 @@ footer b { color: var(--ink); }
     <div class="stats">
       <div class="stat"><b class="num" data-k="record">42.6<small>in</small></b><span>to beat. Sydney, 2025</span></div>
       <div class="stat"><b class="num" data-k="stop">45<small>in</small></b><span>our stop line</span></div>
-      <div class="stat"><b class="num" data-k="count">~300</b><span>pancakes, three sizes</span></div>
+      <div class="stat"><b class="num" data-k="count">~300</b><span>pancakes, two sizes</span></div>
       <div class="stat"><b class="num">5<small>s</small></b><span>standing, hands off</span></div>
     </div>
   </div>
@@ -284,7 +284,7 @@ footer b { color: var(--ink); }
         </svg>
         <h3>It squashes</h3>
         <p>Fluffy pancakes compress under 40 in of weight, unevenly. The tower sinks and tilts while you build.</p>
-        <div class="fix">Thin, dense batter. 0.5% baking powder. 0.16 in cooked.</div>
+        <div class="fix">Thin batter, no leavening. About 0.18 in cooked.</div>
       </article>
       <article class="mode">
         <svg viewBox="0 0 240 92" aria-hidden="true">
@@ -316,22 +316,22 @@ footer b { color: var(--ink); }
     <div class="head">
       <span class="eyebrow">Recipe</span>
       <h2 id="recipe-h">A pancake built to carry weight</h2>
-      <p>Still a real pancake: edible, cooked on both sides, served after the attempt. Ratios by weight, flour = 100.</p>
+      <p>Still a real pancake: edible, cooked on both sides, served after the attempt. One batch is 250 g of flour; ratios by weight, flour = 100.</p>
     </div>
     <div class="recipe">
       <div class="ratios" id="ratios"></div>
       <ol class="steps">
-        <li><div><b>Mix and rest 60 min, cold.</b><span>The flour hydrates. Thickness gets consistent.</span></div></li>
-        <li><div><b>Griddle at 330–350 °F, wiped once.</b><span>No pooled fat. Fat between layers makes them slide.</span></div></li>
-        <li><div><b>Ring down, fixed dose in.</b><span>1/8 in of batter. Don't spread, don't press.</span></div></li>
+        <li><div><b>Weigh, whisk, rest 20 min.</b><span>One batch at a time, so every batch is the same.</span></div></li>
+        <li><div><b>Griddle at 330–350 °F, checked.</b><span>A surface thermometer, not the dial. Heat is what thickens the batter.</span></div></li>
+        <li><div><b>Ring down, one cup in.</b><span>About 1 cup for 9 in, a scant ½ cup for 7 in. Don't spread, don't press.</span></div></li>
         <li><div><b>Flip once, when the top goes matte.</b><span>Pale golden, not brown.</span></div></li>
-        <li><div><b>Cool flat on a rack, 5 min.</b><span>Trapped steam turns into a slippery film.</span></div></li>
-        <li><div><b>Stack 10, measure.</b><span>Target 1.6 in. Accept 1.45 to 1.75 in.</span></div></li>
+        <li><div><b>Cool flat on a rack, 18 min.</b><span>Never stack warm. Trapped steam turns into a slippery film.</span></div></li>
+        <li><div><b>Stack 10, measure.</b><span>About 1.8 in. Re-plan the count from what you measure.</span></div></li>
       </ol>
     </div>
     <div class="head">
       <h3>Doses, drawn to scale</h3>
-      <p>Same ring, same volume, same depth. Every time.</p>
+      <p>Same ring, same cup, every time. The 9 in pancakes come out a little thicker.</p>
     </div>
     <div class="doses" id="doses"></div>
   </div>
@@ -364,8 +364,8 @@ footer b { color: var(--ink); }
     <div class="calc">
       <form class="controls" id="calc-form">
         <div class="field">
-          <label for="thick">Cooked thickness <output id="thick-o" class="num">0.160 in</output></label>
-          <input type="range" id="thick" min="0.130" max="0.180" step="0.005" value="0.160">
+          <label for="thick">Cooked thickness <output id="thick-o" class="num">0.186 in</output></label>
+          <input type="range" id="thick" min="0.120" max="0.260" step="0.002" value="0.186">
           <small>From your stack-of-10 test, divided by 10.</small>
         </div>
         <div class="field">
@@ -374,9 +374,9 @@ footer b { color: var(--ink); }
           <small>Height lost to compression. Measure it at the rehearsal.</small>
         </div>
         <div class="field">
-          <label for="spare">Spares <output id="spare-o" class="num">30%</output></label>
-          <input type="range" id="spare" min="10" max="60" step="5" value="30">
-          <small>Rejects, tests, and one dropped tray.</small>
+          <label for="spare">Spares <output id="spare-o" class="num">7%</output></label>
+          <input type="range" id="spare" min="0" max="40" step="1" value="7">
+          <small>Rejects and tests. Rounded up to whole batches.</small>
         </div>
         <div class="field">
           <label for="attempts-seg">Attempts to cook for <output id="attempts-o" class="num">1</output></label>
@@ -401,9 +401,9 @@ footer b { color: var(--ink); }
           <div class="gauge-legend"><span>0 in</span><span id="g-leg"></span><span>50 in</span></div>
         </div>
         <div class="totals">
-          <div><b class="num" id="t-cook">390</b><span>pancakes to cook</span></div>
-          <div><b class="num" id="t-batter">10.3 gal</b><span>of batter</span></div>
-          <div><b class="num" id="t-stop">297</b><span>to reach the stop line</span></div>
+          <div><b class="num" id="t-cook">296</b><span>pancakes to cook</span></div>
+          <div><b class="num" id="t-batter">13.8 gal</b><span>of batter</span></div>
+          <div><b class="num" id="t-stop">255</b><span>to reach the stop line</span></div>
         </div>
         <div class="scroll-x"><table id="t-sizes"></table></div>
         <div class="scroll-x"><table id="t-shop"></table></div>
@@ -433,15 +433,15 @@ footer b { color: var(--ink); }
     </div>
     <div class="rules">
       <ul>
-        <li>Each pancake 4.9 to 9.84 in across. Some reports say 5.5 to 10 in. We use 6 to 9 in.</li>
-        <li>0.39 in thick at most. Ours are 0.16 in.</li>
-        <li>Freestanding. No support inside or out, nothing holding layers together.</li>
+        <li>Each pancake 4.9 to 9.84 in across, measured before stacking. We use 7 and 9 in.</li>
+        <li>0.39 in thick at most. Ours are about 0.18 in.</li>
+        <li>Freestanding. No support inside or out, nothing holding layers together. Standard ingredients only.</li>
         <li>Stands 5 seconds after the last pancake.</li>
         <li>Edible, and eaten or donated. Nothing in the trash.</li>
       </ul>
       <div class="untested">
-        <b>v0.1.0 is untested.</b>
-        <p>Every number here is an engineering estimate until our rehearsal. Measured values land in the <a href="https://github.com/get-pancake/pancake-tower/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
+        <b>v2 is our chef's sheet.</b>
+        <p>Quantities are the ones we cook on Oct 29. Thickness is the chef's estimate until the stack-of-10 on the day. Measured values land in the <a href="https://github.com/get-pancake/pancake-tower/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
       </div>
     </div>
   </div>
@@ -547,37 +547,36 @@ footer b { color: var(--ink); }
   document.querySelector('[data-k="count"]').textContent = `~${P.pancakes_in_tower}`;
 
   /* ---------- ratios + doses ---------- */
-  const why = { flour_all_purpose: "Structure", whole_milk: "Thin batter that levels itself in the ring", eggs: "Sets the crumb so it doesn't crush", sugar: "Color and taste, kept low", salt: "Taste", baking_powder: "Barely any lift, on purpose", neutral_oil: "Just enough to release" };
   const ratios = document.getElementById("ratios");
-  const keys = ["flour_all_purpose", "whole_milk", "eggs", "sugar", "salt", "baking_powder", "neutral_oil"];
-  for (const k of keys) {
-    const v = S.batter[k];
+  const pctOf = Object.fromEntries(P.shopping.map(x => [x.key, x.pct]));
+  const label = k => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+  for (const i of S.batter.ingredient) {
+    const v = pctOf[i.key];
     const row = document.createElement("div"); row.className = "ratio";
-    row.innerHTML = `<span>${k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase())}</span><span class="bar" style="width:${(v / 120) * 100}%"></span><span class="pct num">${v}</span><span class="why">${why[k]}</span>`;
+    row.innerHTML = `<span>${label(i.key)}</span><span class="bar" style="width:${Math.min(100, v / 150 * 100)}%"></span><span class="pct num">${Math.round(v)}</span><span class="why">${i.why}</span>`;
     ratios.appendChild(row);
   }
   const doses = document.getElementById("doses");
   for (const z of P.sizes) {
     const px = z.ring_in * 18;
     const d = document.createElement("div"); d.className = "dose";
-    d.innerHTML = `<div class="disc" style="width:min(${px}px, 28vw);aspect-ratio:1;background:${TIER[z.name][0]}">${z.ring_in} in</div><b>${fmt(z.dose_fl_oz)} fl oz</b><small>${Math.round(z.dose_ml)} ml · ${Math.round(z.dose_g)} g · ${z.name}</small>`;
+    d.innerHTML = `<div class="disc" style="width:min(${px}px, 28vw);aspect-ratio:1;background:${TIER[z.name][0]}">${z.ring_in} in</div><b>${fmt(z.dose_cups, 2)} cup</b><small>${Math.round(z.dose_ml)} ml · ${z.per_batch} per batch · ${z.name}</small>`;
     doses.appendChild(d);
   }
 
   /* ---------- calculator (port of calc.py) ---------- */
   const state = { thick: P.thickness_in, settle: T.settle_ratio, spare: S.cook.spare_ratio, attempts: 1, units: "us" };
   const compute = () => {
-    const c = S.cook, b = S.batter, settled = state.thick * (1 - state.settle);
-    let ml = 0, cook = 0, tower = 0;
+    const settled = state.thick * (1 - state.settle);
+    let ml = 0, cook = 0, tower = 0, batches = 0;
     const sizes = S.size.map(z => {
-      const dose = Math.PI * (z.ring_in / 2) ** 2 * c.raw_depth_in * 16.387064;
-      const n = Math.ceil(z.in_tower * state.attempts * (1 + state.spare));
-      ml += dose * n; cook += n; tower += z.in_tower;
-      return { ...z, n, dose };
+      const dose = P.batch_ml / z.per_batch;
+      const b = Math.ceil(Math.ceil(z.in_tower * state.attempts * (1 + state.spare)) / z.per_batch);
+      const n = b * z.per_batch;
+      ml += dose * n; cook += n; tower += z.in_tower; batches += b;
+      return { ...z, n, dose, b };
     });
-    const pct = keys.reduce((a, k) => a + b[k], 0);
-    const flour = ml * b.density_g_per_ml / pct * 100;
-    return { sizes, ml, cook, tower, flour, height: tower * settled, toStop: Math.ceil(T.build_to_in / settled) };
+    return { sizes, ml, cook, tower, batches, height: tower * settled, toStop: Math.ceil(T.build_to_in / settled) };
   };
   const lbOz = g => { const oz = g / 28.3495; const lb = Math.floor(oz / 16); return lb ? `${lb} lb ${Math.round(oz % 16)} oz` : `${fmt(oz)} oz`; };
   const render = () => {
@@ -601,18 +600,23 @@ footer b { color: var(--ink); }
     document.getElementById("t-stop").textContent = r.toStop;
     const us = state.units === "us";
     document.getElementById("t-sizes").innerHTML = `<thead><tr><th>Ring</th><th class="r">In tower</th><th class="r">To cook</th><th class="r">Dose</th></tr></thead><tbody>` +
-      r.sizes.map(z => `<tr><td><span class="sw" style="background:${TIER[z.name][0]}"></span>${z.ring_in} in ${z.name}</td><td class="r num">${z.in_tower * state.attempts}</td><td class="r num">${z.n}</td><td class="r num">${us ? fmt(z.dose / 29.5735) + " fl oz" : Math.round(z.dose) + " ml"}</td></tr>`).join("") + "</tbody>";
-    const shop = keys.map(k => {
-      const gr = r.flour * S.batter[k] / 100;
+      r.sizes.map(z => `<tr><td><span class="sw" style="background:${TIER[z.name][0]}"></span>${z.ring_in} in ${z.name}</td><td class="r num">${z.in_tower * state.attempts}</td><td class="r num">${z.n}</td><td class="r num">${us ? fmt(z.dose / 236.588, 2) + " cup" : Math.round(z.dose) + " ml"}</td></tr>`).join("") + "</tbody>";
+    const margin = (S.shopping && S.shopping.margin) || 0;
+    const shop = P.shopping.map(x => {
       let q;
-      if (k === "whole_milk") q = us ? `${fmt(gr / 1.03 / 3785.41)} gal` : `${fmt(gr / 1.03 / 1000)} L`;
-      else if (k === "eggs") q = `${Math.ceil(gr / S.cook.egg_weight_g)} large`;
-      else q = us ? lbOz(gr) : (gr >= 1000 ? `${fmt(gr / 1000, 2)} kg` : `${Math.round(gr)} g`);
-      return `<tr><td>${k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase())}</td><td class="r num">${q}</td></tr>`;
+      if (x.unit === "can") q = `${x.total} cans`;
+      else {
+        const tot = x.per_batch * r.batches, gr = x.g / P.batches * r.batches;
+        if (x.unit === "egg") q = `${tot} (${Math.ceil(tot * (1 + margin) / 12)} dozen)`;
+        else if (x.unit === "cup") q = us ? `${fmt(tot / 16, 2)} gal` : `${fmt(tot * 0.236588)} L`;
+        else if (x.unit === "tsp") q = us ? `${tot} tsp` : `${Math.round(gr)} g`;
+        else q = us ? lbOz(gr) : (gr >= 1000 ? `${fmt(gr / 1000, 1)} kg` : `${Math.round(gr)} g`);
+      }
+      return `<tr><td>${label(x.key)}</td><td class="r num">${q}</td></tr>`;
     }).join("");
     document.getElementById("t-shop").innerHTML = `<thead><tr><th>Shopping list</th><th class="r">Amount</th></tr></thead><tbody>${shop}</tbody>`;
     const warns = [];
-    if (state.thick > S.cook.reject_above_in || state.thick < S.cook.reject_below_in) warns.push("Outside the accepted thickness band. Fix the dose before you cook 390 of them.");
+    if (state.thick > S.cook.reject_above_in || state.thick < S.cook.reject_below_in) warns.push(`Outside the accepted thickness band. Fix the dose before you cook ${r.cook} of them.`);
     document.getElementById("warns").innerHTML = warns.map(w => `<p class="warn">${w}</p>`).join("");
   };
   const bindRange = (id, key, f = x => x) => { const i = document.getElementById(id); i.addEventListener("input", () => { state[key] = f(+i.value); render(); }); state[key] = f(+i.value); };

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="Status: untested" src="https://img.shields.io/badge/status-untested-E33A6A?style=flat-square&labelColor=2C002A">
+  <img alt="Status: chef's sheet" src="https://img.shields.io/badge/status-chef%27s%20sheet-E33A6A?style=flat-square&labelColor=2C002A">
   <img alt="Record to beat: 42.6 in" src="https://img.shields.io/badge/record%20to%20beat-42.6%20in-FF7AA0?style=flat-square&labelColor=2C002A">
   <img alt="Stop line: 45 in" src="https://img.shields.io/badge/stop%20line-45%20in-BA8BFF?style=flat-square&labelColor=2C002A">
   <img alt="Attempt: Oct 29, 2026" src="https://img.shields.io/badge/attempt-Oct%2029%2C%202026-FFBD7A?style=flat-square&labelColor=2C002A">
@@ -27,7 +27,7 @@ Pancake hit #1 Product of the Day on Product Hunt on Oct 14, 2026. We'd promised
 So on Oct 29 we stack pancakes in San Francisco, live. Everything we know goes here first: the recipe, the build protocol, the math. Copy it. Beat us.
 
 > [!IMPORTANT]
-> **v0.1.0 is untested.** These are engineering estimates. Measured numbers replace them after our rehearsal, in [TESTLOG.md](TESTLOG.md).
+> **v2.0.0 is our chef's sheet**, the quantities we cook on Oct 29. Thickness is his estimate until the stack-of-10 on the day; measured numbers land in [TESTLOG.md](TESTLOG.md).
 
 ## The numbers
 
@@ -36,23 +36,23 @@ So on Oct 29 we stack pancakes in San Francisco, live. Everything we know goes h
 | Height to beat | **42.6 in** · 108.3 cm · 230 pancakes · Sydney, 2025 |
 | We stop at | **45 in**, then hands off |
 | Must stand | **5 s**, freestanding |
-| Pancakes in the tower | **~300**, in three sizes: 9, 8 and 6 in |
-| Each pancake | **0.16 in** cooked. The rule allows 0.39 in |
-| To cook | **390** pancakes, 10.3 gal of batter |
+| Pancakes in the tower | **~255** to the stop line, in two sizes: 9 in, then 7 in |
+| Each pancake | **~0.18 in** (4.5 mm) in the stack. The rule allows 0.39 in |
+| To cook | **296** pancakes, 72 batches, 13.8 gal of batter |
 
 ## The tower
 
 <p align="center">
-  <img src="assets/tower.svg" alt="Elevation and plan of the tower, to scale: 50 pancakes at 9 in, 200 at 8 in, 46 at 6 in, 45 in tall" width="100%">
+  <img src="assets/tower.svg" alt="Elevation and plan of the tower, to scale: 145 pancakes at 9 in, then 7 in pancakes up to 45 in" width="100%">
 </p>
 
 Drawn to scale from [`recipe.toml`](recipe.toml) by [`tools/render.py`](tools/render.py). Change a number, re-run it, and the drawing follows.
 
 ## How we stack it
 
-- **Thin and dense.** Fluffy pancakes compress unpredictably. Ours carry weight.
-- **Same dose, same ring, every time.** Volume comes from a dispenser, not a ladle and a guess.
-- **A three-step pyramid.** Less load on the bottom. More room for a shaky hand.
+- **Thin and dense.** No leavening. Fluffy pancakes compress unpredictably. Ours carry weight.
+- **Same cup, same ring, every time.** One batch makes 3 big or 7 small pancakes, so the dose is fixed.
+- **A two-step pyramid.** 9 in at the bottom, 7 in on top. Less load low down, more room for a shaky hand.
 - **Nothing touches the tower but pancakes.** No rings, no rods, no syrup between layers. Lasers and a freestanding gauge read plumb and height.
 - **Stop on height, not on count.** Thickness drifts. The 45 in line doesn't.
 
@@ -65,23 +65,22 @@ Drawn to scale from [`recipe.toml`](recipe.toml) by [`tools/render.py`](tools/re
 ## Calculator
 
 ```bash
-python3 calc.py                  # one tower + 30% spares
+python3 calc.py                  # the chef's plan: one tower + extras, whole batches
 python3 calc.py --attempts 2     # cook for a second attempt
-python3 calc.py --thickness 0.15 # re-plan with your measured thickness
+python3 calc.py --thickness 0.17 # re-plan with your measured thickness
 python3 calc.py --check          # fail if the spec breaks a rule
 ```
 
 <details>
 <summary>Sample output</summary>
 
-| Size | Ring | In tower | To cook | Batter per pancake |
-|---|---|---|---|---|
-| base | 9 in | 50 | 65 | 4.4 fl oz (130 ml) |
-| body | 8 in | 200 | 260 | 3.5 fl oz (103 ml) |
-| top | 6 in | 50 | 65 | 2.0 fl oz (58 ml) |
-| **total** | | **300** | **390** | |
+| Size | Ring | In tower | Per batch | Batches | To cook | Batter per pancake |
+|---|---|---|---|---|---|---|
+| base | 9 in | 145 | 3 | 52 | 156 | 1.02 cup (241 ml) |
+| top | 7 in | 125 | 7 | 20 | 140 | 0.44 cup (103 ml) |
+| **total** | | **270** | | **72** | **296** | |
 
-Shopping list for one attempt: 37 lb 6 oz flour, 5.2 gal whole milk, 85 large eggs, 1 lb 8 oz sugar, 9 oz salt, 3 oz baking powder, 12 oz neutral oil.
+Shopping list for one attempt: 18 kg (39.7 lb) all-purpose flour, 72 eggs, 216 tsp sugar, 6.75 gal whole milk, 2.25 gal water, 6 cans of cooking spray. Buy 9 × 5 lb of flour, 7 dozen eggs and 8 gal of milk.
 
 </details>
 

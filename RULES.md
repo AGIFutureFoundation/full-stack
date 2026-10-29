@@ -11,7 +11,7 @@ What the record rules say, as publicly reported. The official guidelines go to a
 - The pancakes must be edible and distributed for consumption, so nothing is wasted.
 - Any team size.
 
-Some press reports give the diameter range as **5.5–10 in** instead. We design inside both: 6 in minimum, 9 in maximum.
+Some press reports give the diameter range as **5.5–10 in** instead. We use 7 and 9 in, inside both.
 
 ## Current record
 

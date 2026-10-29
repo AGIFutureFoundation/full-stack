@@ -346,7 +346,7 @@ def process(spec, plan) -> str:
          ("Ring + dose", f"{c['griddle_temp_f'][0]}–{c['griddle_temp_f'][1]} °F", "yellow"),
          ("Flip once", "top goes matte", "yellow"),
          ("Cool flat", f"{c['cool_flat_minutes']} min, on a rack", "yellow"),
-         ("Stack of 10", "1.45–1.75 in?", "check")],
+         ("Stack of 10", f"≈ {10 * c['target_cooked_thickness_in']:.1f} in?", "check")],
         [("Eat or donate", "nothing in the trash", "green"),
          ("Hold, measure", f"{spec['rules']['hold_seconds']} s, hands off", "pink"),
          ("Stop", f"at {t['build_to_in']:g} in", "pink"),

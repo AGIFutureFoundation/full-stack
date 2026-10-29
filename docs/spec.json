@@ -1,8 +1,9 @@
 {
   "spec": {
     "meta": {
-      "version": "0.1.0",
-      "status": "untested"
+      "version": "2.0.0",
+      "status": "chef-sheet",
+      "source": "Chef's quantity sheet, Oct 28, 2026 (Candido Blanco)"
     },
     "target": {
       "record_height_in": 42.6,
@@ -11,49 +12,76 @@
       "settle_ratio": 0.05
     },
     "batter": {
-      "flour_all_purpose": 100,
-      "whole_milk": 120,
-      "eggs": 25,
-      "sugar": 4,
-      "salt": 1.5,
-      "baking_powder": 0.5,
-      "neutral_oil": 2,
       "density_g_per_ml": 1.1,
-      "rest_minutes": 60
+      "rest_minutes": 20,
+      "ingredient": [
+        {
+          "key": "flour_all_purpose",
+          "amount": 250,
+          "unit": "g",
+          "why": "Structure"
+        },
+        {
+          "key": "eggs",
+          "amount": 1,
+          "unit": "egg",
+          "why": "Binds and sets the crumb"
+        },
+        {
+          "key": "sugar",
+          "amount": 3,
+          "unit": "tsp",
+          "why": "Color and taste"
+        },
+        {
+          "key": "whole_milk",
+          "amount": 1.5,
+          "unit": "cup",
+          "why": "Thin, pourable batter that levels itself in the ring"
+        },
+        {
+          "key": "water",
+          "amount": 0.5,
+          "unit": "cup",
+          "why": "Thins the batter without adding fat"
+        }
+      ]
     },
     "cook": {
       "griddle_temp_f": [
         330,
         350
       ],
-      "raw_depth_in": 0.125,
-      "target_cooked_thickness_in": 0.16,
-      "reject_below_in": 0.13,
-      "reject_above_in": 0.18,
-      "cool_flat_minutes": 5,
-      "spare_ratio": 0.3,
+      "grease": "cooking spray",
+      "spray_cans": 6,
+      "target_cooked_thickness_in": 0.186,
+      "reject_below_in": 0.12,
+      "reject_above_in": 0.35,
+      "cool_flat_minutes": 18,
+      "spare_ratio": 0.07,
       "egg_weight_g": 50
     },
     "size": [
       {
         "name": "base",
         "ring_in": 9,
-        "in_tower": 50
-      },
-      {
-        "name": "body",
-        "ring_in": 8,
-        "in_tower": 200
+        "in_tower": 145,
+        "per_batch": 3
       },
       {
         "name": "top",
-        "ring_in": 6,
-        "in_tower": 50
+        "ring_in": 7,
+        "in_tower": 125,
+        "per_batch": 7
       }
     ],
+    "shopping": {
+      "margin": 0.05,
+      "flour_bag_lb": 5
+    },
     "rules": {
       "max_diameter_in": 9.84,
-      "min_diameter_in": 5.5,
+      "min_diameter_in": 4.92,
       "max_thickness_in": 0.39,
       "hold_seconds": 5
     },
@@ -65,87 +93,116 @@
   },
   "plan": {
     "attempts": 1,
-    "spare_ratio": 0.3,
-    "thickness_in": 0.16,
+    "spare_ratio": 0.07,
+    "thickness_in": 0.186,
     "sizes": [
       {
         "name": "base",
         "ring_in": 9,
-        "in_tower": 50,
-        "to_cook": 65,
-        "dose_ml": 130.3,
-        "dose_fl_oz": 4.41,
-        "dose_g": 143.3,
-        "tier_height_in": 7.6
-      },
-      {
-        "name": "body",
-        "ring_in": 8,
-        "in_tower": 200,
-        "to_cook": 260,
-        "dose_ml": 103.0,
-        "dose_fl_oz": 3.48,
-        "dose_g": 113.3,
-        "tier_height_in": 30.4
+        "in_tower": 145,
+        "per_batch": 3,
+        "batches": 52,
+        "to_cook": 156,
+        "dose_ml": 241.3,
+        "dose_fl_oz": 8.16,
+        "dose_cups": 1.02,
+        "dose_g": 265.5,
+        "raw_depth_mm": 5.9,
+        "tier_height_in": 25.62
       },
       {
         "name": "top",
-        "ring_in": 6,
-        "in_tower": 50,
-        "to_cook": 65,
-        "dose_ml": 57.9,
-        "dose_fl_oz": 1.96,
-        "dose_g": 63.7,
-        "tier_height_in": 7.6
+        "ring_in": 7,
+        "in_tower": 125,
+        "per_batch": 7,
+        "batches": 20,
+        "to_cook": 140,
+        "dose_ml": 103.4,
+        "dose_fl_oz": 3.5,
+        "dose_cups": 0.44,
+        "dose_g": 113.8,
+        "raw_depth_mm": 4.2,
+        "tier_height_in": 22.09
       }
     ],
-    "pancakes_in_tower": 300,
-    "pancakes_to_cook": 390,
-    "batter_l": 39.0,
-    "batter_gal": 10.3,
-    "batter_kg": 42.9,
+    "batches": 72,
+    "batch_g": 796,
+    "batch_ml": 724,
+    "pancakes_in_tower": 270,
+    "pancakes_to_cook": 296,
+    "batter_l": 52.1,
+    "batter_gal": 13.8,
+    "batter_kg": 57.3,
     "shopping": [
       {
         "key": "flour_all_purpose",
-        "pct": 100,
-        "g": 16959
-      },
-      {
-        "key": "whole_milk",
-        "pct": 120,
-        "g": 20351,
-        "l": 19.8,
-        "gal": 5.2
+        "why": "Structure",
+        "per_batch": 250,
+        "unit": "g",
+        "total": 18000,
+        "pct": 100.0,
+        "g": 18000,
+        "buy": "9 \u00d7 5 lb bags"
       },
       {
         "key": "eggs",
-        "pct": 25,
-        "g": 4240,
-        "count": 85
+        "why": "Binds and sets the crumb",
+        "per_batch": 1,
+        "unit": "egg",
+        "total": 72,
+        "pct": 20.0,
+        "g": 3600,
+        "count": 72,
+        "buy": "7 dozen"
       },
       {
         "key": "sugar",
-        "pct": 4,
-        "g": 678
+        "why": "Color and taste",
+        "per_batch": 3,
+        "unit": "tsp",
+        "total": 216,
+        "pct": 5.0,
+        "g": 907,
+        "buy": "2 lb 2 oz"
       },
       {
-        "key": "salt",
-        "pct": 1.5,
-        "g": 254
+        "key": "whole_milk",
+        "why": "Thin, pourable batter that levels itself in the ring",
+        "per_batch": 1.5,
+        "unit": "cup",
+        "total": 108.0,
+        "pct": 146.2,
+        "g": 26318,
+        "gal": 6.75,
+        "l": 25.6,
+        "buy": "8 gal"
       },
       {
-        "key": "baking_powder",
-        "pct": 0.5,
-        "g": 85
+        "key": "water",
+        "why": "Thins the batter without adding fat",
+        "per_batch": 0.5,
+        "unit": "cup",
+        "total": 36.0,
+        "pct": 47.3,
+        "g": 8517,
+        "gal": 2.25,
+        "l": 8.5,
+        "buy": "tap water"
       },
       {
-        "key": "neutral_oil",
-        "pct": 2,
-        "g": 339
+        "key": "cooking_spray",
+        "why": "Griddle and rings",
+        "per_batch": null,
+        "unit": "can",
+        "total": 6,
+        "pct": null,
+        "g": null,
+        "buy": "6 cans"
       }
     ],
-    "height_in": 45.6,
-    "pancakes_to_stop_line": 297,
+    "height_in": 47.7,
+    "pancakes_to_stop_line": 255,
+    "pancakes_to_record": 242,
     "warnings": []
   },
   "records": [

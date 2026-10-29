@@ -4,14 +4,15 @@
 
 | Layer | Ring | Pancakes | ≈ Height |
 |---|---|---|---|
-| Top | 6 in | 50 | 7.6 in |
-| Body | 8 in | 200 | 30.4 in |
-| Base | 9 in | 50 | 7.6 in |
-| **Total** | | **300** | **≈ 45 in** after settling |
+| Top | 7 in | up to 125, stop on height | ~19 in |
+| Base | 9 in | 145 | ~25.6 in |
+| **Total** | | **~255** | **45 in** after settling |
 
-Why a pyramid: the bottom layers carry less weight, and every step down gives ~0.5 in of placement tolerance on each side.
+Stack all the 9 in pancakes first, then the 7 in, and stop at 45 in. At ~4.5 mm each, the record falls around pancake 242.
 
-Why these sizes: 9 in stays well under the max width even after settling spreads the bottom pancakes; 6 in stays well above the minimum. See [RULES.md](RULES.md).
+Why a pyramid: the top layers weigh less, and the step from 9 to 7 in gives ~1 in of placement tolerance on each side.
+
+Why these sizes: 9 in (22.9 cm) stays under the 25 cm max, measured before stacking; 7 in (17.8 cm) stays well above the 12.5 cm minimum. See [RULES.md](RULES.md).
 
 ## Roles
 
@@ -25,7 +26,7 @@ Why these sizes: 9 in stays well under the max width even after settling spreads
 ## Setup
 
 - Heavy, level table. Check with a digital level, under 0.2°. Matte top.
-- A printed 9 in circle on the table to center the first pancake.
+- A printed 9 in circle on the table to center the first pancake (if the adjudicator OKs it).
 - Two cross-line lasers at 90° to each other, projecting vertical plumb lines on the tower. Nothing touches it.
 - A freestanding height gauge 2 in from the tower, zero on the table surface, marked at **42.6 / 44 / 45 in**.
 - Optional: a horizontal laser line at 45 in. The stacker stops when the top meets the line.
@@ -37,7 +38,7 @@ Why these sizes: 9 in stays well under the max width even after settling spreads
 1. Hold the pancake by one edge, touch it down, and **lower it like a blanket** to push the air out. Never drop it flat, never slide it.
 2. **Rotate each pancake a quarter turn** from the last. Small thickness differences cancel instead of adding up into a lean.
 3. Every 10 pancakes, spotters call the drift on their axis. If it drifts, offset the next 5–10 pancakes by 1/16 in the other way.
-4. Pace: ~7 s per pancake, ~35 min for the full tower. Don't rush the last third: that's where towers fall.
+4. Pace: ~7 s per pancake, ~30 min for the full tower. Don't rush the last third: that's where towers fall.
 
 ## Stop rules
 
