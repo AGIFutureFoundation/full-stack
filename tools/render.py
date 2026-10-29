@@ -9,25 +9,82 @@ Change a number in recipe.toml, run this, and the drawings follow.
 
 from __future__ import annotations
 
+import base64
+import functools
+import html
 import json
+import math
 import re
 import sys
 import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+BRAND = ROOT / "assets/brand"
 sys.path.insert(0, str(ROOT))
 from calc import compute, load_spec  # noqa: E402
 
-# Pancake brand palette (get-pancake/website, _design-kit/tokens.css)
+# Pancake brand palette: Figma "Pancake Design" variables (core tokens, 2316:5111),
+# plus the page cream, tinted pill and blue ramp of pancake.ai (landing-v3/foundation.css).
+# One source for the page CSS ({{TOKENS_CSS}}) and the drawings (C below).
+TOKENS = {
+    "ink": {0: "#FFFFFF", 10: "#FFFBF6", 20: "#FFF7EC", 30: "#F7EDE5", 40: "#EFE4DC", 50: "#DDCFCD",
+            60: "#BBA8AE", 70: "#9A818F", 80: "#85687C", 90: "#6C4B65", 100: "#2C002A"},
+    "pink": {10: "#FFD9DA", 20: "#FFBBC7", 30: "#FF7AA0", 40: "#E33A6A"},
+    "purple": {10: "#EFDDF1", 20: "#DEC3F5", 30: "#BA8BFF", 40: "#8D43FD"},
+    "yellow": {10: "#FFE9D1", 20: "#FFDBB5", 30: "#FFBD7A", 40: "#F38F43"},
+    "orange": {10: "#FFDDBE", 20: "#FFA45F", 30: "#D43900", 40: "#B20000"},
+    "red": {10: "#FFD1C9", 20: "#FF8080", 30: "#E5002E", 40: "#AD001A"},
+    "green": {10: "#CEEAD5", 20: "#68CEA7", 30: "#037D48", 40: "#00532F"},
+    "blue": {10: "#D9E9FF", 20: "#B0CBFF", 30: "#6A8FFF", 40: "#4660E7"},
+    "cream": "#FBF6F1",   # page background
+    "tinted": "#F8E5D4",  # tinted pill
+}
+INK_TR = (5, 10, 20, 40, 50, 60, 70, 80)  # ink-100 at these opacities
+
+
+def tokens_css() -> str:
+    lines = []
+    for name, val in TOKENS.items():
+        if isinstance(val, dict):
+            lines += [f"--{name}-{k}: {v};" for k, v in val.items()]
+        else:
+            lines.append(f"--{name}: {val};")
+    lines += [f"--ink-tr-{p}: rgb(44 0 42 / {p}%);" for p in INK_TR]
+    return ":root {\n  " + "\n  ".join(lines) + "\n}"
+
+
+T = TOKENS
 C = {
-    "bg": "#FBF6F1", "paper": "#FFFCF8", "ink": "#2C002A", "sub": "#85687C", "line": "#DDCFCD",
-    "faint": "#EFE4DC", "pink": "#FF7AA0", "pink2": "#FFBBC7", "pink4": "#E33A6A",
-    "purple": "#BA8BFF", "purple1": "#EFDDF1", "purple2": "#DEC3F5", "purple4": "#8D43FD",
-    "yellow": "#FFBD7A", "yellow2": "#FFDBB5", "yellow4": "#F38F43", "green": "#68CEA7", "blue": "#4660E7",
+    "bg": T["cream"], "paper": T["ink"][10], "ink": T["ink"][100], "sub": T["ink"][80], "muted": T["ink"][70],
+    "line": T["ink"][50], "faint": T["ink"][40], "pink": T["pink"][30], "pink2": T["pink"][20], "pink4": T["pink"][40],
+    "purple": T["purple"][30], "purple1": T["purple"][10], "purple2": T["purple"][20], "purple4": T["purple"][40],
+    "yellow": T["yellow"][30], "yellow2": T["yellow"][20], "yellow4": T["yellow"][40], "green": T["green"][20],
+    "green3": T["green"][30], "blue": T["blue"][40], "tinted": T["tinted"],
 }
 SANS = "Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif"
 MONO = "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
+# Headlines: Mona Sans condensed 600, like the page. GitHub shows README images through <img>, which
+# can't fetch web fonts, so the standalone SVGs carry a Latin subset of it (with_font). Built once with
+# fonttools, not a dependency here: the Google Fonts "Mona Sans" wdth 75 wght 600 latin file (the build
+# the page loads), then
+#   pyftsubset latin.woff2 --unicodes='U+0020-007E,U+00A0,U+00B0,U+00B7,U+00BC,U+00D7,U+2013,U+2014,U+2018,
+#     U+2019,U+201C,U+201D,U+2026' --layout-features='kern,liga,ccmp,locl' --drop-tables+=STAT,gasp
+#     --flavor=woff2 --name-IDs='*' --no-hinting
+# then renamed "Tower Display" in its name table: a subset is a Modified Version under the OFL, and
+# "Mona" is a Reserved Font Name. The copyright notice and licence (fonts/OFL.txt) stay with it.
+DISPLAY = "'Tower Display', 'Mona Sans', 'Arial Narrow', Arial, sans-serif"
+DISPLAY_FONT = BRAND / "fonts/TowerDisplay-Condensed-SemiBold-latin.woff2"
+DISPLAY_TRACK = -0.03  # em
+# its advance widths in 1/1000 em (hmtx), to size headlines without the font at hand
+DISPLAY_ADV = dict(zip(
+    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~°·¼×–—‘’“”…",
+    (188, 200, 331, 501, 432, 671, 571, 158, 263, 263, 259, 480, 176, 314, 165, 291, 455, 287, 406, 425, 451, 428, 447,
+     420, 437, 447, 165, 176, 480, 480, 480, 393, 667, 449, 426, 448, 459, 351, 340, 468, 465, 210, 243, 444, 317, 590,
+     469, 463, 429, 483, 447, 417, 358, 464, 436, 683, 444, 438, 389, 275, 295, 275, 480, 373, 264, 416, 416, 385, 416,
+     389, 244, 413, 423, 196, 196, 386, 196, 661, 423, 404, 416, 416, 266, 364, 234, 423, 367, 569, 381, 360, 305, 298,
+     208, 298, 480, 357, 181, 521, 480, 422, 598, 176, 176, 374, 374, 557), strict=True))
+FALLBACK_EM = 0.6, 0.72  # Arial Bold per character, roughly (lower case, capitals): a headline without its face
 TIER = {"base": ("pink", "pink2"), "body": ("purple", "purple2"), "top": ("yellow", "yellow2")}
 
 
@@ -58,6 +115,57 @@ def text(x, y, s, size, fill=C["ink"], weight=400, family=SANS, anchor="start", 
             f'fill="{fill}" text-anchor="{anchor}"{extra}>{s}</text>')
 
 
+def display_width(s: str, size: float) -> float:
+    return size * (sum(DISPLAY_ADV[ch] for ch in s) / 1000 + DISPLAY_TRACK * len(s))
+
+
+def display(x, y, s, size, box, fill=C["ink"], anchor="start"):
+    """A headline in Mona Sans condensed 600. `box` is the width it may take: where Arial Bold would not fit
+    in it, textLength pins the line to its Mona Sans width, so a missing font squeezes instead of spilling."""
+    w = display_width(s, size)
+    assert w <= box, f"{s!r} at {size}px is {w:.0f}px, wider than its {box:.0f}px box"
+    extra = f' font-stretch="condensed" letter-spacing="{DISPLAY_TRACK}em"'
+    if size * sum(FALLBACK_EM[ch.isupper()] for ch in s) > box:
+        extra += f' textLength="{w:.1f}" lengthAdjust="spacingAndGlyphs"'
+    return text(x, y, s, size, fill, 600, DISPLAY, anchor, extra)
+
+
+def sans_width(s: str, size: float) -> float:
+    """Width of a Geist line with room to spare: README images get Helvetica or Arial instead (+5 %), even Verdana fits."""
+    em = sum(.3 if ch in " .,:;'·ijlI|!ftr()" else .9 if ch in "mwMW" else .74 if ch.isupper() else .57 for ch in s)
+    return em * size
+
+
+def eyebrow(x, y, s, size=13, fill=C["sub"]):
+    return text(x, y, s.upper(), size, fill, 500, SANS, extra=' letter-spacing="0.1em"')
+
+
+def chip(x, y, label, size=14, dot=None) -> tuple[str, float]:
+    """The page's chip: r8, ink at 5 %, Geist 500. Returns the markup and its width."""
+    pad, h = 12, size + 18
+    lead = 16 if dot else 0
+    w = 2 * pad + lead + sans_width(label, size)
+    out = [f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h}" rx="8" fill="{C["ink"]}" fill-opacity="0.05"/>']
+    if dot:
+        out.append(f'<circle cx="{x + pad + 4:.1f}" cy="{y + h / 2:.1f}" r="4" fill="{dot}"/>')
+    out.append(text(round(x + pad + lead + (w - 2 * pad - lead) / 2, 1), round(y + h / 2 + size * .36, 1),
+                    label, size, C["ink"], 500, SANS, "middle"))
+    return "".join(out), w
+
+
+@functools.cache
+def font_face() -> str:
+    b64 = base64.b64encode(DISPLAY_FONT.read_bytes()).decode()
+    return (f"@font-face {{ font-family: 'Tower Display'; font-weight: 600; font-stretch: condensed; "
+            f"src: url(data:font/woff2;base64,{b64}) format('woff2'); }}")
+
+
+def with_font(svg: str) -> str:
+    """The standalone file: the drawing plus the display face it can't fetch. The page inlines the bare drawing."""
+    head, rest = svg.split("</title>\n", 1)
+    return f"{head}</title>\n<style>\n{font_face()}\n</style>\n{rest}"
+
+
 def svg_open(w, h, label):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
             f'role="img" aria-label="{label}">\n<title>{label}</title>\n')
@@ -76,11 +184,21 @@ def stack(x_center, y_bottom, width, n, layer_px, color, rule, rx=3):
 
 
 # ---------------------------------------------------------------- hero
+def dome(scale: float, dx: float, dy: float) -> str:
+    """pancake.ai's hero rainbow (assets/brand/rainbow-hero.svg): five rings and the cream core over them."""
+    rings = re.findall(r'<path d="([^"]+)" fill="(#[0-9A-Fa-f]{6})"/>', (BRAND / "rainbow-hero.svg").read_text())
+    assert len(rings) == 6, "rainbow-hero.svg: expected 5 rings and the core"
+    body = "\n".join(f'<path d="{d}" fill="{fill}"/>' for d, fill in rings)
+    return f'<g transform="translate({dx:.1f} {dy:.1f}) scale({scale:.4f})" aria-hidden="true">\n{body}\n</g>'
+
+
 def hero(spec, plan) -> str:
     W, H = 1280, 640
-    t = spec["target"]
+    t, meta, ev = spec["target"], spec["meta"], spec["event"]
     s = 10  # px per inch
-    base_y, cx = 584, 872
+    base_y, cx = 600, 910
+    rx = cx - 78  # the ruler
+    chips_y, h1_y, h1_lh, h1_size, facts_y = 304, 430, 72, 70, 552
     parts = [svg_open(W, H, "Pancake Tower: we promised a world record. Here is the recipe.")]
     parts.append(f"""<style>
 @media (prefers-reduced-motion: no-preference) {{
@@ -97,32 +215,30 @@ def hero(spec, plan) -> str:
 <defs><clipPath id="card"><rect width="{W}" height="{H}" rx="28"/></clipPath></defs>
 <g clip-path="url(#card)">
 <rect width="{W}" height="{H}" fill="{C['bg']}"/>""")
-    # rainbow arcs, bottom-right corner (landing page motif)
-    for r, col in [(960, "green"), (905, "blue"), (885, "purple"), (830, "pink"), (775, "yellow"), (720, "bg")]:
-        parts.append(f'<circle cx="2000" cy="500" r="{r}" fill="{C[col]}"/>')
-    # left column
-    parts.append(logo(72, 60, 168))
-    parts.append(text(74, 196, "OPEN SOURCE  ·  OCT 29, 2026  ·  SAN FRANCISCO", 15, C["sub"], 500, MONO, extra=' letter-spacing="1.6"'))
-    parts.append(text(70, 274, "We promised a", 68, C["ink"], 700, extra=' letter-spacing="-2"'))
-    parts.append(text(70, 350, "world record.", 68, C["ink"], 700, extra=' letter-spacing="-2"'))
-    parts.append(text(70, 426, "Here’s the recipe.", 68, C["pink4"], 700, extra=' letter-spacing="-2"'))
-    parts.append(text(72, 482, "Recipe, build protocol and calculator for the", 22, C["sub"]))
-    parts.append(text(72, 512, "tallest pancake stack ever built.", 22, C["sub"]))
+    parts.append(dome(0.89, -20, -195))
+    # left column: logo, chips, the H1 (plum, like production), the numbers
+    parts.append(logo(72, 52, 140))
+    x = 72
+    for label, dot in [(f"v{meta['version']} · {meta['status']}", C["pink4"]), (f"{ev['date']} · {ev['place']}", None)]:
+        markup, w = chip(x, chips_y, label, dot=dot)
+        parts.append(markup)
+        x += w + 8
+    box = rx - 36 - 72  # up to the ruler's numbers
+    for i, line in enumerate(["We promised a world record.", "Here’s the recipe."]):
+        parts.append(display(70, h1_y + i * h1_lh, line, h1_size, box))
     x = 72
     for label in [f"{t['record_height_in']} in to beat", f"{t['build_to_in']:g} in stop line",
-                  f"~{plan['pancakes_in_tower']} pancakes", f"{spec['rules']['hold_seconds']} s hold"]:
-        w = 24 + len(label) * 8.7
-        parts.append(f'<rect x="{x}" y="548" width="{w:.0f}" height="38" rx="19" fill="{C["paper"]}" stroke="{C["line"]}"/>')
-        parts.append(text(x + w / 2, 572, label, 14, C["ink"], 500, MONO, "middle"))
-        x += w + 10
+                  f"~{plan['pancakes_to_stop_line']} pancakes", f"{spec['rules']['hold_seconds']} s hold"]:
+        markup, w = chip(x, facts_y, label)
+        parts.append(markup)
+        x += w + 8
+    assert x - 8 <= rx - 36, "hero chips run into the ruler"
     # ruler
-    rx = cx - 78
     parts.append(f'<g class="later"><line x1="{rx}" x2="{rx}" y1="{base_y}" y2="{base_y - 48 * s}" stroke="{C["sub"]}" stroke-width="1.5"/>')
     for i in range(0, 49, 6):
         yy = base_y - i * s
         parts.append(f'<line x1="{rx - 8}" x2="{rx}" y1="{yy}" y2="{yy}" stroke="{C["sub"]}" stroke-width="1.5"/>')
-        parts.append(text(rx - 14, yy + 5, f"{i}", 13, C["sub"], 500, MONO, "end"))
-    parts.append(text(rx - 14, base_y - 49.5 * s, "in", 13, C["sub"], 500, MONO, "end"))
+        parts.append(text(rx - 14, yy + 5, f"{i} in" if i == 48 else f"{i}", 13, C["sub"], 500, MONO, "end"))
     parts.append("</g>")
     # tower to scale
     layer = plan["thickness_in"] * (1 - t["settle_ratio"]) * s
@@ -162,7 +278,7 @@ def tower(spec, plan) -> str:
     for gy in range(base_y, 70, -51):
         g.append(f'<line x1="72" x2="760" y1="{gy}" y2="{gy}" />')
     parts.append(f'<g stroke="{C["faint"]}" stroke-width="1">{"".join(g)}</g>')
-    parts.append(text(72, 56, "ELEVATION", 14, C["sub"], 600, MONO, extra=' letter-spacing="1.5"'))
+    parts.append(eyebrow(72, 56, "Elevation", 14))
     parts.append(text(180, 56, "to scale · grid = 3 in", 14, C["sub"], 400, MONO))
 
     # tiers
@@ -227,7 +343,7 @@ def tower(spec, plan) -> str:
     px0, py0, pw, ph = 812, 72, 396, 392
     pcx, pcy, ps = px0 + pw / 2, py0 + 196, 26
     parts.append(f'<rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="18" fill="{C["paper"]}" stroke="{C["line"]}"/>')
-    parts.append(text(px0 + 22, py0 + 34, "PLAN", 14, C["sub"], 600, MONO, extra=' letter-spacing="1.5"'))
+    parts.append(eyebrow(px0 + 22, py0 + 34, "Plan", 14))
     parts.append(text(px0 + 70, py0 + 34, "from above · to scale", 14, C["sub"], 400, MONO))
     for z in plan["sizes"]:
         r = z["ring_in"] * ps / 2
@@ -237,7 +353,6 @@ def tower(spec, plan) -> str:
     parts.append(text(pcx + 8, py0 + 64, "A", 13, C["purple4"], 700, MONO))
     parts.append(text(px0 + pw - 22, pcy - 8, "B", 13, C["purple4"], 700, MONO, "end"))
     # quarter-turn arrow
-    import math
     r = 4.5 * ps + 18
     a0, a1 = math.radians(-22), math.radians(-62)
     x0, y0 = pcx + r * math.cos(a0), pcy + r * math.sin(a0)
@@ -254,7 +369,7 @@ def tower(spec, plan) -> str:
 
     # notes
     ny = 500
-    parts.append(text(812, ny, "NOTES", 14, C["sub"], 600, MONO, extra=' letter-spacing="1.5"'))
+    parts.append(eyebrow(812, ny, "Notes", 14))
     notes = ["Nothing touches the tower but pancakes.", "Lower each one from an edge. Never slide.",
              "Spotters call drift every 10 pancakes.", f"Slow at {t['slow_down_at_in']:g} in. Stop at {t['build_to_in']:g} in.",
              f"Hold {spec['rules']['hold_seconds']} s, hands off. Then measure."]
@@ -270,7 +385,7 @@ def tower(spec, plan) -> str:
     parts.append(f'<line x1="{tx}" x2="{tx + tw}" y1="{ty + 84}" y2="{ty + 84}" stroke="{C["ink"]}"/>')
     parts.append(f'<line x1="{tx + tw / 2}" x2="{tx + tw / 2}" y1="{ty + 84}" y2="{ty + th}" stroke="{C["ink"]}"/>')
     parts.append(f'<line x1="{tx}" x2="{tx + tw}" y1="{ty + 150}" y2="{ty + 150}" stroke="{C["ink"]}"/>')
-    parts.append(text(tx + 22, ty + 50, "PANCAKE TOWER", 26, C["ink"], 700, extra=' letter-spacing="-0.5"'))
+    parts.append(display(tx + 22, ty + 52, "PANCAKE TOWER", 34, tw - 22 - 86))
     parts.append(text(tx + 22, ty + 72, "Elevation & plan · units: inches", 14, C["sub"], 400, MONO))
     parts.append(mascot(tx + tw - 74, ty + 14, 56))
     cells = [("SPEC", f"v{meta['version']}"), ("STATUS", meta["status"].upper()),
@@ -290,54 +405,62 @@ def tower(spec, plan) -> str:
 
 # ---------------------------------------------------------------- record history
 def records(spec, plan) -> str:
+    """The page's record chart: a card on cream, pink bars, our stop line dashed in purple."""
     W, H = 1280, 660
     recs = tomllib.loads((ROOT / "data/records.toml").read_text())["record"]
-    t = spec["target"]
-    x0, x1, yb, ytop = 150, 1210, 548, 168
-    s = (yb - ytop) / 48
-    parts = [svg_open(W, H, "Tallest pancake stack record, 2012 to 2025, and our 45 inch target")]
+    t, ev = spec["target"], spec["event"]
+    parts = [svg_open(W, H, f"Tallest pancake stack record, {recs[0]['year']} to {recs[-1]['year']}, "
+                            f"and our {t['build_to_in']:g} inch target")]
     parts.append(f'<rect width="{W}" height="{H}" rx="28" fill="{C["bg"]}"/>')
-    parts.append(text(72, 84, "Every record since 2012", 36, C["ink"], 700, extra=' letter-spacing="-1"'))
-    parts.append(text(72, 118, "Tallest stack of pancakes, height in inches", 18, C["sub"]))
+    parts.append(display(72, 94, f"Every record since {recs[0]['year']}.", 44, W - 144))
+    parts.append(text(72, 128, "Tallest stack of pancakes, height in inches", 18, C["sub"]))
+    parts.append(f'<rect x="48" y="156" width="{W - 96}" height="440" rx="24" fill="{C["paper"]}" stroke="{C["faint"]}"/>')
+    x0, x1, yb, ytop = 136, 1196, 520, 216
+    s = (yb - ytop) / 48
     for v in range(0, 49, 12):
         yy = yb - v * s
-        parts.append(f'<line x1="{x0}" x2="{x1}" y1="{yy:.1f}" y2="{yy:.1f}" stroke="{C["line"] if v else C["ink"]}" stroke-width="{1 if v else 1.5}"/>')
-        parts.append(text(x0 - 14, yy + 5, f"{v}", 14, C["sub"], 500, MONO, "end"))
-    parts.append(text(x0 - 14, ytop - 18, "in", 14, C["sub"], 500, MONO, "end"))
+        parts.append(f'<line x1="{x0}" x2="{x1}" y1="{yy:.1f}" y2="{yy:.1f}" stroke="{C["faint"] if v else C["ink"]}" '
+                     f'stroke-width="{1 if v else 1.5}"/>')
+        parts.append(text(x0 - 14, round(yy + 5, 1), f"{v}", 13, C["sub"], 500, SANS, "end"))
     n = len(recs) + 1
     band = (x1 - x0) / n
-    bw = 70
+    bw = 72
     best = max(r["cm"] for r in recs)
     for i, r in enumerate(recs):
         h_in = r["cm"] / 2.54
-        cx = x0 + band * (i + 0.5)
+        cx = round(x0 + band * (i + 0.5), 1)
         hh = h_in * s
         parts.append(f'<rect x="{cx - bw / 2:.1f}" y="{yb - hh:.1f}" width="{bw}" height="{hh:.1f}" rx="10" fill="{C["pink"]}"/>')
-        for k in range(1, int(h_in // 2) - 1):
-            yy = yb - k * 2 * s
-            parts.append(f'<line x1="{cx - bw / 2 + 6:.1f}" x2="{cx + bw / 2 - 6:.1f}" y1="{yy:.1f}" y2="{yy:.1f}" stroke="{C["pink2"]}" stroke-width="1.2"/>')
         bold = r["cm"] == best
-        parts.append(text(cx, yb - hh + 26, f"{h_in:.1f}", 17 if bold else 15, C["ink"], 700 if bold else 600, MONO, "middle"))
-        parts.append(text(cx, yb + 28, str(r["year"]), 16, C["ink"], 700, MONO, "middle"))
-        parts.append(text(cx, yb + 50, r["place"], 14, C["sub"], 400, SANS, "middle"))
+        parts.append(text(cx, round(yb - hh + 26, 1), f"{h_in:.1f}", 16 if bold else 15, C["ink"], 700 if bold else 600, SANS, "middle"))
+        parts.append(text(cx, yb + 30, str(r["year"]), 15, C["ink"], 600, SANS, "middle"))
+        parts.append(text(cx, yb + 50, r["place"], 13, C["sub"], 400, SANS, "middle"))
     # ours
-    cx = x0 + band * (n - 0.5)
+    cx = round(x0 + band * (n - 0.5), 1)
     hh = t["build_to_in"] * s
-    parts.append(f'<rect x="{cx - bw / 2:.1f}" y="{yb - hh:.1f}" width="{bw}" height="{hh:.1f}" rx="10" fill="{C["purple1"]}" stroke="{C["purple4"]}" stroke-width="2" stroke-dasharray="7 5"/>')
-    parts.append(text(cx, yb - hh - 12, f"{t['build_to_in']:g}?", 17, C["purple4"], 700, MONO, "middle"))
-    parts.append(text(cx, yb + 28, "Oct 29, 2026", 16, C["purple4"], 700, MONO, "middle"))
-    parts.append(text(cx, yb + 50, "San Francisco", 14, C["sub"], 400, SANS, "middle"))
-    parts.append(mascot(cx - 30, yb - hh / 2 - 30, 60))
+    parts.append(f'<rect x="{cx - bw / 2:.1f}" y="{yb - hh:.1f}" width="{bw}" height="{hh:.1f}" rx="10" fill="{C["purple1"]}" '
+                 f'stroke="{C["purple4"]}" stroke-width="2" stroke-dasharray="7 5"/>')
+    parts.append(text(cx, round(yb - hh - 12, 1), f"{t['build_to_in']:g}?", 16, C["purple4"], 700, SANS, "middle"))
+    parts.append(text(cx, yb + 30, ev["date"], 15, C["purple4"], 600, SANS, "middle"))
+    parts.append(text(cx, yb + 50, ev["place"], 13, C["sub"], 400, SANS, "middle"))
+    parts.append(mascot(round(cx - 30, 1), round(yb - hh / 2 - 30, 1), 60))
     # record line
     yy = yb - t["record_height_in"] * s
     parts.append(f'<line x1="{x0}" x2="{x1}" y1="{yy:.1f}" y2="{yy:.1f}" stroke="{C["pink4"]}" stroke-width="1.5" stroke-dasharray="6 5"/>')
-    parts.append(text(x0 + 8, yy - 10, f"record to beat · {t['record_height_in']} in", 14, C["pink4"], 600, MONO))
-    parts.append(text(72, 636, "Heights as reported at the time. Sources in data/records.toml.", 14, C["sub"]))
+    parts.append(text(x0 + 8, round(yy - 10, 1), f"Record to beat · {t['record_height_in']} in", 14, C["ink"], 600, SANS))
+    parts.append(text(72, 634, "Heights as reported at the time. Sources in data/records.toml.", 14, C["sub"]))
     parts.append("</svg>\n")
     return "\n".join(parts)
 
 
 # ---------------------------------------------------------------- process strip
+def top_band(x, y, w, r, h, fill) -> str:
+    """A strip of height h along the top of a rounded rect (corner radius r > h), following its corners."""
+    dx = r - math.sqrt(r * r - (r - h) ** 2)
+    return (f'<path d="M{x + dx:.2f} {y + h} A{r} {r} 0 0 1 {x + r:.2f} {y} H{x + w - r:.2f} '
+            f'A{r} {r} 0 0 1 {x + w - dx:.2f} {y + h} Z" fill="{fill}"/>')
+
+
 def process(spec, plan) -> str:
     W, H = 1280, 380
     t, c = spec["target"], spec["cook"]
@@ -355,22 +478,24 @@ def process(spec, plan) -> str:
     ]
     parts = [svg_open(W, H, "From batter to plate: the process, step by step")]
     parts.append(f'<rect width="{W}" height="{H}" rx="28" fill="{C["bg"]}"/>')
-    parts.append(text(56, 58, "FROM BATTER TO PLATE", 14, C["sub"], 600, MONO, extra=' letter-spacing="1.5"'))
-    bw, bh, gap = 196, 92, 46
+    bw, bh, gap, r = 196, 96, 46, 24
     x0 = (W - (5 * bw + 4 * gap)) / 2
     ys = [96, 252]
-    fills = {"yellow": "yellow2", "check": "paper", "purple": "purple2", "pink": "pink2", "green": "faint"}
+    parts.append(eyebrow(x0, 58, "From batter to plate"))
+    bands = {"yellow": C["yellow"], "check": C["yellow"], "purple": C["purple"], "pink": C["pink"], "green": C["green"]}
     centers = {}
-    for r, row in enumerate(rows):
+    for row_i, row in enumerate(rows):
         for i, (title, sub, kind) in enumerate(row):
-            x = x0 + i * (bw + gap)
-            y = ys[r]
-            stroke = C["ink"] if kind == "check" else "none"
-            dash = ' stroke-dasharray="6 4"' if kind == "check" else ""
-            parts.append(f'<rect x="{x:.0f}" y="{y}" width="{bw}" height="{bh}" rx="18" fill="{C[fills[kind]]}" stroke="{stroke}" stroke-width="1.5"{dash}/>')
-            parts.append(text(x + 20, y + 40, title, 20, C["ink"], 700))
-            parts.append(text(x + 20, y + 66, sub, 14, C["sub"], 500, MONO))
-            centers[(r, i)] = (x, y)
+            x, y = x0 + i * (bw + gap), ys[row_i]
+            # the check is a gate, not a step: a dashed edge
+            edge = (f'stroke="{C["ink"]}" stroke-width="1" stroke-dasharray="5 4"' if kind == "check"
+                    else f'stroke="{C["faint"]}" stroke-width="0.5"')
+            parts.append(f'<rect x="{x:.0f}" y="{y}" width="{bw}" height="{bh}" rx="{r}" fill="{C["paper"]}"/>')
+            parts.append(top_band(x, y, bw, r, 8, bands[kind]))
+            parts.append(f'<rect x="{x:.0f}" y="{y}" width="{bw}" height="{bh}" rx="{r}" fill="none" {edge}/>')
+            parts.append(display(x + 20, y + 54, title, 24, bw - 40))
+            parts.append(text(x + 20, y + 78, sub, 14, C["sub"], 500, SANS))
+            centers[(row_i, i)] = (x, y)
     def arrow(x1, y1, x2, y2):
         a = f'<line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" stroke="{C["ink"]}" stroke-width="2"/>'
         if x2 > x1: head = f'<path d="M{x2:.0f} {y2:.0f} l-9 -5 v10 z" fill="{C["ink"]}"/>'
@@ -384,37 +509,162 @@ def process(spec, plan) -> str:
         parts.append(arrow(x - 6, y + bh / 2, x - gap + 6, y + bh / 2))
     x, y = centers[(0, 4)]
     parts.append(arrow(x + bw / 2, y + bh + 6, x + bw / 2, ys[1] - 6))
-    parts.append(text(x + bw / 2 + 10, y + bh + 36, "yes", 13, C["ink"], 700, MONO))
+    parts.append(text(x + bw / 2 + 10, y + bh + 34, "yes", 13, C["ink"], 600, SANS))
     # "no" loop back to the dose
     xd, yd = centers[(0, 1)]
     parts.append(f'<path d="M{x + bw / 2:.0f} {y - 6} V{y - 26} H{xd + bw / 2:.0f} V{yd - 6}" fill="none" stroke="{C["pink4"]}" stroke-width="2" stroke-dasharray="6 4"/>')
     parts.append(f'<path d="M{xd + bw / 2:.0f} {yd - 4} l-5 -9 h10 z" fill="{C["pink4"]}"/>')
-    parts.append(text((x + xd + bw) / 2, y - 34, "no: fix the dose", 13, C["pink4"], 700, MONO, "middle"))
+    parts.append(text((x + xd + bw) / 2, y - 34, "no: fix the dose", 13, C["pink4"], 600, SANS, "middle"))
     parts.append("</svg>\n")
     return "\n".join(parts)
 
 
+# ---------------------------------------------------------------- page
+def path_bbox(*paths: str) -> tuple[float, float, float, float]:
+    """Bounding box of absolute-coordinate paths (control points included, so a hair generous)."""
+    nums = [float(n) for d in paths for n in re.findall(r"-?\d+(?:\.\d+)?(?:e-?\d+)?", d)]
+    xs, ys = nums[0::2], nums[1::2]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def sprite() -> str:
+    """Symbols the page reuses with <use>: logo, mascot, a two-tone pancake, a check."""
+    mon = (BRAND / "pancake-monster.svg").read_text()
+    side, top = re.findall(r'<path d="([^"]+)" fill="[^"]+"/>', mon)[:2]  # the bottom pancake
+    x0, y0, x1, y1 = path_bbox(side, top)
+    check = re.search(r'<path d="([^"]+)"', (BRAND / "icon-check.svg").read_text()).group(1)
+    return (
+        '<svg class="sprite" aria-hidden="true" focusable="false"><defs>'
+        f'<symbol id="logo" viewBox="0 0 422 166"><path fill="currentColor" d="{logo_path()}"/></symbol>'
+        f'<symbol id="mascot" viewBox="340 362 348 352">{mascot_inner()}</symbol>'
+        f'<symbol id="cake" viewBox="{x0:.1f} {y0:.1f} {x1 - x0:.1f} {y1 - y0:.1f}" preserveAspectRatio="none">'
+        f'<path d="{side}" fill="var(--cake-side)"/><path d="{top}" fill="var(--cake-top)"/></symbol>'
+        f'<symbol id="check" viewBox="0 0 24 24"><path fill="currentColor" d="{check}"/></symbol>'
+        "</defs></svg>"
+    )
+
+
+def step_art(kind: str) -> str:
+    """The three failure modes, drawn with the two-tone pancake. Colours come from the card's --cake-* tokens."""
+    W, H, ground, cx = 464, 426, 352, 232
+    ink = C["ink"]
+    out = [f'<svg class="step-art" viewBox="0 0 {W} {H}" aria-hidden="true" focusable="false">']
+
+    def cake(x_mid, bottom, w, h, rot=0.0):
+        turn = f' transform="rotate({rot:g} {x_mid:.1f} {bottom - h / 2:.1f})"' if rot else ""
+        return f'<use href="#cake" x="{x_mid - w / 2:.1f}" y="{bottom - h:.1f}" width="{w:.1f}" height="{h:.1f}"{turn}/>'
+
+    def pile(sizes):
+        bottom, tops = ground, []
+        for w, h, dx in sizes:
+            out.append(cake(cx + dx, bottom, w, h))
+            tops.append(bottom - h)
+            bottom -= h * 0.3
+        return tops[-1]
+
+    if kind == "squash":
+        top = pile([(316, 40, 0), (296, 46, 0), (278, 52, 0), (262, 58, 0), (250, 63, 0), (240, 68, 0)])
+        for dx in (-44, 44):
+            x = cx + dx
+            out.append(f'<path d="M{x} {top - 76:.1f}V{top - 22:.1f}M{x - 9} {top - 33:.1f}L{x} {top - 22:.1f}L{x + 9} {top - 33:.1f}" '
+                       f'stroke="{ink}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>')
+    elif kind == "lean":
+        top = pile([(232, 62, i * 11 - 44) for i in range(9)])
+        out.append(f'<line x1="{cx - 44}" x2="{cx - 44}" y1="{ground + 6}" y2="{top - 44:.1f}" stroke="{ink}" '
+                   f'stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"/>')
+        out.append(f'<path d="M{cx - 36} {top - 30:.1f}H{cx + 40}M{cx + 31} {top - 38:.1f}L{cx + 40} {top - 30:.1f}L{cx + 31} {top - 22:.1f}" '
+                   f'stroke="{ink}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>')
+    else:  # greedy
+        top = pile([(240, 62, 0)] * 7)
+        line_y = top - 20
+        out.append(f'<line x1="40" x2="424" y1="{line_y:.1f}" y2="{line_y:.1f}" stroke="{C["pink4"]}" stroke-width="2.5" '
+                   f'stroke-dasharray="8 7" stroke-linecap="round"/>')
+        out.append(cake(cx + 92, line_y - 34, 220, 58, -16))
+        for i, r in enumerate((18, 30)):
+            out.append(f'<path d="M{cx - 30 - i * 14} {line_y - 66 - i * 10:.1f}q{-r} 6 {-r - 8} {r}" stroke="{ink}" '
+                       f'stroke-width="2.5" stroke-linecap="round" fill="none"/>')
+    out.append(f'<line x1="56" x2="408" y1="{ground + 8}" y2="{ground + 8}" stroke="{ink}" stroke-width="2.5" stroke-linecap="round"/>')
+    out.append("</svg>")
+    return "".join(out)
+
+
+def art(name: str, cls: str, stretch: bool = False) -> str:
+    """A brand SVG from assets/brand, inlined as decoration. The cream core follows the page colour.
+    stretch: the art may widen past its artboard without growing taller (pancake.ai's hero above 1654 px)."""
+    head, body = (BRAND / f"{name}.svg").read_text().strip().split(">", 1)
+    head = re.sub(r'\s(?:width|height|xmlns)="[^"]*"', "", head)
+    par = ' preserveAspectRatio="none"' if stretch else ""
+    svg = head.replace("<svg", f'<svg class="{cls}" aria-hidden="true" focusable="false"{par}', 1) + ">" + body
+    return re.sub(r'fill="#(?:FBF6F1|fbf6f1)"', 'class="core"', svg)
+
+
+def fmt_value(v, spec: str) -> str:
+    if spec:
+        return format(v, spec)
+    if isinstance(v, float):
+        return f"{v:g}"
+    return str(v)
+
+
+def fill_numbers(tpl: str, ns: dict) -> str:
+    """{{spec.cook.rest|.2f}} -> the value from recipe.toml / the plan. Every number in the copy comes from here."""
+    def sub(m):
+        cur = ns[m.group(1)]
+        for key in m.group(2).split("."):
+            cur = cur[int(key)] if isinstance(cur, list) else cur[key]
+        return html.escape(fmt_value(cur, m.group(3) or ""))
+    return re.sub(r"\{\{(spec|plan|best|first|calc)\.([a-z0-9_.]+)(?:\|([^}]+))?\}\}", sub, tpl)
+
+
 def page(spec, plan, recs, tower_svg) -> str:
-    tpl = (ROOT / "site/index.template.html").read_text()
-    data = json.dumps({"spec": spec, "plan": plan, "records": recs}, separators=(",", ":")).replace("</", "<\\/")
-    return (tpl.replace("{{LOGO_PATH}}", logo_path())
-               .replace("{{MASCOT}}", mascot_inner())
-               .replace("{{TOWER_SVG}}", tower_svg.replace("<title>", '<title id="tower-title">', 1))
-               .replace("{{SPEC_JSON}}", data))
+    site = ROOT / "site"
+    tpl = (site / "index.template.html").read_text()
+    css, js = (site / "page.css").read_text(), (site / "page.js").read_text()
+    assert "</style" not in css and "</script" not in js, "page.css / page.js must not close their own tag"
+    best = max(recs, key=lambda r: r["cm"])
+    best = {**best, "in": round(best["cm"] / 2.54, 1)}
+    first = {**recs[0], "in": round(recs[0]["cm"] / 2.54, 1)}
+    ns = {"spec": spec, "plan": plan, "best": best, "first": first, "calc": {
+        "thick_min": round(spec["cook"]["reject_below_in"] - 0.02, 3),   # the slider reaches past both reject limits
+        "settle_pct": round(spec["target"]["settle_ratio"] * 100),
+        "spare_pct": round(spec["cook"]["spare_ratio"] * 100),
+        "stack10_in": round(10 * plan["thickness_in"], 2),
+        "major": spec["meta"]["version"].split(".")[0],
+    }}
+    blocks = {
+        "{{TOKENS_CSS}}": tokens_css(), "{{SPRITE}}": sprite(), "{{TOWER_SVG}}": tower_svg,
+        "{{ART_HERO}}": art("rainbow-hero", "rainbow", stretch=True), "{{ART_FOOTER}}": art("rainbow-footer", "rainbow"),
+        "{{ART_CTA_LEFT}}": art("rainbow-cta-left", "sliver sliver-l"),
+        "{{ART_CTA_RIGHT}}": art("rainbow-cta-right", "sliver sliver-r"),
+        "{{ART_CLOUD_A}}": art("sky-cloud-a", "cloud cloud-a"), "{{ART_CLOUD_B}}": art("sky-cloud-b", "cloud cloud-b"),
+        "{{ART_HILL_TOP}}": art("sky-hill-top", "hill hill-top"),
+        "{{ART_HILL_BOTTOM}}": art("sky-hill-top", "hill hill-bottom"),
+        "{{ART_STEP_SQUASH}}": step_art("squash"), "{{ART_STEP_LEAN}}": step_art("lean"),
+        "{{ART_STEP_GREEDY}}": step_art("greedy"),
+    }
+    for key, val in blocks.items():
+        assert key in tpl, f"placeholder {key} missing from the template"
+        tpl = tpl.replace(key, val)
+    tpl = fill_numbers(tpl, ns)
+    left = re.findall(r"\{\{[^}]*\}\}", tpl.replace("{{CSS}}", "").replace("{{JS}}", "").replace("{{SPEC_JSON}}", ""))
+    assert not left, f"unresolved placeholders: {left}"
+    data =json.dumps({"spec": spec, "plan": plan, "records": recs}, separators=(",", ":")).replace("<", "\\u003c")
+    return tpl.replace("{{CSS}}", css).replace("{{JS}}", js).replace("{{SPEC_JSON}}", data)
 
 
 def outputs() -> dict[Path, str]:
     spec = load_spec()
     plan = compute(spec)
     recs = tomllib.loads((ROOT / "data/records.toml").read_text())["record"]
-    tower_svg = tower(spec, plan)
+    tower_svg = tower(spec, plan)  # bare: the page inlines it and brings its own fonts
     return {
         ROOT / "docs/index.html": page(spec, plan, recs, tower_svg),
         ROOT / "docs/.nojekyll": "",
-        ROOT / "assets/hero.svg": hero(spec, plan),
-        ROOT / "assets/tower.svg": tower_svg,
-        ROOT / "assets/records.svg": records(spec, plan),
-        ROOT / "assets/process.svg": process(spec, plan),
+        ROOT / "docs/tower.svg": with_font(tower_svg),
+        ROOT / "assets/hero.svg": with_font(hero(spec, plan)),
+        ROOT / "assets/tower.svg": with_font(tower_svg),
+        ROOT / "assets/records.svg": with_font(records(spec, plan)),
+        ROOT / "assets/process.svg": with_font(process(spec, plan)),
         ROOT / "docs/spec.json": json.dumps({"spec": spec, "plan": plan, "records": recs}, indent=2) + "\n",
     }
 

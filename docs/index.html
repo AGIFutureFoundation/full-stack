@@ -4,360 +4,1010 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pancake Tower</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. Oct 29, 2026, San Francisco.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FBF6F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1F0A1D" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://get-pancake.github.io/full-stack/">
 <meta property="og:title" content="We're open-sourcing our full stack">
 <meta property="og:description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. Oct 29, 2026, San Francisco.">
-<meta property="og:image" content="https://raw.githubusercontent.com/get-pancake/full-stack/main/assets/social-preview.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/get-pancake/full-stack/main/assets/social-preview.png?v=2.0.0">
 <meta property="og:image:width" content="1280">
 <meta property="og:image:height" content="640">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..700&family=Mona+Sans:wdth,wght@75,500..700&display=swap">
 <style>
-/* Layout: a spec sheet you can scroll. Left-aligned bands, one live tower drawn to scale. */
 :root {
-  --bg: #FBF6F1;          /* page cream */
-  --paper: #FFFCF8;       /* cards, inputs */
-  --ink: #2C002A;         /* text, rules */
-  --sub: #85687C;         /* secondary text */
-  --line: #DDCFCD;        /* strokes */
-  --faint: #EFE4DC;       /* grids */
-  --accent: #E33A6A;      /* record, emphasis */
-  --accent-2: #8D43FD;    /* our target, links */
-  --pink: #FF7AA0; --pink-2: #FFBBC7; --pink-1: #FFD9DA;
-  --purple: #BA8BFF; --purple-2: #DEC3F5; --purple-1: #EFDDF1;
-  --yellow: #FFBD7A; --yellow-2: #FFDBB5; --yellow-1: #FFE9D1;
-  --green: #68CEA7; --blue: #4660E7;
-  --on-accent: #FFFCF8;
-  --sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --step--1: .875rem; --step-0: 1rem; --step-1: 1.25rem; --step-2: 1.75rem; --step-3: 2.5rem; --step-4: clamp(2.6rem, 6vw, 4.6rem);
-  --r-sm: 12px; --r-md: 18px; --r-lg: 24px;
-  --wrap: 1180px;
+  --ink-0: #FFFFFF;
+  --ink-10: #FFFBF6;
+  --ink-20: #FFF7EC;
+  --ink-30: #F7EDE5;
+  --ink-40: #EFE4DC;
+  --ink-50: #DDCFCD;
+  --ink-60: #BBA8AE;
+  --ink-70: #9A818F;
+  --ink-80: #85687C;
+  --ink-90: #6C4B65;
+  --ink-100: #2C002A;
+  --pink-10: #FFD9DA;
+  --pink-20: #FFBBC7;
+  --pink-30: #FF7AA0;
+  --pink-40: #E33A6A;
+  --purple-10: #EFDDF1;
+  --purple-20: #DEC3F5;
+  --purple-30: #BA8BFF;
+  --purple-40: #8D43FD;
+  --yellow-10: #FFE9D1;
+  --yellow-20: #FFDBB5;
+  --yellow-30: #FFBD7A;
+  --yellow-40: #F38F43;
+  --orange-10: #FFDDBE;
+  --orange-20: #FFA45F;
+  --orange-30: #D43900;
+  --orange-40: #B20000;
+  --red-10: #FFD1C9;
+  --red-20: #FF8080;
+  --red-30: #E5002E;
+  --red-40: #AD001A;
+  --green-10: #CEEAD5;
+  --green-20: #68CEA7;
+  --green-30: #037D48;
+  --green-40: #00532F;
+  --blue-10: #D9E9FF;
+  --blue-20: #B0CBFF;
+  --blue-30: #6A8FFF;
+  --blue-40: #4660E7;
+  --cream: #FBF6F1;
+  --tinted: #F8E5D4;
+  --ink-tr-5: rgb(44 0 42 / 5%);
+  --ink-tr-10: rgb(44 0 42 / 10%);
+  --ink-tr-20: rgb(44 0 42 / 20%);
+  --ink-tr-40: rgb(44 0 42 / 40%);
+  --ink-tr-50: rgb(44 0 42 / 50%);
+  --ink-tr-60: rgb(44 0 42 / 60%);
+  --ink-tr-70: rgb(44 0 42 / 70%);
+  --ink-tr-80: rgb(44 0 42 / 80%);
 }
+/* Pancake Tower. Colour tokens are the Figma "Pancake Design" variables (generated above by
+   tools/render.py); layout, type, buttons and motion follow pancake.ai (landing-v3).
+   Breakpoints: 1360 eases paddings, 1024 recomposes, 767 is the phone layout. */
+
+/* ---------- semantic tokens (light) ---------- */
+:root,
+.on-light {
+  color-scheme: light;
+  --page: var(--cream);
+  --card: var(--ink-10);
+  --surface: var(--ink-0);
+  --inverted-surface: var(--ink-100);
+  --tinted-surface: var(--tinted);
+  --chip-surface: var(--ink-tr-5);
+  --hover-layer: var(--ink-tr-10);
+  --track: var(--ink-tr-10);
+  --text: var(--ink-100);
+  --subtle-text: var(--ink-80);
+  --text-on-inverted-surface: var(--ink-20);
+  --stroke: var(--ink-50);
+  --subtle-stroke: var(--ink-40);
+  --control-stroke: var(--ink-70);
+  --strongest-stroke: var(--ink-100);
+  --interactive: var(--purple-40);
+  --positive-text: var(--green-30);
+  --negative-text: var(--red-30);
+  --shadow-window: 0 4px 62.4px rgb(0 0 0 / 8%);
+}
+.on-light { color: var(--text); } /* light islands keep ink text in dark mode */
+
+/* ---------- semantic tokens (dark): brand inverted surfaces ---------- */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #1F0A1D; --paper: #2C002A; --ink: #FFF7EC; --sub: #BBA8AE; --line: #6C4B65; --faint: #3A1838;
-    --accent: #FF7AA0; --accent-2: #BA8BFF; --on-accent: #2C002A; color-scheme: dark;
+  :root {
+    color-scheme: dark;
+    --page: #1F0A1D;
+    --card: var(--ink-100);
+    --surface: #3A1838;
+    --inverted-surface: var(--ink-20);
+    --tinted-surface: #47213F;
+    --chip-surface: rgb(255 247 236 / 8%);
+    --hover-layer: rgb(255 247 236 / 10%);
+    --track: rgb(255 247 236 / 16%);
+    --text: var(--ink-20);
+    --subtle-text: var(--ink-50);
+    --text-on-inverted-surface: var(--ink-100);
+    --stroke: var(--ink-90);
+    --subtle-stroke: #3A1838;
+    --control-stroke: var(--ink-60);
+    --strongest-stroke: var(--ink-20);
+    --interactive: var(--purple-30);
+    --positive-text: var(--green-20);
+    --negative-text: var(--red-20);
+    --shadow-window: 0 4px 62.4px rgb(0 0 0 / 45%);
   }
 }
-:root[data-theme="dark"] {
-  --bg: #1F0A1D; --paper: #2C002A; --ink: #FFF7EC; --sub: #BBA8AE; --line: #6C4B65; --faint: #3A1838;
-  --accent: #FF7AA0; --accent-2: #BA8BFF; --on-accent: #2C002A; color-scheme: dark;
+
+:root {
+  --page-root: var(--page); /* resolved here, so light islands still blend into the real page */
+  --font-display: "Mona Sans", "Mona Sans Fallback", "Arial Narrow", sans-serif;
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* text-size scale, x1.2 (Figma text-size/*) */
+  --t-xsm: 11.108px; --t-sm: 13.333px; --t-md: 16px; --t-lg: 19.2px; --t-xlg: 23.04px;
+  --t-2xlg: 27.648px; --t-3xlg: 33.18px; --t-4xlg: 39.816px; --t-5xlg: 47.784px; --t-6xlg: 57.336px;
+  /* radii (Figma radii + the 30 of marketing cards) */
+  --r-xsm: 8px; --r-sm: 12px; --r-m: 16px; --r-lg: 24px; --r-card: 30px; --r-xlg: 32px; --r-2xlg: 48px;
+  --pad: 32px;
+  --section-y: 128px;
+  --nav-h: 120px;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-pop: cubic-bezier(.25, 1.38, .42, 1);
+  --ease-spring: var(--ease-pop);
 }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { /* Figma spring, 856 ms (prototype 4257:5361) */
+    --ease-spring: linear(0, .0188, .0679, .1374, .2195, .308, .3978, .4856, .5686, .6452, .7142, .7753, .8283, .8735, .9113, .9423, .9671, .9866, 1.0014, 1.0123, 1.0198, 1.0247, 1.0274, 1.0283, 1.0281, 1.0268, 1.025, 1.0227, 1.0202, 1.0177, 1.0152, 1.0128, 1.0106, 1.0085, 1.0068, 1.0052, 1.0039, 1.0028, 1.0018, 1.0011, 1.0005, 1, .9997, .9995, .9993, .9992, .9992, .9992, .9992, .9993, .9993);
+  }
+}
+@media (max-width: 1024px) {
+  :root { --section-y: 96px; }
+}
+@media (max-width: 767px) {
+  :root { --pad: 16px; --section-y: 64px; --nav-h: 104px; }
+  html { scroll-padding-top: calc(76px + env(safe-area-inset-top)); }
+}
+
+/* Metric stand-in while Mona Sans loads: keeps the condensed headlines on the same lines. */
+@font-face {
+  font-family: "Mona Sans Fallback";
+  src: local("Arial Narrow Bold"), local("ArialNarrow-Bold"), local("Arial Bold"), local("Arial-BoldMT");
+  size-adjust: 82%;
+  ascent-override: 102%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--page);
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+  overscroll-behavior-y: none;
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-0)/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
-a { color: var(--accent-2); text-underline-offset: 3px; }
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; border-radius: 6px; }
-h1, h2, h3 { text-wrap: balance; margin: 0; letter-spacing: -.02em; line-height: 1.05; }
-h2 { font-size: var(--step-3); font-weight: 800; }
-h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
-p { margin: 0; max-width: 62ch; }
-.mono { font-family: var(--mono); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--page);
+  color: var(--text);
+  font: 400 var(--t-md)/1.5 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, p, ol, ul, dl, dd, figure { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+svg { display: block; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+h1, h2, h3 { font-weight: 600; text-wrap: balance; }
+p { text-wrap: pretty; }
+code { font: 500 .92em/1 var(--font-mono); }
+:focus-visible { outline: 2px solid var(--interactive); outline-offset: 2px; border-radius: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 .num { font-variant-numeric: tabular-nums; }
-.eyebrow { font: 500 var(--step--1)/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sub); }
-.band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: clamp(56px, 8vw, 104px); }
-.band.alt { background: var(--paper); border-block: 1px solid var(--line); }
-.wrap { max-width: var(--wrap); margin: 0 auto; display: grid; gap: 40px; min-width: 0; }
-.head { display: grid; gap: 14px; }
-.head p { color: var(--sub); font-size: var(--step-1); line-height: 1.45; }
+.display { font-family: var(--font-display); font-stretch: 75%; font-weight: 600; letter-spacing: -.03em; }
+.link { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: .25em; transition: text-decoration-color .16s ease-out; }
+@media (hover: hover) and (pointer: fine) { .link:hover { text-decoration-color: currentColor; } }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 60; padding: 12px 16px; border-radius: var(--r-sm); background: var(--inverted-surface); color: var(--text-on-inverted-surface); font-weight: 600; text-decoration: none; }
+.skip:focus { top: calc(16px + env(safe-area-inset-top)); }
 
-/* nav */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.nav .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
-.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-.brand svg { height: 30px; width: auto; display: block; }
-.brand span { font: 500 var(--step--1) var(--mono); color: var(--sub); border-left: 1px solid var(--line); padding-left: 12px; }
-.nav ul { display: flex; gap: 22px; list-style: none; margin: 0 0 0 auto; padding: 0; }
-.nav ul a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: var(--step--1); }
-.nav ul a:hover { color: var(--accent-2); }
-@media (max-width: 760px) { .nav ul li:not(:last-child) { display: none; } }
-
-/* buttons, pills */
-.btn { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 20px; border-radius: var(--r-md); font: 600 var(--step-0) var(--sans); text-decoration: none; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
-.btn.brand-btn { background: var(--pink); border-color: var(--pink); color: #2C002A; }
-.btn:hover { transform: translateY(-1px); }
-.btn.sm { height: 40px; padding: 0 16px; font-size: var(--step--1); }
-.pill { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); font: 500 .8125rem var(--mono); color: var(--ink); white-space: nowrap; }
-.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-
-/* hero */
-.hero { padding-block: clamp(40px, 6vw, 72px) 0; }
-.hero .wrap { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: end; gap: 24px; }
-.hero h1 { font-size: var(--step-4); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
-.hero h1 em { font-style: normal; color: var(--accent); display: block; }
-.hero .copy { display: grid; gap: 26px; padding-bottom: clamp(40px, 6vw, 80px); min-width: 0; }
-.hero .lede { font-size: var(--step-1); color: var(--sub); line-height: 1.45; max-width: 44ch; }
-.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-.countdown { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.ribbon { display: block; width: 100%; height: clamp(72px, 9vw, 128px); margin-top: clamp(24px, 4vw, 48px); }
-.stage { display: grid; justify-items: center; gap: 10px; min-width: 0; }
-.stage svg { width: 100%; max-width: 420px; height: auto; display: block; }
-.readout { display: flex; gap: 18px; font: 500 var(--step--1) var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 16px; align-items: center; }
-.readout b { font-weight: 700; }
-.readout .btn { height: 32px; padding: 0 14px; border-radius: 999px; }
-@media (max-width: 860px) {
-  .hero .wrap { grid-template-columns: 1fr; }
-  .hero .copy { padding-bottom: 8px; }
+/* ---------- layout ---------- */
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: calc(1296px + 2 * var(--pad));
+  margin-inline: auto;
+  padding-inline: max(var(--pad), env(safe-area-inset-left)) max(var(--pad), env(safe-area-inset-right));
+}
+.section { padding-block: var(--section-y); }
+.section-tight { padding-top: 0; }
+.head { display: grid; justify-items: center; gap: 16px; max-width: 760px; margin: 0 auto 64px; text-align: center; }
+.kicker { font: 500 24px/32px var(--font-display); font-stretch: 75%; color: var(--text); }
+.title { font: 600 var(--t-6xlg)/1.2 var(--font-display); font-stretch: 75%; letter-spacing: -.03em; }
+.head-lede { max-width: 560px; color: var(--subtle-text); }
+.eyebrow { font: 500 12px/1.5 var(--font-sans); letter-spacing: .1em; text-transform: uppercase; color: var(--subtle-text); }
+.card-title { font: 500 var(--t-xlg)/1.3 var(--font-display); font-stretch: 75%; letter-spacing: -.01em; }
+.card-sub { margin-top: 4px; color: var(--subtle-text); }
+@media (max-width: 767px) {
+  .head { margin-bottom: 40px; padding-inline: 8px; }
+  .title { font-size: 35.559px; }
 }
 
-/* stat strip */
-.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); }
-.stat { padding: 20px 20px 4px 0; display: grid; gap: 6px; border-right: 1px solid var(--line); padding-left: 20px; }
-.stat:first-child { padding-left: 0; }
-.stat:last-child { border-right: 0; }
-.stat b { font: 800 clamp(2rem, 4.4vw, 3.2rem)/1 var(--sans); letter-spacing: -.03em; }
-.stat b small { font: 600 .45em var(--mono); letter-spacing: 0; margin-left: 4px; color: var(--sub); }
-.stat span { color: var(--sub); font-size: var(--step--1); }
-@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(3) { padding-left: 0; } }
+/* ---------- components ---------- */
+/* Button: pancake.ai .lp-btn. Plum pill, tinted twin, outline twin; three sizes. */
+.button {
+  --b-bg: var(--inverted-surface);
+  --b-fg: var(--text-on-inverted-surface);
+  --b-h: 48px;
+  --b-pad: 12px 20px;
+  --b-r: 12px;
+  --b-size: var(--t-md);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--b-h);
+  padding: var(--b-pad);
+  border: 0;
+  border-radius: var(--b-r);
+  background: var(--b-bg);
+  color: var(--b-fg);
+  font: 600 var(--b-size)/1.5 var(--font-sans);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform .15s var(--ease-out);
+}
+.button[data-variant="tinted"] { --b-bg: var(--tinted-surface); --b-fg: var(--text); font-weight: 500; }
+.button[data-variant="outline"] { --b-bg: transparent; --b-fg: var(--text); box-shadow: inset 0 0 0 1px var(--strongest-stroke); }
+.button[data-size="sm"] { --b-h: 38px; --b-pad: 9px 15px; --b-r: 9px; --b-size: var(--t-sm); }
+.button[data-size="lg"] { --b-h: 72px; --b-pad: 18px 30px; --b-r: 18px; --b-size: 24px; }
+.button:active { transform: scale(.96); }
+.button[aria-disabled="true"] { opacity: .55; cursor: default; }
+@media (pointer: coarse) { .button[data-size="sm"] { --b-h: 44px; } }
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 399px) { .buttons > .button { flex: 1 1 100%; } }
+/* the flood: a circle grows from the pointer, the label slides up (pancake.ai LpFxButton) */
+.button .fx { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.button .fx i { position: absolute; border-radius: 50%; transform: translate(-50%, -50%) scale(0); transition: transform .55s cubic-bezier(.22, .61, .36, 1); }
+.button .lbl { position: relative; display: inline-block; overflow: hidden; margin: -.16em 0; padding: .16em 0; vertical-align: top; }
+.button .lbl > span { display: block; transition: translate .45s var(--ease-out); }
+.button .lbl > span + span { position: absolute; inset: .16em 0; translate: 0 165%; color: var(--ink-100); text-align: center; }
+.button.is-fx { background-color: var(--fx-fill); transition: background-color 0s linear .5s, transform .15s var(--ease-out); }
+.button.is-fx .lbl > span:first-child { translate: 0 -165%; }
+.button.is-fx .lbl > span + span { translate: 0 0; }
 
-/* failure modes */
-.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.mode { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 24px; border-radius: var(--r-lg); background: var(--bg); border: 1px solid var(--line); min-width: 0; }
-.mode svg { width: 100%; height: 92px; }
-.mode .fix { font: 500 var(--step--1)/1.45 var(--mono); color: var(--ink); border-top: 1px dashed var(--line); padding-top: 12px; }
-.mode .fix::before { content: "FIX  "; color: var(--accent-2); font-weight: 700; }
-.mode p { color: var(--sub); }
-@media (max-width: 860px) { .modes { grid-template-columns: 1fr; } }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 3px 10px;
+  border-radius: var(--r-xsm);
+  background: var(--chip-surface);
+  color: var(--text);
+  font: 500 12px/1.6 var(--font-sans);
+  white-space: nowrap;
+}
+.chip b { font-weight: 700; }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink-40); }
+.chip[data-live] .dot, #countdown[data-live]::before { background: var(--green-30); }
 
-/* recipe */
-.recipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
-.ratios { display: grid; gap: 10px; }
-.ratio { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 3.4rem; align-items: center; gap: 12px; font-size: var(--step--1); }
-.ratio .bar { height: 14px; border-radius: 4px; background: var(--yellow); min-width: 3px; }
-.ratio .why { grid-column: 1 / -1; color: var(--sub); font-size: .8125rem; margin-top: -6px; }
-.ratio .pct { font-family: var(--mono); text-align: right; }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: s; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 12px; align-items: start; }
-.steps li::before { content: counter(s); font: 700 var(--step--1)/2rem var(--mono); width: 2rem; height: 2rem; text-align: center; border-radius: 50%; border: 1.5px solid var(--ink); }
-.steps b { display: block; }
-.steps span { color: var(--sub); }
-.doses { display: flex; flex-wrap: wrap; gap: 28px; align-items: end; }
+.card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 .5px var(--subtle-stroke);
+  padding: 48px;
+}
+@media (max-width: 767px) { .card { padding: 32px 24px; } }
+
+/* ---------- nav (pancake.ai: 120 px, scrolls away; phones: sticky, compacts) ---------- */
+.nav { position: relative; z-index: 30; height: var(--nav-h); }
+.nav-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  max-width: calc(1296px + 64px);
+  margin-inline: auto;
+  padding-inline: max(32px, env(safe-area-inset-left)) max(32px, env(safe-area-inset-right));
+}
+.nav-logo { display: flex; align-items: center; min-height: 44px; width: 115px; color: var(--text); transition: transform .25s ease; transform-origin: left center; }
+.nav-logo svg { width: 100%; height: auto; }
+.nav-links { position: absolute; left: 50%; top: 50%; display: flex; gap: 34px; transform: translate(-50%, -50%); white-space: nowrap; }
+.nav-links a { padding-block: 10px; color: var(--text); font: 500 var(--t-sm)/1.5 var(--font-sans); letter-spacing: .1333px; text-decoration: none; }
+@media (hover: hover) and (pointer: fine) { .nav-links a:hover { text-decoration: underline; text-underline-offset: 4px; } }
+.nav-ctas { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.burger, .menu-close { position: relative; display: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--r-sm); background: transparent; cursor: pointer; }
+.burger span, .menu-close span { position: absolute; left: 12px; width: 20px; height: 2px; border-radius: 1px; background: currentColor; }
+.burger span:first-child { top: 17px; }
+.burger span:last-child { top: 25px; }
+.menu-close span { top: 21px; }
+.menu-close span:first-child { transform: rotate(45deg); }
+.menu-close span:last-child { transform: rotate(-45deg); }
+@media (max-width: 1180px) { .nav-links { gap: 24px; } }
+@media (max-width: 1060px) { .nav-tag { display: none; } }
+@media (max-width: 960px) {
+  .nav-links { display: none; }
+  .burger { display: block; }
+}
+@media (max-width: 767px) {
+  .nav {
+    position: sticky;
+    top: 0;
+    height: calc(var(--nav-h) + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    transition: height .25s ease, margin-bottom .25s ease, box-shadow .25s ease, background-color .25s ease;
+  }
+  .nav-bar { padding-inline: max(20px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right)); }
+  .nav.is-scrolled { --nav-h: 64px; margin-bottom: 40px; background: var(--page); box-shadow: 0 1px 0 var(--ink-tr-10); }
+  .nav.is-scrolled .nav-logo { transform: scale(.79); }
+  .nav-logo { width: 104px; }
+  .nav-tag { display: none; }
+}
+
+/* menu sheet: a modal dialog, plum like pancake.ai's phone menu */
+.menu {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--ink-100);
+  color: var(--ink-20);
+  flex-direction: column;
+}
+.menu[open] { display: flex; }
+.menu::backdrop { background: transparent; }
+.menu :focus-visible { outline-color: var(--ink-20); }
+.menu-head { display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top) + 30px) max(12px, env(safe-area-inset-right)) 24px max(20px, env(safe-area-inset-left)); }
+.menu-logo { width: 104px; height: auto; color: var(--ink-20); }
+.menu-close { display: block; color: var(--ink-20); }
+.menu-links { flex: 1; display: grid; align-content: start; gap: 4px; padding: 16px max(24px, env(safe-area-inset-left)); overflow-y: auto; }
+.menu-links a { padding-block: 8px; color: var(--ink-20); font: 600 var(--t-2xlg)/1.25 var(--font-display); font-stretch: 75%; letter-spacing: -.03em; text-decoration: none; }
+.menu-foot { display: flex; flex-wrap: wrap; gap: 8px; padding: 20px max(24px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); box-shadow: 0 -1px 0 rgb(255 247 236 / 12%); }
+.menu-foot .button { flex: 1 1 140px; --b-bg: var(--ink-20); --b-fg: var(--ink-100); }
+.menu-foot .button[data-variant="tinted"] { --b-bg: rgb(255 247 236 / 12%); --b-fg: var(--ink-20); }
+html:has(.menu[open]) { overflow: hidden; }
+
+/* ---------- hero (pancake.ai home hero: rainbow dome, H1 bottom left, aside on the right) ---------- */
+.hero { position: relative; isolation: isolate; height: 657px; overflow-x: clip; }
+@supports not (overflow: clip) { .hero { overflow: hidden; } }
+.hero-art {
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--nav-h));
+  z-index: -1;
+  width: max(1654px, 100vw);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.hero-art-clip { clip-path: inset(0 0 38.04% 0); } /* all ink ends above y878 of 1417 */
+/* the rings are full discs under the cream core: cover the anti-aliased seam the clip leaves, from outside the clip */
+.hero-art::after { content: ""; position: absolute; left: 0; right: 0; top: calc(61.96% - 3px); height: 6px; background: var(--page-root); }
+.rainbow { display: block; width: 100%; height: auto; }
+.hero-art .rainbow { height: 1417px; }
+.core { fill: var(--page-root); }
+.hero-inner { position: absolute; inset: 0; max-width: 1654px; margin-inline: auto; }
+.hero-title { position: absolute; left: calc(50% - 568px); bottom: 64px; max-width: 700px; font-size: 64px; line-height: 1.04; }
+.hero-title span { display: block; }
+.hero-aside { position: absolute; left: calc(50% + 200px); bottom: 71px; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; width: 368px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-lede { color: var(--text); }
+#countdown { gap: 8px; max-width: 100%; white-space: normal; }
+#countdown[data-live]::before { content: ""; width: 8px; height: 8px; border-radius: 50%; }
+@media (max-width: 1200px) {
+  .hero-title { left: 48px; font-size: clamp(48px, 5vw, 64px); max-width: 52vw; }
+  .hero-aside { left: auto; right: 48px; width: 340px; }
+}
+@media (max-width: 1024px) {
+  .hero { height: auto; }
+  .hero-art { top: -11.7vw; width: 161.5vw; }
+  .hero-art .rainbow { height: auto; }
+  .hero-inner { position: static; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; max-width: none; padding: 34vw max(48px, env(safe-area-inset-right)) 72px max(48px, env(safe-area-inset-left)); }
+  .hero-title { position: static; max-width: 15ch; font-size: clamp(40px, 6.4vw, 62px); }
+  .hero-aside { display: contents; }
+  .hero-meta { order: -1; }
+  .hero-lede { max-width: 560px; }
+}
+@media (max-width: 767px) {
+  .hero { display: flex; flex-direction: column; min-height: calc(100svh - var(--nav-h)); }
+  .hero-art { top: .3vw; width: 163.33vw; margin-left: -4.82vw; }
+  /* the phone artboard rotates the same rings 15 degrees and mirrors them, about their common centre */
+  .hero-art .rainbow { transform-origin: 52.95% 102.79%; transform: rotate(15deg) scaleX(-1); }
+  .hero-inner { flex: 1; justify-content: flex-end; gap: 23px; padding: 61.44vw max(24px, env(safe-area-inset-right)) 48px max(24px, env(safe-area-inset-left)); }
+  .hero-title { max-width: none; font-size: clamp(30px, 8.846vw, 35.559px); line-height: 1.12; }
+}
+
+/* ---------- stage: the live tower, where pancake.ai shows its demo window ---------- */
+.stage-sec { position: relative; z-index: 1; padding-bottom: var(--section-y); }
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  padding: 48px 64px;
+  box-shadow: var(--shadow-window), inset 0 0 0 .5px var(--subtle-stroke);
+}
+.stage-tower { display: grid; justify-items: center; gap: 16px; min-width: 0; }
+.stage-tower svg { width: 100%; max-width: 420px; height: auto; aspect-ratio: 420 / 560; color: var(--text); overflow: visible; }
+.readout { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+.readout .chip { font-size: var(--t-sm); min-height: 32px; }
+.stage-copy { display: grid; gap: 16px; min-width: 0; }
+.stage-title { max-width: 14ch; font-size: var(--t-5xlg); line-height: 1.05; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; margin-top: 16px; }
+.stat { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 6px; padding: 24px 24px 24px 0; box-shadow: inset 0 .5px 0 var(--stroke); }
+.stat:nth-child(even) { padding-left: 24px; box-shadow: inset 0 .5px 0 var(--stroke), inset .5px 0 0 var(--stroke); }
+.stat dd { font-size: var(--t-6xlg); line-height: 1; }
+.stat dd small { margin-left: 4px; color: var(--subtle-text); font: 500 var(--t-lg)/1 var(--font-sans); letter-spacing: 0; }
+.stat dt { color: var(--subtle-text); font-size: var(--t-sm); }
+@media (max-width: 1024px) {
+  .stage { grid-template-columns: 1fr; gap: 32px; padding: 40px; }
+  .stage-copy { order: -1; }
+  .stage-tower svg { max-width: 360px; }
+}
+@media (max-width: 767px) {
+  .stage { padding: 28px 20px; }
+  .stage-title { font-size: var(--t-3xlg); }
+  .stat { padding: 18px 12px 18px 0; }
+  .stat:nth-child(even) { padding-left: 16px; }
+  .stat dd { font-size: var(--t-4xlg); }
+  .stage-tower svg { max-width: 300px; }
+}
+
+/* ---------- why towers fall (pancake.ai steps: text card + media card, alternating) ---------- */
+.steps { display: grid; gap: 32px; max-width: 1136px; margin-inline: auto; }
+.step { display: grid; grid-template-columns: minmax(0, 656fr) minmax(0, 464fr); gap: 16px; }
+.step:nth-child(even) { grid-template-columns: minmax(0, 464fr) minmax(0, 656fr); }
+.step:nth-child(even) .step-media { order: -1; }
+.step[data-tone="purple"] { --tone: var(--purple-40); --tone-weak: var(--purple-10); --cake-top: var(--purple-30); --cake-side: var(--purple-20); }
+.step[data-tone="pink"] { --tone: var(--pink-40); --tone-weak: var(--pink-10); --cake-top: var(--pink-30); --cake-side: var(--pink-20); }
+.step[data-tone="yellow"] { --tone: var(--orange-30); --tone-weak: var(--yellow-10); --cake-top: var(--yellow-30); --cake-side: var(--yellow-20); }
+@media (prefers-color-scheme: dark) {
+  .step[data-tone="purple"] { --tone: var(--purple-30); }
+  .step[data-tone="pink"] { --tone: var(--pink-30); }
+  .step[data-tone="yellow"] { --tone: var(--yellow-30); }
+}
+.step-text { display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.step-n { color: var(--tone); font-size: var(--t-6xlg); line-height: 1.2; }
+.step-text hr { width: 73px; height: 1px; margin: 0; border: 0; background: var(--stroke); }
+.step-title { font-size: var(--t-4xlg); line-height: 1.2; }
+.step-text p { color: var(--subtle-text); }
+.step-text .fix { display: flex; align-items: center; gap: 10px; margin-top: 8px; color: var(--text); font-weight: 500; }
+.fix .chip { flex: none; text-transform: uppercase; letter-spacing: .1em; font-size: var(--t-xsm); }
+.step-media { display: grid; place-items: center; min-height: 426px; overflow: hidden; border-radius: var(--r-card); background: var(--tone-weak); }
+.step-art { width: 100%; max-width: 464px; height: auto; }
+@media (max-width: 1024px) {
+  .step, .step:nth-child(even) { grid-template-columns: 1fr; gap: 12px; }
+  .step .step-media { order: -1; min-height: 0; }
+  .step-art { max-height: 300px; }
+}
+@media (max-width: 767px) {
+  .steps { gap: 40px; }
+  .step-title { font-size: 35.559px; }
+  .step-n { font-size: var(--t-5xlg); }
+  .step-art { max-height: 240px; }
+}
+
+/* ---------- recipe ---------- */
+.recipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ratios { display: grid; gap: 16px; margin-top: 28px; }
+.ratio { display: grid; grid-template-columns: 9rem minmax(0, 1fr) 2.6rem; align-items: center; gap: 4px 14px; }
+.ratio .name { font-weight: 500; }
+.ratio .track { height: 12px; overflow: hidden; border-radius: 6px; background: var(--track); }
+.ratio .bar { display: block; height: 100%; border-radius: inherit; background: var(--yellow-40); }
+.ratio .pct { text-align: right; font-weight: 600; }
+.ratio .why { grid-column: 1 / -1; color: var(--subtle-text); font-size: var(--t-sm); }
+.method { display: grid; gap: 18px; margin-top: 28px; counter-reset: step; }
+.method li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 14px; counter-increment: step; }
+.method li > * { grid-column: 2; }
+.method li::before { grid-row: 1 / span 2; content: counter(step); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--inverted-surface); color: var(--text-on-inverted-surface); font: 600 var(--t-sm)/1 var(--font-sans); }
+.method b { display: block; font-weight: 600; }
+.method span { color: var(--subtle-text); }
+.doses-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 40px; margin-top: 16px; }
+.doses { --u: 20px; display: flex; align-items: flex-end; gap: 40px; --cake-top: var(--yellow-30); --cake-side: var(--yellow-20); }
 .dose { display: grid; justify-items: center; gap: 8px; text-align: center; }
-.dose .disc { border-radius: 50%; display: grid; place-items: center; font: 700 var(--step-0) var(--mono); color: #2C002A; }
-.dose small { font: 500 var(--step--1) var(--mono); color: var(--sub); }
-@media (max-width: 860px) { .recipe { grid-template-columns: 1fr; } }
+.dose svg { width: calc(var(--in) * var(--u)); height: auto; aspect-ratio: 302 / 172; } /* both rings on one scale */
+.dose b { font-weight: 600; }
+.dose small { color: var(--subtle-text); font-size: var(--t-sm); }
+@media (max-width: 1024px) {
+  .recipe, .doses-card { grid-template-columns: 1fr; }
+  .doses { justify-content: center; }
+}
+@media (max-width: 767px) {
+  .ratio { grid-template-columns: 7.2rem minmax(0, 1fr) 2.4rem; }
+  .doses { --u: min(20px, 3.7vw); gap: 16px; }
+  .dose { flex: 1 1 0; }
+}
 
-/* drawing */
-.figure { border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: #FBF6F1; }
-.scroll-x { overflow-x: auto; }
-.figure svg { display: block; width: 100%; height: auto; min-width: 640px; }
-.roles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.role { border-top: 1.5px solid var(--ink); padding-top: 12px; display: grid; gap: 6px; }
-.role span { color: var(--sub); font-size: var(--step--1); }
-@media (max-width: 860px) { .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* ---------- tower: the sky band (pancake.ai sky.css) ---------- */
+.sky { position: relative; overflow: clip; padding-block: calc(var(--section-y) + 72px); background: var(--blue-10); color: var(--text); --subtle-text: var(--ink-90); }
+@supports not (overflow: clip) { .sky { overflow: hidden; } }
+.hill { position: absolute; left: 0; width: 100%; height: clamp(56px, 7vw, 120px); pointer-events: none; }
+.hill-top { top: -1px; }
+.hill-bottom { bottom: -1px; transform: scaleY(-1); }
+.sky .hill .core { fill: var(--page-root); }
+.sky-clouds { position: absolute; inset: 0; pointer-events: none; }
+.cloud { position: absolute; height: auto; }
+.cloud-a { right: -40px; top: 24px; width: 202px; }
+.cloud-b { left: -20px; top: 200px; width: 155px; }
+.sheet { max-width: 1136px; margin-inline: auto; }
+.sheet-art { overflow: hidden; border-radius: 28px; box-shadow: var(--shadow-window); }
+.sheet-art svg { width: 100%; height: auto; }
+.sheet-cap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; color: var(--ink-90); font-size: var(--t-sm); }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1136px; margin: 16px auto 0; }
+.facts .card, .roles .card { padding: 32px; }
+.fact-list { display: grid; gap: 10px; margin-top: 12px; }
+.fact-list li { padding-left: 18px; background: radial-gradient(circle, var(--blue-40) 3px, transparent 3.5px) 0 .65em / 8px 8px no-repeat; }
+.fact-list b { font-weight: 600; }
+.roles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; max-width: 1136px; margin: 16px auto 0; }
+.roles p { margin-top: 6px; color: var(--subtle-text); font-size: var(--t-sm); }
+@media (max-width: 1024px) {
+  .roles { grid-template-columns: 1fr 1fr; }
+  .cloud-a { width: 121px; right: -30px; }
+  .cloud-b { width: 93px; }
+}
+@media (max-width: 767px) {
+  .sheet-art { border-radius: 16px; }
+  .facts, .roles { grid-template-columns: 1fr; }
+  .cloud-b { display: none; }
+}
 
-/* calculator */
-.calc { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 24px; align-items: start; }
-.controls, .results { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 24px; display: grid; gap: 22px; min-width: 0; }
-.field { display: grid; gap: 8px; }
-.field label { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
-.field label output { font: 700 var(--step-0) var(--mono); color: var(--accent-2); }
-.field small { color: var(--sub); font-size: .8125rem; }
-input[type=range] { width: 100%; accent-color: var(--accent-2); height: 28px; }
-.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: var(--r-sm); overflow: hidden; }
-.seg button { font: 600 var(--step--1) var(--sans); padding: 8px 14px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.gauge { display: grid; gap: 8px; }
-.gauge-track { position: relative; height: 40px; border-radius: 10px; background: var(--faint); overflow: hidden; }
-.gauge-fill { position: absolute; inset: 0 auto 0 0; background: var(--purple); border-radius: 10px; transition: width .4s cubic-bezier(.2,.8,.2,1); }
-.gauge-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; }
-.gauge-mark.rec { background: var(--accent); } .gauge-mark.stop { background: var(--ink); }
-.gauge-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font: 500 .8125rem var(--mono); color: var(--sub); }
-.verdict { font: 700 var(--step-1)/1.3 var(--sans); }
-.verdict.ok { color: var(--ink); } .verdict.bad { color: var(--accent); }
-table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
-th, td { text-align: left; padding: 9px 8px 9px 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
-th { font: 600 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--sub); }
-td.r, th.r { text-align: right; padding-right: 0; }
-td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: 0; }
-.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.totals div { display: grid; gap: 2px; }
-.totals b { font: 800 var(--step-2)/1.1 var(--sans); letter-spacing: -.02em; }
-.totals span { color: var(--sub); font-size: .8125rem; }
-.warn { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; color: var(--accent); font-weight: 600; font-size: var(--step--1); }
-@media (max-width: 860px) { .calc { grid-template-columns: 1fr; } }
+/* ---------- calculator ---------- */
+.noscript { max-width: 760px; margin: 0 auto 24px; padding: 16px 20px; border-radius: var(--r-m); background: var(--chip-surface); text-align: center; }
+.calc { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); align-items: start; gap: 16px; }
+.controls { display: grid; gap: 28px; padding: 40px; }
+.field { display: grid; gap: 10px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.field-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.field label, .field legend { font-weight: 600; }
+.field legend { float: left; width: 100%; margin-bottom: 10px; padding: 0; }
+.field legend + * { clear: both; }
+.field small { color: var(--subtle-text); font-size: var(--t-sm); }
+.value { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.input-num {
+  width: 5.8em;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--control-stroke);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: 600 var(--t-md)/1.2 var(--font-sans);
+  text-align: right;
+}
+.input-num:focus { border-color: var(--interactive); }
+input[type="range"] {
+  --p: 50%;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: linear-gradient(var(--interactive), var(--interactive)) 0 / var(--p) 100% no-repeat, var(--track); }
+input[type="range"]::-webkit-slider-thumb { width: 28px; height: 28px; margin-top: -10px; border: 2px solid var(--interactive); border-radius: 50%; background: var(--surface); box-shadow: 0 2px 8px rgb(44 0 42 / 22%); -webkit-appearance: none; appearance: none; transition: transform .15s var(--ease-out); }
+input[type="range"]::-moz-range-track { height: 8px; border-radius: 4px; background: var(--track); }
+input[type="range"]::-moz-range-progress { height: 8px; border-radius: 4px; background: var(--interactive); }
+input[type="range"]::-moz-range-thumb { box-sizing: border-box; width: 28px; height: 28px; border: 2px solid var(--interactive); border-radius: 50%; background: var(--surface); box-shadow: 0 2px 8px rgb(44 0 42 / 22%); }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); }
+input[type="range"]:focus-visible { outline-offset: 4px; }
+.seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--chip-surface); }
+.seg label { position: relative; }
+.seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.seg span { display: grid; place-items: center; min-width: 52px; min-height: 44px; padding: 0 16px; border-radius: 10px; font-size: var(--t-sm); font-weight: 600; transition: background-color .2s var(--ease-out), color .2s var(--ease-out); }
+.seg input:checked + span { background: var(--inverted-surface); color: var(--text-on-inverted-surface); }
+.seg input:focus-visible + span { outline: 2px solid var(--interactive); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { .seg input:not(:checked):hover + span { background: var(--hover-layer); } }
+.results { display: grid; gap: 28px; padding: 40px; min-width: 0; }
+.gauge { display: grid; gap: 12px; }
+.verdict { display: flex; align-items: flex-start; gap: 10px; font: 500 var(--t-xlg)/1.3 var(--font-display); font-stretch: 75%; letter-spacing: -.01em; }
+.verdict svg { flex: none; width: 24px; height: 24px; margin-top: 2px; }
+.verdict.ok svg { color: var(--positive-text); }
+.verdict.bad { color: var(--negative-text); }
+.gauge-track { position: relative; height: 40px; overflow: hidden; border-radius: var(--r-sm); background: var(--track); }
+.gauge-fill { position: absolute; inset: 0 auto 0 0; border-radius: var(--r-sm); background: var(--purple-30); transition: width .45s var(--ease-out); }
+.gauge-mark { position: absolute; top: 0; bottom: 0; width: 2px; }
+.gauge-mark.rec, .key.rec { background: var(--pink-40); }
+.gauge-mark.stop, .key.stop { background: var(--strongest-stroke); }
+.gauge-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; color: var(--subtle-text); font-size: var(--t-sm); }
+.gauge-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.key { display: inline-block; width: 10px; height: 2px; }
+.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.totals b { display: block; font-size: var(--t-4xlg); line-height: 1.05; }
+.totals span { color: var(--subtle-text); font-size: var(--t-sm); }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+th { padding: 0 10px 10px 0; color: var(--subtle-text); font: 500 var(--t-xsm)/1.5 var(--font-sans); letter-spacing: .1em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+td { padding: 11px 10px 11px 0; border-top: .5px solid var(--stroke); vertical-align: middle; }
+.r { padding-right: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.sw { display: inline-block; width: 22px; height: 15px; margin-right: 10px; vertical-align: -3px; }
+.warn { display: flex; gap: 8px; color: var(--negative-text); font-size: var(--t-sm); font-weight: 600; }
+.calc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 1024px) { .calc { grid-template-columns: 1fr; } }
+@media (max-width: 767px) {
+  .controls, .results { padding: 28px 20px; }
+  .totals { grid-template-columns: 1fr 1fr; }
+  .totals div:last-child { grid-column: 1 / -1; }
+  .totals b { font-size: var(--t-3xlg); }
+}
 
-/* record chart */
-.chart { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 20px 20px 12px; }
-.chart svg { display: block; width: 100%; height: auto; min-width: 560px; overflow: visible; }
-.chart .bar { cursor: pointer; }
-.chart .bar:hover rect.fill, .chart .bar:focus rect.fill { fill: var(--accent); }
-.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 12px; padding: 10px 12px; font-size: .8125rem; line-height: 1.4; max-width: 240px; box-shadow: 0 8px 24px rgba(44,0,42,.18); }
-.tip b { font-family: var(--mono); }
-details { border-top: 1px solid var(--line); padding-top: 12px; }
-summary { cursor: pointer; font-weight: 600; }
+/* ---------- record history: the yellow banner (pancake.ai banner) ---------- */
+.section-panel { padding-block: 0; }
+.panel { max-width: 1622px; margin-inline: auto; padding-block: 112px; border-radius: var(--r-2xlg); }
+.section-panel { padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right)); }
+.panel-yellow { background: var(--yellow-30); --subtle-text: var(--ink-90); }
+.chart { position: relative; max-width: 1136px; margin-inline: auto; padding: 28px 28px 16px; border-radius: var(--r-lg); background: var(--ink-0); container-type: inline-size; }
+.chart-cap { margin-bottom: 16px; font: 500 var(--t-lg)/1.35 var(--font-display); font-stretch: 75%; }
+.chart-v { display: none; width: 100%; height: auto; overflow: visible; }
+.chart-h { position: relative; display: grid; gap: 12px; }
+.chart-h li { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); align-items: center; gap: 2px 12px; }
+.chart-h .yr { font-weight: 600; font-variant-numeric: tabular-nums; }
+.chart-h .bar { display: flex; align-items: center; justify-content: flex-end; width: calc(var(--w) * 1%); min-width: 4.2rem; height: 30px; padding-right: 10px; border-radius: 8px; background: var(--pink-30); font-weight: 600; font-variant-numeric: tabular-nums; }
+.chart-h .ours .bar { background: var(--purple-10); box-shadow: inset 0 0 0 2px var(--purple-40); color: var(--ink-100); }
+.chart-h .ours .yr { color: var(--purple-40); }
+.chart-h .place { grid-column: 2; color: var(--ink-90); font-size: 12px; }
+@container (min-width: 820px) {
+  .chart-v { display: block; }
+  .chart-h { display: none; }
+}
+.chart-v .bar-g:hover .fill { fill: var(--pink-40); }
+.tip { position: absolute; z-index: 2; max-width: 240px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--ink-100); color: var(--ink-20); font-size: var(--t-sm); line-height: 1.4; pointer-events: none; box-shadow: 0 8px 24px rgb(44 0 42 / 18%); }
+.tip b { font-weight: 700; }
+.rec-details { max-width: 1136px; margin: 16px auto 0; }
+.rec-details summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 600; cursor: pointer; list-style: none; }
+.rec-details summary::-webkit-details-marker { display: none; }
+.rec-details summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .2s var(--ease-out); }
+.rec-details[open] summary::before { transform: rotate(45deg); }
+.rec-details .table-wrap { margin-top: 8px; padding: 20px 24px; border-radius: var(--r-lg); background: var(--ink-10); }
+.rec-details a { text-decoration: underline; text-underline-offset: .2em; }
+@media (max-width: 767px) {
+  .panel { padding-block: 64px; border-radius: var(--r-xlg); }
+  .chart { padding: 20px 16px 12px; }
+}
 
-/* rules */
-.rules { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
-.rules ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; }
-.rules ul li::marker { color: var(--accent-2); }
-.untested { display: grid; gap: 10px; padding: 20px; border-radius: var(--r-lg); background: var(--pink-1); color: #2C002A; border: 1px solid var(--pink-2); }
-.untested a { color: #2C002A; }
-@media (max-width: 860px) { .rules { grid-template-columns: 1fr; } }
+/* ---------- rules ---------- */
+.rules { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: start; gap: 16px; max-width: 1136px; margin-inline: auto; }
+.checks { display: grid; gap: 16px; padding: 40px; }
+.checks li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; }
+.checks svg { width: 24px; height: 24px; color: var(--positive-text); }
+.brand-card { display: grid; gap: 12px; padding: 40px; background: var(--pink-10); box-shadow: inset 0 0 0 .5px var(--pink-20); }
+@media (max-width: 1024px) { .rules { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .checks, .brand-card { padding: 28px 24px; } }
 
-/* footer */
-footer .wrap { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 24px; }
-footer .mascot { width: 84px; height: auto; }
-footer p { color: var(--sub); }
-footer b { color: var(--ink); }
-@media (max-width: 760px) { footer .wrap { grid-template-columns: 1fr; } }
+/* ---------- closing CTA (pancake.ai cta.css) ---------- */
+.cta-sec { padding: 96px max(16px, env(safe-area-inset-right)) 96px max(16px, env(safe-area-inset-left)); }
+.cta { position: relative; display: flex; flex-direction: column; align-items: center; max-width: 1296px; margin-inline: auto; padding: 104px 80px; overflow: hidden; border-radius: var(--r-2xlg); background: var(--card); box-shadow: inset 0 0 0 .5px var(--subtle-stroke); }
+.sliver { position: absolute; top: 0; height: 432px; width: auto; pointer-events: none; }
+.sliver-l { left: 0; }
+.sliver-r { right: 0; }
+.cta-content { position: relative; display: flex; flex-direction: column; align-items: center; gap: 48px; width: 100%; max-width: 464px; text-align: center; }
+.cta-text { display: grid; gap: 32px; }
+.cta-title { font-size: 48px; line-height: 1; }
+.cta .buttons { justify-content: center; gap: 16px; }
+@media (max-width: 1360px) { .cta { padding: 96px 64px; } }
+@media (max-width: 1024px) {
+  .cta-sec { padding-block: 72px; }
+  .cta { padding: 80px 48px; }
+  .sliver { height: 336px; }
+}
+@media (max-width: 767px) {
+  .cta-sec { padding-block: 56px; }
+  .cta { padding: 224px 30px; border-radius: var(--r-xlg); }
+  .cta-title { max-width: 280px; margin-inline: auto; }
+  .cta .buttons { flex-direction: column; align-items: stretch; width: 100%; }
+  .sliver-l { left: 0; top: 0; width: 151.35%; height: auto; max-width: 560px; transform: translate(77.14%, -8.33%) rotate(90deg); transform-origin: 0 0; }
+  .sliver-r { left: 0; right: auto; top: auto; bottom: 0; width: 142.97%; height: auto; max-width: 529px; transform: translate(81.66%, -20.37%) rotate(90deg); transform-origin: 0 0; }
+}
+
+/* ---------- footer (pancake.ai: black, white text, cream logo) ---------- */
+.foot { position: relative; background: #000; color: #fff; }
+/* covers the sub-pixel seam where the cream page meets the black at a fractional offset */
+.foot::before { content: ""; position: absolute; top: -1px; left: 0; right: 0; z-index: 1; height: 3px; background: var(--page-root); }
+.foot :focus-visible { outline-color: var(--ink-20); outline-offset: 3px; }
+/* pancake.ai's pricing pose: the cream page sags into the black with a rainbow rim. Window = 30–78 % of the art. */
+.foot-art { --aw: max(1654px, 100vw); position: relative; height: calc(var(--aw) * .30); overflow: hidden; }
+.foot-art .rainbow { position: absolute; left: 50%; top: calc(var(--aw) * -.188); width: var(--aw); height: auto; transform: translateX(-50%); }
+.foot-frame { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; max-width: 1654px; margin-inline: auto; padding: 56px max(32px, calc(50% - 568px)) 140px; padding-bottom: max(140px, env(safe-area-inset-bottom)); }
+.foot-brand { display: grid; gap: 16px; max-width: 360px; }
+.foot-logo { display: block; width: 240px; color: var(--ink-20); }
+.foot-logo svg { width: 100%; height: auto; }
+.foot-line { margin-top: 56px; font-size: var(--t-sm); }
+.foot-legal { color: var(--ink-50); font-size: var(--t-sm); }
+.foot-cols { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 48px; margin-top: 20px; }
+.foot-col { text-align: right; }
+.foot-head { font-weight: 600; }
+.foot-links { display: grid; gap: 13px; margin-top: 17px; }
+.foot-links a { display: inline-block; min-width: 44px; text-decoration: none; }
+@media (hover: hover) and (pointer: fine) { .foot a:hover { text-decoration: underline; text-underline-offset: 4px; } }
+@media (pointer: coarse) { .foot-links { gap: 0; margin-top: 7px; } .foot-links a { display: inline-block; padding-block: 10px; } }
+@media (max-width: 1199px) {
+  .foot-frame { flex-direction: column; gap: 56px; padding: 64px max(48px, env(safe-area-inset-right)) max(64px, env(safe-area-inset-bottom)) max(48px, env(safe-area-inset-left)); }
+  .foot-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(156px, 1fr)); gap: 40px 32px; width: 100%; margin: 0; }
+  .foot-col { text-align: left; }
+  .foot-line { margin-top: 24px; }
+}
+@media (max-width: 767px) {
+  .foot-art { --aw: 200vw; }
+  .foot-frame { gap: 32px; padding: 40px max(24px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+  .foot-logo { width: 140px; }
+  .foot-cols { grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+  .foot-head { color: var(--ink-60); font-size: var(--t-sm); }
+}
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 40;
+  padding: 12px 18px;
+  border-radius: var(--r-sm);
+  background: var(--inverted-surface);
+  color: var(--text-on-inverted-surface);
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgb(44 0 42 / 18%);
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+/* ---------- motion (only with html.motion, set by script when motion is welcome) ---------- */
+@keyframes rise { from { opacity: 0; transform: translateY(28px) scale(.97); } }
+@keyframes dawn { from { opacity: 0; transform: rotate(-5deg); } }
+html.motion [data-reveal].pending { opacity: 0; }
+html.motion [data-reveal].in { animation: rise .7s var(--ease-spring) backwards; animation-delay: var(--d, 0ms); }
+@media (min-width: 1025px) and (hover: hover) {
+  html.motion .hero-art .rainbow { transform-origin: 52.95% 102.79%; animation: dawn 2.4s var(--ease-out) backwards; }
+}
+html.motion .menu[open] { animation: rise .35s var(--ease-out); }
+
+/* ---------- stronger contrast, forced colours ---------- */
+@media (prefers-contrast: more) {
+  :root, .on-light { --subtle-text: var(--ink-90); --stroke: var(--ink-70); --subtle-stroke: var(--ink-60); --track: var(--ink-tr-40); }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root { --subtle-text: var(--ink-20); --stroke: var(--ink-50); --subtle-stroke: var(--ink-80); }
+}
+@media (forced-colors: active) {
+  .button, .seg span, .chip, .card, .input-num { border: 1px solid CanvasText; }
+  .seg input:checked + span { outline: 2px solid Highlight; }
+}
+
+/* ---------- print: the chef's sheet ---------- */
+@media print {
+  :root { --page: #fff; --card: #fff; }
+  .nav, .menu, .skip, .hero-art, .foot-art, .sliver, .sky-clouds, .hill, .calc-actions, #stack-btn, .toast, .cta-sec { display: none !important; }
+  html.motion [data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }
+  body, .sky, .panel-yellow, .foot { background: #fff !important; color: #000 !important; }
+  .hero { height: auto; }
+  .hero-inner, .hero-title, .hero-aside { position: static; }
+  .card, .chart { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  .section, .sky, .panel { padding-block: 24px; }
+  .stage { box-shadow: none; }
+}
+
 </style>
 </head>
 <body>
+<svg class="sprite" aria-hidden="true" focusable="false"><defs><symbol id="logo" viewBox="0 0 422 166"><path fill="currentColor" d="M318.116 9.17733C322.015 3.82624 327.3 -0.212597 333.318 0.00867186C339.855 0.249222 344.109 5.2716 346.075 11.2001C348.052 17.1614 348.283 25.2018 346.541 34.8696C343.758 50.3187 335.749 70.9712 319.701 96.3398C320.064 98.657 320.466 101.023 320.906 103.439C323.782 97.805 327.283 93.7008 331.185 91.0009C339.115 85.514 348.228 86.3193 353.997 91.567C356.827 94.1415 358.729 97.7143 359.101 101.775C359.476 105.865 358.272 110.084 355.536 113.942C352.678 117.969 348.175 121.607 341.859 124.63C355.431 143.67 374.26 153.904 396.156 153.904V165.071C369.298 165.071 346.575 151.84 331.068 128.657C329.695 129.053 328.269 129.428 326.788 129.781C327.717 133.264 328.982 137.817 330.285 142.473C332.416 150.085 334.647 157.982 335.222 160.587L324.317 162.994C323.831 160.79 321.744 153.387 319.532 145.482C317.43 137.974 315.203 129.967 314.531 126.778C313.07 120.896 311.812 115.23 310.74 109.778C309.1 112.12 307.397 114.498 305.627 116.91L296.624 110.302C300.819 104.588 304.613 99.0974 308.038 93.8374C304.407 68.1372 305.246 47.9882 308.437 33.1118C310.658 22.7627 314.067 14.7339 318.116 9.17733ZM85.7208 82.9906C101.219 82.9906 110.174 90.4529 110.174 104.344V127.879C110.174 130.863 111.207 131.667 113.848 131.667H116.258V142.459H109.829C102.138 142.459 99.268 139.129 99.1531 133.504C95.2498 139.244 89.1651 143.147 79.9809 143.147C67.2379 143.147 58.3979 136.833 58.3978 125.927C58.3978 113.758 67.008 107.099 83.3099 107.099H97.8899V103.54C97.8899 96.9966 93.1831 92.9785 85.1469 92.9785C77.9144 92.9785 73.0926 96.4228 72.1742 101.589H59.8902C61.2678 90.2235 70.9113 82.9906 85.7208 82.9906ZM210.227 82.9906C225.266 82.9906 234.68 91.3715 236.976 104.689H224.003C222.396 97.8005 217.46 93.5525 209.997 93.5524C200.124 93.5524 193.58 101.703 193.58 113.184C193.58 124.664 200.124 132.586 209.997 132.586C217.345 132.586 222.396 128.223 223.888 121.449H236.976C234.795 134.766 224.807 143.147 209.883 143.147C192.203 143.147 180.952 131.552 180.952 113.184C180.952 95.045 192.547 82.9907 210.227 82.9906ZM267.979 82.9906C283.478 82.9906 292.432 90.4529 292.432 104.344V127.879C292.432 130.863 293.465 131.667 296.106 131.667H298.517V142.459H292.088C284.396 142.459 281.526 139.129 281.411 133.504C277.508 139.244 271.423 143.147 262.239 143.147C249.496 143.147 240.656 136.833 240.656 125.927C240.656 113.758 249.266 107.099 265.568 107.099H280.148V103.54C280.148 96.9966 275.441 92.9785 267.405 92.9785C260.173 92.9785 255.351 96.4228 254.432 101.589H242.148C243.526 90.2235 253.17 82.9906 267.979 82.9906ZM393.043 82.9906C410.034 82.9906 421.284 93.7821 421.629 111.002C421.629 112.265 421.514 114.217 421.285 115.939H377.43V116.513C377.775 126.501 383.974 133.044 393.617 133.045C400.964 133.045 406.59 129.256 408.197 122.713H420.596C418.53 134.308 408.771 143.147 394.306 143.147C375.938 143.147 364.457 131.208 364.457 113.184C364.458 95.0449 375.938 82.9906 393.043 82.9906ZM30.652 62.0968C47.2984 62.0968 58.3197 72.0844 58.3197 87.6976C58.3196 103.196 47.2984 113.298 30.652 113.298H13.202V142.459H0V62.0968H30.652ZM151.733 82.9906C164.246 82.9906 174.694 89.7641 174.694 108.936V142.459H162.18V110.084C162.18 99.637 157.703 93.8971 148.863 93.8971C139.564 93.8971 133.939 100.67 133.939 112.036V142.459H121.54V83.6794H132.332L133.709 91.3712C137.153 86.7792 142.664 82.9906 151.733 82.9906ZM82.736 116.283C75.1591 116.283 70.9115 119.154 70.9115 125.123C70.9117 130.06 75.0446 133.504 81.7031 133.504C91.8056 133.504 97.8899 127.419 97.8899 118.579V116.283H82.736ZM264.994 116.283C257.417 116.283 253.17 119.154 253.17 125.123C253.17 130.06 257.303 133.504 263.961 133.504C274.064 133.504 280.148 127.419 280.148 118.579V116.283H264.994ZM346.482 99.8277C344.864 98.3563 341.545 97.4116 337.539 100.184C334.149 102.529 330.057 107.801 327.246 118.134C338.482 115.011 344.066 110.809 346.428 107.48C347.813 105.528 348.084 103.921 347.981 102.796C347.875 101.642 347.345 100.613 346.482 99.8277ZM393.158 92.9785C385.466 92.9785 378.808 98.2594 377.889 106.64H408.771C407.738 97.9151 401.768 92.9786 393.158 92.9785ZM13.202 101.818H29.0447C38.6881 101.818 44.8873 96.3078 44.8874 87.6976C44.8874 78.9726 38.6882 73.5766 29.1596 73.5766H13.202V101.818ZM332.907 11.1678C332.368 11.1481 330.155 11.6174 327.142 15.7532C324.277 19.6844 321.357 26.1241 319.355 35.4541C317.06 46.1528 316.039 60.3509 317.516 78.2562C328.126 59.4285 333.509 44.2226 335.551 32.8898C337.108 24.2465 336.651 18.261 335.475 14.7148C334.292 11.1477 332.935 11.1683 332.907 11.1678Z"/></symbol><symbol id="mascot" viewBox="340 362 348 352"><path d="M486.604 708.842C517.164 708.842 564.826 709.521 594.424 691.269C630.578 668.974 648.925 632.463 649.265 599.843C649.934 535.667 589.721 475.79 509.577 475.79C472.983 475.79 431.2 483.476 404.158 500.475C371.974 520.705 347.456 547.546 347.456 590.4C347.456 659.698 394.127 708.842 486.604 708.842Z" fill="#FFBBC7"/>
+<path d="M487.339 672.046C515.989 672.046 560.672 672.618 588.42 657.248C622.315 638.473 639.514 607.727 639.833 580.257C640.46 526.214 584.011 475.792 508.875 475.792C474.569 475.792 435.398 482.263 410.045 496.578C379.873 513.615 356.887 536.217 356.887 572.305C356.887 630.661 400.641 672.046 487.339 672.046Z" fill="#FF7AA0"/>
+<g opacity="0.16">
+<path d="M505.183 669C565.842 669 647.245 623.569 647.798 576.799C648.395 526.205 594.596 479 522.988 479C490.292 479 455.343 487.995 431.181 501.396C402.426 517.346 378.135 535.57 378.135 569.355C378.136 623.987 437.018 669 505.183 669Z" fill="#2C002A"/>
+</g>
+<path d="M521.646 668.795C589.537 668.795 680.644 611.168 681.262 551.844C681.931 487.668 621.719 427.791 541.574 427.791C504.98 427.791 465.865 439.2 438.823 456.199C406.639 476.43 379.453 499.547 379.453 542.401C379.453 611.699 445.355 668.795 521.646 668.795Z" fill="#DEC3F5"/>
+<path d="M522.19 630.742C585.837 630.742 671.25 582.215 671.83 532.257C672.457 478.214 616.008 427.792 540.872 427.792C506.566 427.792 469.895 437.399 444.543 451.714C414.371 468.751 388.884 488.217 388.884 524.305C388.884 582.661 450.667 630.742 522.19 630.742Z" fill="#BA8BFF"/>
+<g opacity="0.16">
+<path d="M516.284 612C561.513 612 597.678 590.056 622.45 567.874C639.454 552.648 649.532 533.424 649.792 511.887C650.436 458.757 587.299 416 510.262 416C433.226 416 367.717 453.642 359.687 511.887C354.814 547.231 379.204 566.415 406.734 582.158C434.075 597.794 478.277 612 516.284 612Z" fill="#2C002A"/>
+</g>
+<path d="M510.635 612.795C557.627 612.795 595.202 585.813 620.941 558.537C638.608 539.815 649.079 516.177 649.35 489.695C650.018 424.365 584.419 371.791 504.379 371.791C424.338 371.791 356.274 418.076 347.931 489.695C342.869 533.154 368.21 556.743 396.813 576.101C425.22 595.327 471.146 612.795 510.635 612.795Z" fill="#FFDBB5"/>
+<path d="M509.867 574.742C553.922 574.742 589.149 552.02 613.279 529.051C629.841 513.285 639.658 493.379 639.912 471.079C640.539 416.064 579.04 371.792 504.002 371.792C428.963 371.792 365.154 410.768 357.333 471.079C352.586 507.676 376.344 527.54 403.159 543.842C429.791 560.032 472.846 574.742 509.867 574.742Z" fill="#FFBD7A"/>
+<path d="M385.97 472.633C385.97 455.175 390.67 442.714 403.92 442.715C417.171 442.714 421.871 455.175 421.871 472.633C421.871 490.09 417.171 502.551 403.92 502.55C390.67 502.551 385.97 490.09 385.97 472.633Z" fill="#2C002A"/>
+<path d="M486.034 465.869C486.034 442.529 492.319 425.868 510.034 425.869C527.75 425.868 534.034 442.529 534.034 465.869C534.034 489.21 527.75 505.87 510.034 505.869C492.319 505.87 486.034 489.21 486.034 465.869Z" fill="#2C002A"/></symbol><symbol id="cake" viewBox="347.5 475.8 302.5 233.7" preserveAspectRatio="none"><path d="M486.604 708.842C517.164 708.842 564.826 709.521 594.424 691.269C630.578 668.974 648.925 632.463 649.265 599.843C649.934 535.667 589.721 475.79 509.577 475.79C472.983 475.79 431.2 483.476 404.158 500.475C371.974 520.705 347.456 547.546 347.456 590.4C347.456 659.698 394.127 708.842 486.604 708.842Z" fill="var(--cake-side)"/><path d="M487.339 672.046C515.989 672.046 560.672 672.618 588.42 657.248C622.315 638.473 639.514 607.727 639.833 580.257C640.46 526.214 584.011 475.792 508.875 475.792C474.569 475.792 435.398 482.263 410.045 496.578C379.873 513.615 356.887 536.217 356.887 572.305C356.887 630.661 400.641 672.046 487.339 672.046Z" fill="var(--cake-top)"/></symbol><symbol id="check" viewBox="0 0 24 24"><path fill="currentColor" d="M19.6719 6.74023C15.8888 10.172 13.5285 14.1231 12.4111 19.2148L10.502 19.3604C9.39587 16.5018 7.48463 14.777 5.58496 13.9102L6.41504 12.0898C8.15295 12.8828 9.84968 14.2371 11.1436 16.2334C12.5306 11.9122 14.8998 8.36986 18.3281 5.25977L19.6719 6.74023Z"/></symbol></defs></svg>
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="nav">
-  <div class="wrap">
-    <a class="brand" href="https://pancake.ai" aria-label="Pancake">
-      <svg viewBox="0 0 422 166" aria-hidden="true"><path fill="currentColor" d="M318.116 9.17733C322.015 3.82624 327.3 -0.212597 333.318 0.00867186C339.855 0.249222 344.109 5.2716 346.075 11.2001C348.052 17.1614 348.283 25.2018 346.541 34.8696C343.758 50.3187 335.749 70.9712 319.701 96.3398C320.064 98.657 320.466 101.023 320.906 103.439C323.782 97.805 327.283 93.7008 331.185 91.0009C339.115 85.514 348.228 86.3193 353.997 91.567C356.827 94.1415 358.729 97.7143 359.101 101.775C359.476 105.865 358.272 110.084 355.536 113.942C352.678 117.969 348.175 121.607 341.859 124.63C355.431 143.67 374.26 153.904 396.156 153.904V165.071C369.298 165.071 346.575 151.84 331.068 128.657C329.695 129.053 328.269 129.428 326.788 129.781C327.717 133.264 328.982 137.817 330.285 142.473C332.416 150.085 334.647 157.982 335.222 160.587L324.317 162.994C323.831 160.79 321.744 153.387 319.532 145.482C317.43 137.974 315.203 129.967 314.531 126.778C313.07 120.896 311.812 115.23 310.74 109.778C309.1 112.12 307.397 114.498 305.627 116.91L296.624 110.302C300.819 104.588 304.613 99.0974 308.038 93.8374C304.407 68.1372 305.246 47.9882 308.437 33.1118C310.658 22.7627 314.067 14.7339 318.116 9.17733ZM85.7208 82.9906C101.219 82.9906 110.174 90.4529 110.174 104.344V127.879C110.174 130.863 111.207 131.667 113.848 131.667H116.258V142.459H109.829C102.138 142.459 99.268 139.129 99.1531 133.504C95.2498 139.244 89.1651 143.147 79.9809 143.147C67.2379 143.147 58.3979 136.833 58.3978 125.927C58.3978 113.758 67.008 107.099 83.3099 107.099H97.8899V103.54C97.8899 96.9966 93.1831 92.9785 85.1469 92.9785C77.9144 92.9785 73.0926 96.4228 72.1742 101.589H59.8902C61.2678 90.2235 70.9113 82.9906 85.7208 82.9906ZM210.227 82.9906C225.266 82.9906 234.68 91.3715 236.976 104.689H224.003C222.396 97.8005 217.46 93.5525 209.997 93.5524C200.124 93.5524 193.58 101.703 193.58 113.184C193.58 124.664 200.124 132.586 209.997 132.586C217.345 132.586 222.396 128.223 223.888 121.449H236.976C234.795 134.766 224.807 143.147 209.883 143.147C192.203 143.147 180.952 131.552 180.952 113.184C180.952 95.045 192.547 82.9907 210.227 82.9906ZM267.979 82.9906C283.478 82.9906 292.432 90.4529 292.432 104.344V127.879C292.432 130.863 293.465 131.667 296.106 131.667H298.517V142.459H292.088C284.396 142.459 281.526 139.129 281.411 133.504C277.508 139.244 271.423 143.147 262.239 143.147C249.496 143.147 240.656 136.833 240.656 125.927C240.656 113.758 249.266 107.099 265.568 107.099H280.148V103.54C280.148 96.9966 275.441 92.9785 267.405 92.9785C260.173 92.9785 255.351 96.4228 254.432 101.589H242.148C243.526 90.2235 253.17 82.9906 267.979 82.9906ZM393.043 82.9906C410.034 82.9906 421.284 93.7821 421.629 111.002C421.629 112.265 421.514 114.217 421.285 115.939H377.43V116.513C377.775 126.501 383.974 133.044 393.617 133.045C400.964 133.045 406.59 129.256 408.197 122.713H420.596C418.53 134.308 408.771 143.147 394.306 143.147C375.938 143.147 364.457 131.208 364.457 113.184C364.458 95.0449 375.938 82.9906 393.043 82.9906ZM30.652 62.0968C47.2984 62.0968 58.3197 72.0844 58.3197 87.6976C58.3196 103.196 47.2984 113.298 30.652 113.298H13.202V142.459H0V62.0968H30.652ZM151.733 82.9906C164.246 82.9906 174.694 89.7641 174.694 108.936V142.459H162.18V110.084C162.18 99.637 157.703 93.8971 148.863 93.8971C139.564 93.8971 133.939 100.67 133.939 112.036V142.459H121.54V83.6794H132.332L133.709 91.3712C137.153 86.7792 142.664 82.9906 151.733 82.9906ZM82.736 116.283C75.1591 116.283 70.9115 119.154 70.9115 125.123C70.9117 130.06 75.0446 133.504 81.7031 133.504C91.8056 133.504 97.8899 127.419 97.8899 118.579V116.283H82.736ZM264.994 116.283C257.417 116.283 253.17 119.154 253.17 125.123C253.17 130.06 257.303 133.504 263.961 133.504C274.064 133.504 280.148 127.419 280.148 118.579V116.283H264.994ZM346.482 99.8277C344.864 98.3563 341.545 97.4116 337.539 100.184C334.149 102.529 330.057 107.801 327.246 118.134C338.482 115.011 344.066 110.809 346.428 107.48C347.813 105.528 348.084 103.921 347.981 102.796C347.875 101.642 347.345 100.613 346.482 99.8277ZM393.158 92.9785C385.466 92.9785 378.808 98.2594 377.889 106.64H408.771C407.738 97.9151 401.768 92.9786 393.158 92.9785ZM13.202 101.818H29.0447C38.6881 101.818 44.8873 96.3078 44.8874 87.6976C44.8874 78.9726 38.6882 73.5766 29.1596 73.5766H13.202V101.818ZM332.907 11.1678C332.368 11.1481 330.155 11.6174 327.142 15.7532C324.277 19.6844 321.357 26.1241 319.355 35.4541C317.06 46.1528 316.039 60.3509 317.516 78.2562C328.126 59.4285 333.509 44.2226 335.551 32.8898C337.108 24.2465 336.651 18.261 335.475 14.7148C334.292 11.1477 332.935 11.1683 332.907 11.1678Z"/></svg>
-      <span>full-stack</span>
-    </a>
-    <ul>
-      <li><a href="#why">Why towers fall</a></li>
-      <li><a href="#recipe">Recipe</a></li>
-      <li><a href="#tower-sec">Tower</a></li>
-      <li><a href="#calculator">Calculator</a></li>
-      <li><a href="#record">Record</a></li>
-      <li><a class="btn sm" href="https://github.com/get-pancake/full-stack">GitHub</a></li>
-    </ul>
+<header class="nav" id="nav">
+  <div class="nav-bar">
+    <a class="nav-logo" href="https://pancake.ai" aria-label="Pancake"><svg viewBox="0 0 422 166" aria-hidden="true"><use href="#logo"/></svg></a>
+    <span class="chip nav-tag">full-stack</span>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#why">Why towers fall</a>
+      <a href="#recipe">Recipe</a>
+      <a href="#tower">Tower</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#record">Record</a>
+    </nav>
+    <div class="nav-ctas">
+      <a class="button" data-size="sm" href="https://github.com/get-pancake/full-stack">GitHub</a>
+      <button class="burger" type="button" aria-label="Menu" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
   </div>
 </header>
 
-<main>
-<section class="band hero" aria-labelledby="h1">
-  <div class="wrap">
-    <div class="copy">
-      <div class="countdown">
-        <span class="pill"><span class="dot"></span><span id="status">v0.1.0 · untested</span></span>
-        <span class="pill num" id="countdown">Oct 29, 2026 · San Francisco</span>
-      </div>
-      <h1 id="h1">We promised a world record. <em>Here’s the recipe.</em></h1>
-      <p class="lede">Pancake hit #1 on Product Hunt. So we're open-sourcing our full stack: on Oct 29 we stack pancakes in San Francisco, live, and everything we know is here first.</p>
-      <div class="cta">
-        <a class="btn brand-btn" href="#calculator">Run the numbers</a>
-        <a class="btn" href="https://github.com/get-pancake/full-stack">Fork the recipe</a>
-      </div>
-    </div>
-    <div class="stage">
-      <svg id="tower" viewBox="0 0 420 560" role="img" aria-label="The tower, to scale"></svg>
-      <div class="readout" aria-live="polite">
-        <span><b class="num" id="ro-h">45.0</b> in</span>
-        <span><b class="num" id="ro-n">296</b> pancakes</span>
-        <button class="btn sm" id="stack-btn" type="button">Watch it stack</button>
+<dialog class="menu" id="menu" aria-label="Menu">
+  <div class="menu-head">
+    <svg class="menu-logo" viewBox="0 0 422 166" aria-hidden="true"><use href="#logo"/></svg>
+    <button class="menu-close" type="button" aria-label="Close menu"><span></span><span></span></button>
+  </div>
+  <nav class="menu-links" aria-label="Sections">
+    <a href="#why">Why towers fall</a>
+    <a href="#recipe">Recipe</a>
+    <a href="#tower">Tower</a>
+    <a href="#calculator">Calculator</a>
+    <a href="#record">Record</a>
+    <a href="#rules">Rules</a>
+  </nav>
+  <div class="menu-foot">
+    <a class="button" href="https://github.com/get-pancake/full-stack">Fork the recipe</a>
+    <a class="button" data-variant="tinted" href="https://pancake.ai">pancake.ai</a>
+  </div>
+</dialog>
+
+<main id="main">
+<section class="hero" aria-labelledby="h1">
+  <div class="hero-art"><div class="hero-art-clip"><svg class="rainbow" aria-hidden="true" focusable="false" preserveAspectRatio="none" viewBox="0 0 1654 1417" fill="none">
+<g clip-path="url(#rbh-0)">
+<g><g clip-path="url(#rbh-1)">
+<g><path d="M950.709 145.494C365.969 145.494 -418.75 772.448 -424.088 1417.87C-429.862 2116.09 88.7403 2767.52 779.027 2767.52C1094.21 2767.52 1431.11 2643.39 1664.03 2458.45C1941.23 2238.34 2175.39 1986.85 2175.4 1520.61C2175.41 766.673 1607.81 145.494 950.709 145.494Z" fill="#FFBD7A"/>
+<path d="M910.288 167.932C511.839 167.932 56.5617 508.138 -161.672 793.224C-311.469 988.908 -400.254 1235.97 -402.55 1512.75C-408.216 2195.58 147.991 2745.08 826.655 2745.08C1136.53 2745.08 1421.43 2610.79 1650.43 2429.92C1922.96 2214.67 2153.17 1968.71 2153.17 1512.75C2153.16 775.424 1556.32 167.932 910.288 167.932Z" fill="#FF7AA0"/>
+<path d="M774.074 196.781C385.16 196.781 74.1845 478.853 -138.827 763.995C-285.039 959.717 -371.7 1206.83 -373.941 1483.66C-379.472 2166.62 163.426 2716.23 825.85 2716.23C1488.27 2716.23 2051.57 2232.37 2120.62 1483.66C2162.52 1029.35 1952.79 782.751 1716.07 580.379C1480.97 379.39 1100.88 196.781 774.074 196.781Z" fill="#BA8BFF"/>
+<path d="M778.466 251.272C406.376 251.272 108.852 521.144 -94.9452 793.95C-234.833 981.206 -317.744 1217.63 -319.889 1482.49C-325.18 2135.9 194.233 2661.74 828.003 2661.74C1461.77 2661.74 2000.7 2198.81 2066.76 1482.49C2106.85 1047.83 1906.2 811.895 1679.72 618.278C1454.78 425.983 1091.14 251.272 778.466 251.272Z" fill="#4660E7"/>
+<path d="M944.655 251.272C407.094 251.272 -314.3 827.641 -319.197 1420.99C-324.495 2062.87 152.274 2661.74 786.866 2661.74C1076.62 2661.74 1386.33 2547.63 1600.46 2377.61C1855.29 2175.26 2070.55 1944.06 2070.55 1515.44C2070.55 822.332 1548.74 251.272 944.655 251.272Z" fill="#68CEA7"/>
+<path d="M968.769 330.803C726.791 330.803 349.402 324.011 115.044 506.565C-171.229 729.559 -316.497 1094.73 -319.19 1420.99C-324.488 2062.87 152.281 2661.74 786.872 2661.74C1076.63 2661.74 1407.46 2584.87 1621.59 2414.85C1876.42 2212.51 2070.56 1944.06 2070.56 1515.44C2070.55 822.332 1701.01 330.803 968.769 330.803Z" class="core"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="rbh-0">
+<rect width="1654" height="9632.58" fill="white"/>
+</clipPath>
+<clipPath id="rbh-1">
+<rect width="2622" height="1478" fill="white" transform="translate(-435 -61.6459)"/>
+</clipPath>
+</defs>
+</svg></div></div>
+  <div class="hero-inner">
+    <h1 id="h1" class="hero-title display"><span>We promised a world record.</span> <span>Here’s the recipe.</span></h1>
+    <div class="hero-aside">
+      <p class="hero-meta">
+        <span class="chip"><span class="dot" aria-hidden="true"></span>v2.0.0 · chef-sheet</span>
+        <time class="chip num" id="countdown" datetime="2026-10-29T17:00:00-07:00">Oct 29, 2026 · San Francisco</time>
+      </p>
+      <p class="hero-lede" id="lede" data-past="Pancake hit #1 on Product Hunt. So we open-sourced our full stack: on Oct 29, 2026 we stacked pancakes in San Francisco, live. Everything we know is here.">Pancake hit #1 on Product Hunt. So we’re open-sourcing our full stack: on Oct 29, 2026 we stack pancakes in San Francisco, live. Everything we know is here first.</p>
+      <div class="buttons">
+        <a class="button" href="#calculator">Run the numbers</a>
+        <a class="button" data-variant="tinted" href="https://github.com/get-pancake/full-stack">Fork the recipe</a>
       </div>
     </div>
   </div>
 </section>
-<svg class="ribbon" viewBox="0 0 1440 128" preserveAspectRatio="none" aria-hidden="true">
-  <g fill="none" stroke-linecap="butt" vector-effect="non-scaling-stroke">
-    <path d="M0 74 C 420 70, 900 44, 1440 4" stroke="#68CEA7" stroke-width="16" vector-effect="non-scaling-stroke"/>
-    <path d="M0 87 C 420 83, 900 57, 1440 17" stroke="#4660E7" stroke-width="7" vector-effect="non-scaling-stroke"/>
-    <path d="M0 98 C 420 94, 900 68, 1440 28" stroke="#BA8BFF" stroke-width="16" vector-effect="non-scaling-stroke"/>
-    <path d="M0 113 C 420 109, 900 83, 1440 43" stroke="#FF7AA0" stroke-width="16" vector-effect="non-scaling-stroke"/>
-    <path d="M0 128 C 420 124, 900 98, 1440 58" stroke="#FFBD7A" stroke-width="16" vector-effect="non-scaling-stroke"/>
-  </g>
-</svg>
 
-<section class="band" aria-label="Key numbers">
+<section class="stage-sec" aria-labelledby="stage-h">
   <div class="wrap">
-    <div class="stats">
-      <div class="stat"><b class="num" data-k="record">42.6<small>in</small></b><span>to beat. Sydney, 2025</span></div>
-      <div class="stat"><b class="num" data-k="stop">45<small>in</small></b><span>our stop line</span></div>
-      <div class="stat"><b class="num" data-k="count">~300</b><span>pancakes, two sizes</span></div>
-      <div class="stat"><b class="num">5<small>s</small></b><span>standing, hands off</span></div>
+    <div class="stage card" data-reveal>
+      <figure class="stage-tower">
+        <svg id="tower-live" viewBox="0 0 420 560" role="img" aria-label="The tower to scale: 145 pancakes at 9 in, then 7 in pancakes up to the 45 in stop line."></svg>
+        <figcaption class="readout">
+          <span class="chip num"><b id="ro-h">45.0</b>&nbsp;in</span>
+          <span class="chip num"><b id="ro-n">255</b>&nbsp;pancakes</span>
+          <button class="button" data-variant="tinted" data-size="sm" id="stack-btn" type="button">Stack it again</button>
+        </figcaption>
+      </figure>
+      <div class="stage-copy">
+        <p class="eyebrow">Live, to scale</p>
+        <h2 id="stage-h" class="stage-title display">Every pancake, drawn from the recipe.</h2>
+        <dl class="stats">
+          <div class="stat"><dt>to beat. Sydney, 2025</dt><dd class="display num">42.6<small>in</small></dd></div>
+          <div class="stat"><dt>our stop line</dt><dd class="display num">45<small>in</small></dd></div>
+          <div class="stat"><dt>pancakes to the stop line</dt><dd class="display num">~255</dd></div>
+          <div class="stat"><dt>standing, hands off</dt><dd class="display num">5<small>s</small></dd></div>
+        </dl>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="band alt" id="why" aria-labelledby="why-h">
+<section class="section" id="why" aria-labelledby="why-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Failure modes</span>
-      <h2 id="why-h">Why towers fall</h2>
-      <p>Most attempts die on construction, not taste. Three ways it goes wrong, and what we do about each.</p>
-    </div>
-    <div class="modes">
-      <article class="mode">
-        <svg viewBox="0 0 240 92" aria-hidden="true">
-          <g fill="#FFBD7A"><rect x="70" y="10" width="100" height="16" rx="8"/><rect x="66" y="30" width="108" height="14" rx="7"/><rect x="62" y="48" width="116" height="11" rx="5.5"/><rect x="56" y="63" width="128" height="8" rx="4"/><rect x="50" y="75" width="140" height="6" rx="3"/></g>
-          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <h3>It squashes</h3>
-        <p>Fluffy pancakes compress under 40 in of weight, unevenly. The tower sinks and tilts while you build.</p>
-        <div class="fix">Thin batter, no leavening. About 0.18 in cooked.</div>
-      </article>
-      <article class="mode">
-        <svg viewBox="0 0 240 92" aria-hidden="true">
-          <g fill="#BA8BFF"><rect x="78" y="70" width="84" height="10" rx="5"/><rect x="82" y="58" width="84" height="10" rx="5"/><rect x="87" y="46" width="84" height="10" rx="5"/><rect x="93" y="34" width="84" height="10" rx="5"/><rect x="100" y="22" width="84" height="10" rx="5"/><rect x="108" y="10" width="84" height="10" rx="5"/></g>
-          <line x1="120" x2="120" y1="4" y2="84" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 4"/>
-          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <h3>It leans</h3>
-        <p>Each pancake is a hair off. Three hundred hairs add up to a lean you can't fix at the top.</p>
-        <div class="fix">¼ turn per pancake. Two lasers. Drift called every 10.</div>
-      </article>
-      <article class="mode">
-        <svg viewBox="0 0 240 92" aria-hidden="true">
-          <g fill="#FF7AA0"><rect x="80" y="62" width="80" height="20" rx="6"/><rect x="84" y="40" width="72" height="20" rx="6"/><rect x="88" y="18" width="64" height="20" rx="6"/></g>
-          <rect x="128" y="2" width="54" height="13" rx="6" fill="#FF7AA0" transform="rotate(14 155 8)"/>
-          <line x1="20" x2="220" y1="22" y2="22" stroke="#E33A6A" stroke-width="1.5" stroke-dasharray="5 4"/>
-          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <h3>It gets greedy</h3>
-        <p>The record is in reach, so you add five more. The fifth one is the one that falls.</p>
-        <div class="fix">Slow at 44 in. Stop at 45 in. Hands off.</div>
-      </article>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Failure modes</p>
+      <h2 id="why-h" class="title">Why towers fall.</h2>
+      <p class="head-lede">Most attempts die on construction, not taste. Three ways it goes wrong, and what we do about each.</p>
+    </header>
+    <ol class="steps">
+      <li class="step" data-tone="purple" data-reveal>
+        <div class="step-text card">
+          <span class="step-n display" aria-hidden="true">01</span>
+          <hr>
+          <h3 class="step-title display">It squashes.</h3>
+          <p>Fluffy pancakes compress under 45 in of stack, unevenly. The tower sinks and tilts while you build.</p>
+          <p class="fix"><span class="chip">Fix</span><span>Thin batter, no leavening. About 0.19 in cooked.</span></p>
+        </div>
+        <div class="step-media"><svg class="step-art" viewBox="0 0 464 426" aria-hidden="true" focusable="false"><use href="#cake" x="74.0" y="312.0" width="316.0" height="40.0"/><use href="#cake" x="84.0" y="294.0" width="296.0" height="46.0"/><use href="#cake" x="93.0" y="274.2" width="278.0" height="52.0"/><use href="#cake" x="101.0" y="252.6" width="262.0" height="58.0"/><use href="#cake" x="107.0" y="230.2" width="250.0" height="63.0"/><use href="#cake" x="112.0" y="206.3" width="240.0" height="68.0"/><path d="M188 130.3V184.3M179 173.3L188 184.3L197 173.3" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M276 130.3V184.3M267 173.3L276 184.3L285 173.3" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="56" x2="408" y1="360" y2="360" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+      </li>
+      <li class="step" data-tone="pink" data-reveal>
+        <div class="step-text card">
+          <span class="step-n display" aria-hidden="true">02</span>
+          <hr>
+          <h3 class="step-title display">It leans.</h3>
+          <p>Each pancake sits a hair off. 270 hairs add up to a lean you can’t fix at the top.</p>
+          <p class="fix"><span class="chip">Fix</span><span>¼ turn per pancake. Two lasers. Drift called every 10.</span></p>
+        </div>
+        <div class="step-media"><svg class="step-art" viewBox="0 0 464 426" aria-hidden="true" focusable="false"><use href="#cake" x="72.0" y="290.0" width="232.0" height="62.0"/><use href="#cake" x="83.0" y="271.4" width="232.0" height="62.0"/><use href="#cake" x="94.0" y="252.8" width="232.0" height="62.0"/><use href="#cake" x="105.0" y="234.2" width="232.0" height="62.0"/><use href="#cake" x="116.0" y="215.6" width="232.0" height="62.0"/><use href="#cake" x="127.0" y="197.0" width="232.0" height="62.0"/><use href="#cake" x="138.0" y="178.4" width="232.0" height="62.0"/><use href="#cake" x="149.0" y="159.8" width="232.0" height="62.0"/><use href="#cake" x="160.0" y="141.2" width="232.0" height="62.0"/><line x1="188" x2="188" y1="358" y2="97.2" stroke="#2C002A" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"/><path d="M196 111.2H272M263 103.2L272 111.2L263 119.2" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="56" x2="408" y1="360" y2="360" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+      </li>
+      <li class="step" data-tone="yellow" data-reveal>
+        <div class="step-text card">
+          <span class="step-n display" aria-hidden="true">03</span>
+          <hr>
+          <h3 class="step-title display">It gets greedy.</h3>
+          <p>The record is in reach, so you add five more. The fifth one is the one that falls.</p>
+          <p class="fix"><span class="chip">Fix</span><span>Slow at 44 in. Stop at 45 in. Hands off.</span></p>
+        </div>
+        <div class="step-media"><svg class="step-art" viewBox="0 0 464 426" aria-hidden="true" focusable="false"><use href="#cake" x="112.0" y="290.0" width="240.0" height="62.0"/><use href="#cake" x="112.0" y="271.4" width="240.0" height="62.0"/><use href="#cake" x="112.0" y="252.8" width="240.0" height="62.0"/><use href="#cake" x="112.0" y="234.2" width="240.0" height="62.0"/><use href="#cake" x="112.0" y="215.6" width="240.0" height="62.0"/><use href="#cake" x="112.0" y="197.0" width="240.0" height="62.0"/><use href="#cake" x="112.0" y="178.4" width="240.0" height="62.0"/><line x1="40" x2="424" y1="158.4" y2="158.4" stroke="#E33A6A" stroke-width="2.5" stroke-dasharray="8 7" stroke-linecap="round"/><use href="#cake" x="214.0" y="66.4" width="220.0" height="58.0" transform="rotate(-16 324.0 95.4)"/><path d="M202 92.4q-18 6 -26 18" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M188 82.4q-30 6 -38 30" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round" fill="none"/><line x1="56" x2="408" y1="360" y2="360" stroke="#2C002A" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+      </li>
+    </ol>
   </div>
 </section>
 
-<section class="band" id="recipe" aria-labelledby="recipe-h">
+<section class="section section-tight" id="recipe" aria-labelledby="recipe-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Recipe</span>
-      <h2 id="recipe-h">A pancake built to carry weight</h2>
-      <p>Still a real pancake: edible, cooked on both sides, served after the attempt. One batch is 250 g of flour; ratios by weight, flour = 100.</p>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Recipe</p>
+      <h2 id="recipe-h" class="title">A pancake built to carry weight.</h2>
+      <p class="head-lede">Still a real pancake: edible, cooked on both sides, served after the attempt. One batch is 250 g of flour.</p>
+    </header>
     <div class="recipe">
-      <div class="ratios" id="ratios"></div>
-      <ol class="steps">
-        <li><div><b>Weigh, whisk, rest 20 min.</b><span>One batch at a time, so every batch is the same.</span></div></li>
-        <li><div><b>Griddle at 330–350 °F, checked.</b><span>A surface thermometer, not the dial. Heat is what thickens the batter.</span></div></li>
-        <li><div><b>Ring down, one cup in.</b><span>About 1 cup for 9 in, a scant ½ cup for 7 in. Don't spread, don't press.</span></div></li>
-        <li><div><b>Flip once, when the top goes matte.</b><span>Pale golden, not brown.</span></div></li>
-        <li><div><b>Cool flat on a rack, 18 min.</b><span>Never stack warm. Trapped steam turns into a slippery film.</span></div></li>
-        <li><div><b>Stack 10, measure.</b><span>About 1.8 in. Re-plan the count from what you measure.</span></div></li>
-      </ol>
+      <div class="card" data-reveal>
+        <h3 class="card-title display">Ratios by weight.</h3>
+        <p class="card-sub">Flour = 100.</p>
+        <div class="ratios" id="ratios"></div>
+      </div>
+      <div class="card" data-reveal>
+        <h3 class="card-title display">Method.</h3>
+        <ol class="method">
+          <li><b>Weigh, whisk, rest 20 min.</b><span>One batch at a time, so every batch is the same.</span></li>
+          <li><b>Griddle at 330–350 °F, checked.</b><span>A surface thermometer, not the dial. Heat is what thickens the batter.</span></li>
+          <li><b>Ring down, one dose in.</b><span>1.02 cup for 9 in, 0.44 cup for 7 in. Don’t spread, don’t press.</span></li>
+          <li><b>Flip once, when the top goes matte.</b><span>Pale golden, not brown.</span></li>
+          <li><b>Cool flat on a rack, 18 min.</b><span>Never stack warm. Trapped steam turns into a slippery film.</span></li>
+          <li><b>Stack 10, measure.</b><span>About 1.86 in. Re-plan the count from what you measure.</span></li>
+        </ol>
+      </div>
     </div>
-    <div class="head">
-      <h3>Doses, drawn to scale</h3>
-      <p>Same ring, same cup, every time. The 9 in pancakes come out a little thicker.</p>
+    <div class="card doses-card" data-reveal>
+      <div class="doses-copy">
+        <h3 class="card-title display">Doses, drawn to scale.</h3>
+        <p class="card-sub">Same ring, same cup, every time. The 9 in pancakes come out a little thicker.</p>
+      </div>
+      <div class="doses" id="doses"></div>
     </div>
-    <div class="doses" id="doses"></div>
   </div>
 </section>
 
-<section class="band alt" id="tower-sec" aria-labelledby="tower-h">
+<section class="sky on-light" id="tower" aria-labelledby="tower-h">
+  <svg class="hill hill-top" aria-hidden="true" focusable="false" viewBox="0 0 1654 753" preserveAspectRatio="none" fill="none"><path d="M -2370.328 -2759.711 C -2370.328 -1367.780 -877.909 500.159 658.479 512.840 C 2320.524 526.558 3871.206 -707.963 3871.206 -2351.140 C 3871.206 -3101.411 3575.731 -3903.369 3135.487 -4457.814 C 2611.548 -5117.665 2012.878 -5675.044 903.042 -5675.044 C -891.656 -5675.039 -2370.328 -4323.887 -2370.328 -2759.711 Z" class="core"/></svg>
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Build protocol</span>
-      <h2 id="tower-h">The tower, to scale</h2>
-      <p>Nothing touches it but pancakes. Lasers read plumb. A freestanding gauge reads height.</p>
-    </div>
-    <div class="figure scroll-x"><svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1000" viewBox="0 0 1280 1000" role="img" aria-label="Pancake Tower elevation and plan, drawn to scale from recipe.toml">
-<title id="tower-title">Pancake Tower elevation and plan, drawn to scale from recipe.toml</title>
+    <div class="sky-clouds" aria-hidden="true"><svg class="cloud cloud-a" aria-hidden="true" focusable="false" viewBox="0 0 201.770 69.013" fill="none"><path d="M0 69.013H201.770C201.770 50.429 182.871 23.351 151.001 37.516C151.001 -7.507 54.886 -14.589 54.381 30.434C36.254 23.352 0 21.152 0 69.013Z" fill="#fff"/></svg><svg class="cloud cloud-b" aria-hidden="true" focusable="false" viewBox="0 0 155.047 53.032" fill="none"><path d="M0 53.032H155.047C155.047 38.751 140.525 17.944 116.035 28.828C116.035 -5.768 42.177 -11.210 41.788 23.386C27.859 17.944 0 16.254 0 53.032Z" fill="#fff"/></svg></div>
+    <header class="head" data-reveal>
+      <p class="kicker">Build protocol</p>
+      <h2 id="tower-h" class="title">The tower, to scale.</h2>
+      <p class="head-lede">Nothing touches it but pancakes. Lasers read plumb. A freestanding gauge reads height.</p>
+    </header>
+    <figure class="sheet" data-reveal>
+      <div class="sheet-art"><svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1000" viewBox="0 0 1280 1000" role="img" aria-label="Pancake Tower elevation and plan, drawn to scale from recipe.toml">
+<title>Pancake Tower elevation and plan, drawn to scale from recipe.toml</title>
 
 <rect width="1280" height="1000" rx="28" fill="#FBF6F1"/>
 <g stroke="#EFE4DC" stroke-width="1"><line x1="72" x2="72" y1="72" y2="884" /><line x1="123" x2="123" y1="72" y2="884" /><line x1="174" x2="174" y1="72" y2="884" /><line x1="225" x2="225" y1="72" y2="884" /><line x1="276" x2="276" y1="72" y2="884" /><line x1="327" x2="327" y1="72" y2="884" /><line x1="378" x2="378" y1="72" y2="884" /><line x1="429" x2="429" y1="72" y2="884" /><line x1="480" x2="480" y1="72" y2="884" /><line x1="531" x2="531" y1="72" y2="884" /><line x1="582" x2="582" y1="72" y2="884" /><line x1="633" x2="633" y1="72" y2="884" /><line x1="684" x2="684" y1="72" y2="884" /><line x1="735" x2="735" y1="72" y2="884" /><line x1="72" x2="760" y1="884" y2="884" /><line x1="72" x2="760" y1="833" y2="833" /><line x1="72" x2="760" y1="782" y2="782" /><line x1="72" x2="760" y1="731" y2="731" /><line x1="72" x2="760" y1="680" y2="680" /><line x1="72" x2="760" y1="629" y2="629" /><line x1="72" x2="760" y1="578" y2="578" /><line x1="72" x2="760" y1="527" y2="527" /><line x1="72" x2="760" y1="476" y2="476" /><line x1="72" x2="760" y1="425" y2="425" /><line x1="72" x2="760" y1="374" y2="374" /><line x1="72" x2="760" y1="323" y2="323" /><line x1="72" x2="760" y1="272" y2="272" /><line x1="72" x2="760" y1="221" y2="221" /><line x1="72" x2="760" y1="170" y2="170" /><line x1="72" x2="760" y1="119" y2="119" /></g>
-<text x="72" y="56" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">ELEVATION</text>
+<text x="72" y="56" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#85687C" text-anchor="start" letter-spacing="0.1em">ELEVATION</text>
 <text x="180" y="56" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="start">to scale · grid = 3 in</text>
 <rect x="355.5" y="448.4" width="153.0" height="435.6" rx="3" fill="#FF7AA0"/>
 <line x1="356.5" x2="507.5" y1="881.00" y2="881.00" stroke="#FFBBC7" stroke-width="0.80"/>
@@ -639,7 +1289,7 @@ footer b { color: var(--ink); }
 <line x1="577" x2="587" y1="118.0" y2="118.0"/><line x1="577" x2="587" y1="884.0" y2="884.0"/>
 </g>
 <text x="591" y="506.00275" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#2C002A" text-anchor="start">45 in</text>
-<rect x="658" y="68" width="8" height="816" rx="2" fill="#FFFCF8" stroke="#2C002A"/>
+<rect x="658" y="68" width="8" height="816" rx="2" fill="#FFFBF6" stroke="#2C002A"/>
 <rect x="634" y="878" width="56" height="6" rx="2" fill="#2C002A"/>
 <line x1="658" x2="668" y1="884" y2="884" stroke="#2C002A"/>
 <line x1="658" x2="664" y1="833" y2="833" stroke="#2C002A"/>
@@ -668,11 +1318,11 @@ footer b { color: var(--ink); }
 <rect x="250" y="884" width="450" height="14" rx="3" fill="#2C002A"/>
 <rect x="270" y="898" width="10" height="56" fill="#2C002A"/><rect x="670" y="898" width="10" height="56" fill="#2C002A"/>
 <text x="475" y="980" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="middle">Heavy table · level &lt; 0.2° · printed Ø 9 in circle</text>
-<rect x="812" y="72" width="396" height="392" rx="18" fill="#FFFCF8" stroke="#DDCFCD"/>
-<text x="834" y="106" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">PLAN</text>
+<rect x="812" y="72" width="396" height="392" rx="18" fill="#FFFBF6" stroke="#DDCFCD"/>
+<text x="834" y="106" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#85687C" text-anchor="start" letter-spacing="0.1em">PLAN</text>
 <text x="882" y="106" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="start">from above · to scale</text>
-<circle cx="1010.0" cy="268" r="117.0" fill="#FF7AA0" stroke="#FFFCF8" stroke-width="2"/>
-<circle cx="1010.0" cy="268" r="91.0" fill="#FFBD7A" stroke="#FFFCF8" stroke-width="2"/>
+<circle cx="1010.0" cy="268" r="117.0" fill="#FF7AA0" stroke="#FFFBF6" stroke-width="2"/>
+<circle cx="1010.0" cy="268" r="91.0" fill="#FFBD7A" stroke="#FFFBF6" stroke-width="2"/>
 <line x1="1010.0" x2="1010.0" y1="124" y2="446" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 5"/>
 <line x1="830" x2="1190" y1="268" y2="268" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 5"/>
 <text x="1018.0" y="136" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#8D43FD" text-anchor="start">A</text>
@@ -684,7 +1334,7 @@ footer b { color: var(--ink); }
 <text x="854" y="442" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="500" fill="#2C002A" text-anchor="start">Ø 9 base</text>
 <rect x="932" y="430" width="14" height="14" rx="4" fill="#FFBD7A"/>
 <text x="952" y="442" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="500" fill="#2C002A" text-anchor="start">Ø 7 top</text>
-<text x="812" y="500" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#85687C" text-anchor="start" letter-spacing="1.5">NOTES</text>
+<text x="812" y="500" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#85687C" text-anchor="start" letter-spacing="0.1em">NOTES</text>
 <circle cx="824" cy="531" r="11" fill="none" stroke="#2C002A"/>
 <text x="824" y="536" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">1</text>
 <text x="846" y="536" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Nothing touches the tower but pancakes.</text>
@@ -700,11 +1350,11 @@ footer b { color: var(--ink); }
 <circle cx="824" cy="667" r="11" fill="none" stroke="#2C002A"/>
 <text x="824" y="672" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#2C002A" text-anchor="middle">5</text>
 <text x="846" y="672" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="400" fill="#2C002A" text-anchor="start">Hold 5 s, hands off. Then measure.</text>
-<rect x="812" y="720" width="396" height="214" rx="18" fill="#FFFCF8" stroke="#2C002A" stroke-width="1.5"/>
+<rect x="812" y="720" width="396" height="214" rx="18" fill="#FFFBF6" stroke="#2C002A" stroke-width="1.5"/>
 <line x1="812" x2="1208" y1="804" y2="804" stroke="#2C002A"/>
 <line x1="1010.0" x2="1010.0" y1="804" y2="934" stroke="#2C002A"/>
 <line x1="812" x2="1208" y1="870" y2="870" stroke="#2C002A"/>
-<text x="834" y="770" font-family="Geist, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#2C002A" text-anchor="start" letter-spacing="-0.5">PANCAKE TOWER</text>
+<text x="834" y="772" font-family="'Tower Display', 'Mona Sans', 'Arial Narrow', Arial, sans-serif" font-size="34" font-weight="600" fill="#2C002A" text-anchor="start" font-stretch="condensed" letter-spacing="-0.03em" textLength="174.7" lengthAdjust="spacingAndGlyphs">PANCAKE TOWER</text>
 <text x="834" y="792" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#85687C" text-anchor="start">Elevation &amp; plan · units: inches</text>
 <g transform="translate(1134 734) scale(0.1609) translate(-340 -362)"><path d="M486.604 708.842C517.164 708.842 564.826 709.521 594.424 691.269C630.578 668.974 648.925 632.463 649.265 599.843C649.934 535.667 589.721 475.79 509.577 475.79C472.983 475.79 431.2 483.476 404.158 500.475C371.974 520.705 347.456 547.546 347.456 590.4C347.456 659.698 394.127 708.842 486.604 708.842Z" fill="#FFBBC7"/>
 <path d="M487.339 672.046C515.989 672.046 560.672 672.618 588.42 657.248C622.315 638.473 639.514 607.727 639.833 580.257C640.46 526.214 584.011 475.792 508.875 475.792C474.569 475.792 435.398 482.263 410.045 496.578C379.873 513.615 356.887 536.217 356.887 572.305C356.887 630.661 400.641 672.046 487.339 672.046Z" fill="#FF7AA0"/>
@@ -730,240 +1380,546 @@ footer b { color: var(--ink); }
 <path transform="translate(1032.0 902) scale(0.1896)" d="M318.116 9.17733C322.015 3.82624 327.3 -0.212597 333.318 0.00867186C339.855 0.249222 344.109 5.2716 346.075 11.2001C348.052 17.1614 348.283 25.2018 346.541 34.8696C343.758 50.3187 335.749 70.9712 319.701 96.3398C320.064 98.657 320.466 101.023 320.906 103.439C323.782 97.805 327.283 93.7008 331.185 91.0009C339.115 85.514 348.228 86.3193 353.997 91.567C356.827 94.1415 358.729 97.7143 359.101 101.775C359.476 105.865 358.272 110.084 355.536 113.942C352.678 117.969 348.175 121.607 341.859 124.63C355.431 143.67 374.26 153.904 396.156 153.904V165.071C369.298 165.071 346.575 151.84 331.068 128.657C329.695 129.053 328.269 129.428 326.788 129.781C327.717 133.264 328.982 137.817 330.285 142.473C332.416 150.085 334.647 157.982 335.222 160.587L324.317 162.994C323.831 160.79 321.744 153.387 319.532 145.482C317.43 137.974 315.203 129.967 314.531 126.778C313.07 120.896 311.812 115.23 310.74 109.778C309.1 112.12 307.397 114.498 305.627 116.91L296.624 110.302C300.819 104.588 304.613 99.0974 308.038 93.8374C304.407 68.1372 305.246 47.9882 308.437 33.1118C310.658 22.7627 314.067 14.7339 318.116 9.17733ZM85.7208 82.9906C101.219 82.9906 110.174 90.4529 110.174 104.344V127.879C110.174 130.863 111.207 131.667 113.848 131.667H116.258V142.459H109.829C102.138 142.459 99.268 139.129 99.1531 133.504C95.2498 139.244 89.1651 143.147 79.9809 143.147C67.2379 143.147 58.3979 136.833 58.3978 125.927C58.3978 113.758 67.008 107.099 83.3099 107.099H97.8899V103.54C97.8899 96.9966 93.1831 92.9785 85.1469 92.9785C77.9144 92.9785 73.0926 96.4228 72.1742 101.589H59.8902C61.2678 90.2235 70.9113 82.9906 85.7208 82.9906ZM210.227 82.9906C225.266 82.9906 234.68 91.3715 236.976 104.689H224.003C222.396 97.8005 217.46 93.5525 209.997 93.5524C200.124 93.5524 193.58 101.703 193.58 113.184C193.58 124.664 200.124 132.586 209.997 132.586C217.345 132.586 222.396 128.223 223.888 121.449H236.976C234.795 134.766 224.807 143.147 209.883 143.147C192.203 143.147 180.952 131.552 180.952 113.184C180.952 95.045 192.547 82.9907 210.227 82.9906ZM267.979 82.9906C283.478 82.9906 292.432 90.4529 292.432 104.344V127.879C292.432 130.863 293.465 131.667 296.106 131.667H298.517V142.459H292.088C284.396 142.459 281.526 139.129 281.411 133.504C277.508 139.244 271.423 143.147 262.239 143.147C249.496 143.147 240.656 136.833 240.656 125.927C240.656 113.758 249.266 107.099 265.568 107.099H280.148V103.54C280.148 96.9966 275.441 92.9785 267.405 92.9785C260.173 92.9785 255.351 96.4228 254.432 101.589H242.148C243.526 90.2235 253.17 82.9906 267.979 82.9906ZM393.043 82.9906C410.034 82.9906 421.284 93.7821 421.629 111.002C421.629 112.265 421.514 114.217 421.285 115.939H377.43V116.513C377.775 126.501 383.974 133.044 393.617 133.045C400.964 133.045 406.59 129.256 408.197 122.713H420.596C418.53 134.308 408.771 143.147 394.306 143.147C375.938 143.147 364.457 131.208 364.457 113.184C364.458 95.0449 375.938 82.9906 393.043 82.9906ZM30.652 62.0968C47.2984 62.0968 58.3197 72.0844 58.3197 87.6976C58.3196 103.196 47.2984 113.298 30.652 113.298H13.202V142.459H0V62.0968H30.652ZM151.733 82.9906C164.246 82.9906 174.694 89.7641 174.694 108.936V142.459H162.18V110.084C162.18 99.637 157.703 93.8971 148.863 93.8971C139.564 93.8971 133.939 100.67 133.939 112.036V142.459H121.54V83.6794H132.332L133.709 91.3712C137.153 86.7792 142.664 82.9906 151.733 82.9906ZM82.736 116.283C75.1591 116.283 70.9115 119.154 70.9115 125.123C70.9117 130.06 75.0446 133.504 81.7031 133.504C91.8056 133.504 97.8899 127.419 97.8899 118.579V116.283H82.736ZM264.994 116.283C257.417 116.283 253.17 119.154 253.17 125.123C253.17 130.06 257.303 133.504 263.961 133.504C274.064 133.504 280.148 127.419 280.148 118.579V116.283H264.994ZM346.482 99.8277C344.864 98.3563 341.545 97.4116 337.539 100.184C334.149 102.529 330.057 107.801 327.246 118.134C338.482 115.011 344.066 110.809 346.428 107.48C347.813 105.528 348.084 103.921 347.981 102.796C347.875 101.642 347.345 100.613 346.482 99.8277ZM393.158 92.9785C385.466 92.9785 378.808 98.2594 377.889 106.64H408.771C407.738 97.9151 401.768 92.9786 393.158 92.9785ZM13.202 101.818H29.0447C38.6881 101.818 44.8873 96.3078 44.8874 87.6976C44.8874 78.9726 38.6882 73.5766 29.1596 73.5766H13.202V101.818ZM332.907 11.1678C332.368 11.1481 330.155 11.6174 327.142 15.7532C324.277 19.6844 321.357 26.1241 319.355 35.4541C317.06 46.1528 316.039 60.3509 317.516 78.2562C328.126 59.4285 333.509 44.2226 335.551 32.8898C337.108 24.2465 336.651 18.261 335.475 14.7148C334.292 11.1477 332.935 11.1683 332.907 11.1678Z" fill="#2C002A"/>
 </svg>
 </div>
-    <div class="roles">
-      <div class="role"><h3>Stacker</h3><span>Places every pancake. Same person at every rehearsal.</span></div>
-      <div class="role"><h3>Passer</h3><span>Hands each one over on a thin spatula, at stack height.</span></div>
-      <div class="role"><h3>Spotters ×2</h3><span>One per laser. Call the drift every 10 pancakes.</span></div>
-      <div class="role"><h3>Zone guard</h3><span>Silence. No traffic, no robot, nobody near the table.</span></div>
+      <figcaption class="sheet-cap">
+        <span>Drawn from <code>recipe.toml</code> by <code>tools/render.py</code>.</span>
+        <a class="button" data-variant="tinted" data-size="sm" href="tower.svg">View full size</a>
+      </figcaption>
+    </figure>
+    <div class="facts">
+      <div class="card" data-reveal>
+        <p class="eyebrow">The stack</p>
+        <ul class="fact-list">
+          <li><b class="num">145</b> pancakes at 9 in, the base</li>
+          <li><b class="num">125</b> pancakes at 7 in, the top</li>
+          <li>Slow at <b class="num">44 in</b>. Stop at <b class="num">45 in</b>.</li>
+          <li>Hold <b class="num">5 s</b>, hands off. Then measure.</li>
+        </ul>
+      </div>
+      <div class="card" data-reveal>
+        <p class="eyebrow">The moves</p>
+        <ul class="fact-list">
+          <li>Nothing touches the tower but pancakes.</li>
+          <li>Lower each one from an edge. Never slide.</li>
+          <li>A ¼ turn per pancake.</li>
+          <li>Spotters call drift every 10 pancakes.</li>
+        </ul>
+      </div>
     </div>
+    <ul class="roles">
+      <li class="card" data-reveal><h3 class="card-title display">Stacker.</h3><p>Places every pancake. Same person at every rehearsal.</p></li>
+      <li class="card" data-reveal><h3 class="card-title display">Passer.</h3><p>Hands each one over on a thin spatula, at stack height.</p></li>
+      <li class="card" data-reveal><h3 class="card-title display">Spotters ×2.</h3><p>One per laser. They call the drift every 10 pancakes.</p></li>
+      <li class="card" data-reveal><h3 class="card-title display">Zone guard.</h3><p>Keeps it silent. No traffic, nobody near the table.</p></li>
+    </ul>
   </div>
+  <svg class="hill hill-bottom" aria-hidden="true" focusable="false" viewBox="0 0 1654 753" preserveAspectRatio="none" fill="none"><path d="M -2370.328 -2759.711 C -2370.328 -1367.780 -877.909 500.159 658.479 512.840 C 2320.524 526.558 3871.206 -707.963 3871.206 -2351.140 C 3871.206 -3101.411 3575.731 -3903.369 3135.487 -4457.814 C 2611.548 -5117.665 2012.878 -5675.044 903.042 -5675.044 C -891.656 -5675.039 -2370.328 -4323.887 -2370.328 -2759.711 Z" class="core"/></svg>
 </section>
 
-<section class="band" id="calculator" aria-labelledby="calc-h">
+<section class="section" id="calculator" aria-labelledby="calc-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Calculator</span>
-      <h2 id="calc-h">Run the numbers</h2>
-      <p>Same math as <span class="mono">calc.py</span>. Change your measured thickness and watch the plan move.</p>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Calculator</p>
+      <h2 id="calc-h" class="title">Run the numbers.</h2>
+      <p class="head-lede">Same math as <code>calc.py</code>. Measure your stack of 10, set the thickness, and the plan follows.</p>
+    </header>
+    <noscript><p class="noscript">The calculator, the chart and the live tower need JavaScript. Every number in the text comes straight from <code>recipe.toml</code>, and <code>python3 calc.py</code> runs the same math.</p></noscript>
     <div class="calc">
-      <form class="controls" id="calc-form">
+      <form class="card controls" id="calc-form" data-reveal>
         <div class="field">
-          <label for="thick">Cooked thickness <output id="thick-o" class="num">0.186 in</output></label>
-          <input type="range" id="thick" min="0.120" max="0.260" step="0.002" value="0.186">
-          <small>From your stack-of-10 test, divided by 10.</small>
-        </div>
-        <div class="field">
-          <label for="settle">Settling while stacking <output id="settle-o" class="num">5%</output></label>
-          <input type="range" id="settle" min="0" max="10" step="1" value="5">
-          <small>Height lost to compression. Measure it at the rehearsal.</small>
-        </div>
-        <div class="field">
-          <label for="spare">Spares <output id="spare-o" class="num">7%</output></label>
-          <input type="range" id="spare" min="0" max="40" step="1" value="7">
-          <small>Rejects and tests. Rounded up to whole batches.</small>
-        </div>
-        <div class="field">
-          <label for="attempts-seg">Attempts to cook for <output id="attempts-o" class="num">1</output></label>
-          <div class="seg" id="attempts-seg" role="group" aria-label="Attempts">
-            <button type="button" data-v="1" aria-pressed="true">1</button>
-            <button type="button" data-v="2" aria-pressed="false">2</button>
-            <button type="button" data-v="3" aria-pressed="false">3</button>
+          <div class="field-head">
+            <label for="thick">Cooked thickness</label>
+            <span class="value"><input class="input-num num" id="thick-n" type="number" inputmode="decimal" min="0.1" max="0.39" step="0.001" value="0.186" aria-label="Cooked thickness, inches"><span aria-hidden="true">in</span></span>
           </div>
+          <input type="range" id="thick" min="0.1" max="0.39" step="0.001" value="0.186" aria-describedby="thick-help">
+          <small id="thick-help">Your stack of 10, divided by 10.</small>
         </div>
         <div class="field">
-          <label for="units-seg">Units</label>
-          <div class="seg" id="units-seg" role="group" aria-label="Units">
-            <button type="button" data-v="us" aria-pressed="true">US</button>
-            <button type="button" data-v="metric" aria-pressed="false">Metric</button>
-          </div>
+          <div class="field-head"><label for="settle">Settling while stacking</label><span class="value num" id="settle-o" aria-hidden="true">5%</span></div>
+          <input type="range" id="settle" min="0" max="10" step="1" value="5" aria-describedby="settle-help">
+          <small id="settle-help">Height lost to compression. Measure it at the rehearsal.</small>
         </div>
+        <div class="field">
+          <div class="field-head"><label for="spare">Spares</label><span class="value num" id="spare-o" aria-hidden="true">7%</span></div>
+          <input type="range" id="spare" min="0" max="40" step="1" value="7" aria-describedby="spare-help">
+          <small id="spare-help">Rejects and tests. Rounded up to whole batches.</small>
+        </div>
+        <fieldset class="field">
+          <legend>Attempts to cook for</legend>
+          <div class="seg">
+            <label><input type="radio" name="attempts" value="1" checked><span>1</span></label>
+            <label><input type="radio" name="attempts" value="2"><span>2</span></label>
+            <label><input type="radio" name="attempts" value="3"><span>3</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Units</legend>
+          <div class="seg">
+            <label><input type="radio" name="units" value="us" checked><span>US</span></label>
+            <label><input type="radio" name="units" value="metric"><span>Metric</span></label>
+          </div>
+        </fieldset>
       </form>
-      <div class="results" aria-live="polite">
+      <div class="card results" data-reveal>
         <div class="gauge">
-          <div class="verdict" id="verdict"></div>
-          <div class="gauge-track"><div class="gauge-fill" id="g-fill"></div><div class="gauge-mark rec" id="g-rec"></div><div class="gauge-mark stop" id="g-stop"></div></div>
-          <div class="gauge-legend"><span>0 in</span><span id="g-leg"></span><span>50 in</span></div>
+          <p class="verdict" id="verdict"></p>
+          <div class="gauge-track" aria-hidden="true"><div class="gauge-fill" id="g-fill"></div><div class="gauge-mark rec" id="g-rec"></div><div class="gauge-mark stop" id="g-stop"></div></div>
+          <div class="gauge-legend" aria-hidden="true"><span>0 in</span><span><i class="key rec"></i>record 42.6</span><span><i class="key stop"></i>stop 45</span><span>50 in</span></div>
         </div>
         <div class="totals">
-          <div><b class="num" id="t-cook">296</b><span>pancakes to cook</span></div>
-          <div><b class="num" id="t-batter">13.8 gal</b><span>of batter</span></div>
-          <div><b class="num" id="t-stop">255</b><span>to reach the stop line</span></div>
+          <div><b class="display num" id="t-cook">296</b><span>pancakes to cook</span></div>
+          <div><b class="display num" id="t-batter">13.8 gal</b><span>of batter</span></div>
+          <div><b class="display num" id="t-stop">255</b><span>to reach the stop line</span></div>
         </div>
-        <div class="scroll-x"><table id="t-sizes"></table></div>
-        <div class="scroll-x"><table id="t-shop"></table></div>
+        <div class="table-wrap" data-name="Pancakes per ring size"><table id="t-sizes"></table></div>
+        <div class="table-wrap" data-name="Shopping list"><table id="t-shop"></table></div>
         <div id="warns"></div>
+        <div class="calc-actions">
+          <button class="button" data-variant="tinted" data-size="sm" type="button" id="copy-shop">Copy shopping list</button>
+          <button class="button" data-variant="outline" data-size="sm" type="button" id="share-plan">Share this plan</button>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="band alt" id="record" aria-labelledby="rec-h">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">History</span>
-      <h2 id="rec-h">Every record since 2012</h2>
-      <p>Tallest stack of pancakes, height in inches. Hover a stack for who, where and how many.</p>
+<section class="section section-panel" id="record" aria-labelledby="rec-h">
+  <div class="panel panel-yellow on-light">
+    <div class="wrap">
+      <header class="head" data-reveal>
+        <p class="kicker">History</p>
+        <h2 id="rec-h" class="title">Every record since 2012.</h2>
+        <p class="head-lede">Tallest stack of pancakes, height in inches.</p>
+      </header>
+      <figure class="chart" id="chart" data-reveal>
+        <figcaption class="chart-cap">29.9 in in 2012. 42.6 in in 2025. We stop at 45 in.</figcaption>
+        <svg class="chart-v" id="rec-svg" viewBox="0 0 1000 420" aria-hidden="true" focusable="false"></svg>
+        <ol class="chart-h" id="rec-list"></ol>
+        <div class="tip" id="tip" hidden></div>
+      </figure>
+      <details class="rec-details">
+        <summary>Show as a table</summary>
+        <div class="table-wrap" data-name="Record history"><table id="rec-table"></table></div>
+      </details>
     </div>
-    <div class="chart scroll-x" id="chart"><svg id="rec-svg" viewBox="0 0 1000 400" role="img" aria-label="Record heights from 2012 to 2025, and our target"></svg><div class="tip" id="tip" hidden></div></div>
-    <details><summary>Show as a table</summary><div class="scroll-x"><table id="rec-table"></table></div></details>
   </div>
 </section>
 
-<section class="band" id="rules" aria-labelledby="rules-h">
+<section class="section" id="rules" aria-labelledby="rules-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Rules</span>
-      <h2 id="rules-h">Inside the rules, with margin</h2>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Rules</p>
+      <h2 id="rules-h" class="title">Inside the rules, with margin.</h2>
+    </header>
     <div class="rules">
-      <ul>
-        <li>Each pancake 4.9 to 9.84 in across, measured before stacking. We use 7 and 9 in.</li>
-        <li>0.39 in thick at most. Ours are about 0.18 in.</li>
-        <li>Freestanding. No support inside or out, nothing holding layers together. Standard ingredients only.</li>
-        <li>Stands 5 seconds after the last pancake.</li>
-        <li>Edible, and eaten or donated. Nothing in the trash.</li>
+      <ul class="checks card" data-reveal>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Each pancake 4.92 to 9.84 in across, measured before stacking. We use 7 and 9 in.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>0.39 in thick at most. Ours are about 0.19 in.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Freestanding. No support inside or out, nothing holding layers together. Standard ingredients only.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Stands 5 seconds after the last pancake.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Edible, and eaten or donated. Nothing in the trash.</span></li>
       </ul>
-      <div class="untested">
-        <b>v2 is our chef's sheet.</b>
-        <p>Quantities are the ones we cook on Oct 29. Thickness is the chef's estimate until the stack-of-10 on the day. Measured values land in the <a href="https://github.com/get-pancake/full-stack/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
+      <aside class="card brand-card on-light" data-reveal>
+        <h3 class="card-title display">v2 is our chef’s sheet.</h3>
+        <p>These are the quantities we cook on Oct 29, 2026. Thickness is the chef’s estimate until the stack of 10 on the day. Measured values land in the <a class="link" href="https://github.com/get-pancake/full-stack/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec" aria-labelledby="cta-h">
+  <div class="cta" data-reveal>
+    <svg class="sliver sliver-l" aria-hidden="true" focusable="false" viewBox="0 0 560 432" fill="none">
+<g><g><g><g clip-path="url(#rbl-0)">
+<g clip-path="url(#rbl-1)">
+<g><path d="M168.555 217.291C168.554 802.031 -458.4 1586.75 -1103.82 1592.09C-1802.04 1597.86 -2453.47 1079.26 -2453.47 388.972C-2453.47 73.7893 -2329.34 -263.11 -2144.4 -496.031C-1924.29 -773.233 -1672.8 -1007.39 -1206.56 -1007.4C-452.625 -1007.41 168.555 -439.808 168.555 217.291Z" fill="#FFBD7A"/>
+<path d="M146.117 257.712C146.117 656.161 -194.09 1111.44 -479.175 1329.67C-674.859 1479.47 -921.922 1568.25 -1198.7 1570.55C-1881.53 1576.22 -2431.03 1020.01 -2431.03 341.344C-2431.03 31.4682 -2296.74 -253.43 -2115.87 -482.426C-1900.62 -754.957 -1654.66 -985.166 -1198.7 -985.166C-461.375 -985.163 146.117 -388.323 146.117 257.712Z" fill="#FF7AA0"/>
+<path d="M117.265 393.926C117.265 782.84 -164.807 1093.82 -449.949 1306.83C-645.671 1453.04 -892.782 1539.7 -1169.62 1541.94C-1852.58 1547.47 -2402.18 1004.57 -2402.18 342.15C-2402.18 -320.274 -1918.33 -883.572 -1169.62 -952.618C-715.302 -994.518 -468.704 -784.792 -266.333 -548.072C-65.3441 -312.97 117.265 67.1172 117.265 393.926Z" fill="#BA8BFF"/>
+<path d="M62.7733 389.534C62.7732 761.624 -207.098 1059.15 -479.905 1262.95C-667.161 1402.83 -903.582 1485.74 -1168.44 1487.89C-1821.86 1493.18 -2347.69 973.767 -2347.69 339.997C-2347.69 -293.773 -1884.76 -832.704 -1168.44 -898.763C-733.78 -938.85 -497.849 -738.197 -304.232 -511.717C-111.937 -286.784 62.7733 76.8615 62.7733 389.534Z" fill="#4660E7"/>
+<path d="M62.7733 223.345C62.7732 760.906 -513.596 1482.3 -1106.94 1487.2C-1748.82 1492.49 -2347.69 1015.73 -2347.69 381.134C-2347.69 91.3816 -2233.58 -218.333 -2063.56 -432.458C-1861.22 -687.291 -1630.01 -902.55 -1201.39 -902.55C-508.286 -902.548 62.7734 -380.736 62.7733 223.345Z" fill="#68CEA7"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="rbl-0">
+<path d="M0 76.8C0 49.9175 0 36.4762 5.23169 26.2085C9.83361 17.1767 17.1767 9.83361 26.2085 5.23169C36.4762 0 49.9175 0 76.8 0H1219.2C1246.08 0 1259.52 0 1269.79 5.23169C1278.82 9.83361 1286.17 17.1767 1290.77 26.2085C1296 36.4762 1296 49.9175 1296 76.8V355.2C1296 382.083 1296 395.524 1290.77 405.792C1286.17 414.823 1278.82 422.166 1269.79 426.768C1259.52 432 1246.08 432 1219.2 432H76.8C49.9175 432 36.4762 432 26.2085 426.768C17.1767 422.166 9.83361 414.823 5.23169 405.792C0 395.524 0 382.083 0 355.2V76.8Z" fill="white"/>
+</clipPath>
+<clipPath id="rbl-1">
+<rect width="2622" height="1478" fill="white" transform="matrix(4.37114e-08 -1 -1 -4.37114e-08 560 1603)"/>
+</clipPath>
+</defs>
+</svg><svg class="sliver sliver-r" aria-hidden="true" focusable="false" viewBox="0 0 529 432" fill="none">
+<g><g><g><g clip-path="url(#rbr-0)">
+<g clip-path="url(#rbr-1)">
+<g><path d="M357.641 217.292C357.641 802.032 984.595 1586.75 1630.02 1592.09C2328.23 1597.86 2979.66 1079.26 2979.66 388.973C2979.66 73.7902 2855.54 -263.109 2670.59 -496.03C2450.49 -773.232 2198.99 -1007.39 1732.76 -1007.4C978.82 -1007.41 357.641 -439.807 357.641 217.292Z" fill="#FFBD7A"/>
+<path d="M380.078 257.713C380.078 656.162 720.285 1111.44 1005.37 1329.67C1201.05 1479.47 1448.12 1568.25 1724.9 1570.55C2407.73 1576.22 2957.23 1020.01 2957.23 341.345C2957.23 31.4692 2822.93 -253.429 2642.07 -482.425C2426.81 -754.956 2180.86 -985.165 1724.9 -985.165C987.571 -985.162 380.078 -388.322 380.078 257.713Z" fill="#FF7AA0"/>
+<path d="M408.926 393.927C408.926 782.841 690.999 1093.82 976.14 1306.83C1171.86 1453.04 1418.97 1539.7 1695.81 1541.94C2378.77 1547.47 2928.38 1004.57 2928.38 342.151C2928.38 -320.273 2444.52 -883.571 1695.81 -952.617C1241.49 -994.517 994.896 -784.791 792.524 -548.071C591.536 -312.969 408.926 67.1182 408.926 393.927Z" fill="#BA8BFF"/>
+<path d="M463.418 389.535C463.418 761.625 733.289 1059.15 1006.1 1262.95C1193.35 1402.83 1429.77 1485.75 1694.63 1487.89C2348.05 1493.18 2873.88 973.767 2873.88 339.998C2873.88 -293.772 2410.96 -832.703 1694.63 -898.762C1259.97 -938.85 1024.04 -738.196 830.423 -511.716C638.129 -286.783 463.418 76.8625 463.418 389.535Z" fill="#4660E7"/>
+<path d="M463.418 223.346C463.418 760.907 1039.79 1482.3 1633.14 1487.2C2275.01 1492.5 2873.88 1015.73 2873.88 381.135C2873.88 91.3826 2759.77 -218.332 2589.75 -432.457C2387.41 -687.29 2156.2 -902.549 1727.59 -902.549C1034.48 -902.547 463.418 -380.735 463.418 223.346Z" fill="#68CEA7"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="rbr-0">
+<path d="M-767 76.8C-767 49.9175 -767 36.4762 -761.768 26.2085C-757.166 17.1767 -749.823 9.83361 -740.791 5.23169C-730.524 0 -717.082 0 -690.2 0H452.2C479.083 0 492.524 0 502.792 5.23169C511.823 9.83361 519.166 17.1767 523.768 26.2085C529 36.4762 529 49.9175 529 76.8V355.2C529 382.083 529 395.524 523.768 405.792C519.166 414.823 511.823 422.166 502.792 426.768C492.524 432 479.083 432 452.2 432H-690.2C-717.082 432 -730.524 432 -740.791 426.768C-749.823 422.166 -757.166 414.823 -761.768 405.792C-767 395.524 -767 382.083 -767 355.2V76.8Z" fill="white"/>
+</clipPath>
+<clipPath id="rbr-1">
+<rect width="2622" height="1478" fill="white" transform="translate(0.000114611 1603) rotate(-90)"/>
+</clipPath>
+</defs>
+</svg>
+    <div class="cta-content">
+      <div class="cta-text">
+        <h2 id="cta-h" class="cta-title display">Copy it. Beat us.</h2>
+        <p>Fork the recipe, cook it, measure it. Then tell us how high you got. Better numbers win.</p>
+      </div>
+      <div class="buttons">
+        <a class="button" href="https://github.com/get-pancake/full-stack/fork">Fork on GitHub</a>
+        <a class="button" data-variant="tinted" href="https://github.com/get-pancake/full-stack/issues/new?template=attempt-report.yml">Report your attempt</a>
       </div>
     </div>
   </div>
 </section>
 </main>
 
-<footer class="band alt">
-  <div class="wrap">
-    <svg class="mascot" viewBox="340 362 348 352" aria-hidden="true"><path d="M486.604 708.842C517.164 708.842 564.826 709.521 594.424 691.269C630.578 668.974 648.925 632.463 649.265 599.843C649.934 535.667 589.721 475.79 509.577 475.79C472.983 475.79 431.2 483.476 404.158 500.475C371.974 520.705 347.456 547.546 347.456 590.4C347.456 659.698 394.127 708.842 486.604 708.842Z" fill="#FFBBC7"/>
-<path d="M487.339 672.046C515.989 672.046 560.672 672.618 588.42 657.248C622.315 638.473 639.514 607.727 639.833 580.257C640.46 526.214 584.011 475.792 508.875 475.792C474.569 475.792 435.398 482.263 410.045 496.578C379.873 513.615 356.887 536.217 356.887 572.305C356.887 630.661 400.641 672.046 487.339 672.046Z" fill="#FF7AA0"/>
-<g opacity="0.16">
-<path d="M505.183 669C565.842 669 647.245 623.569 647.798 576.799C648.395 526.205 594.596 479 522.988 479C490.292 479 455.343 487.995 431.181 501.396C402.426 517.346 378.135 535.57 378.135 569.355C378.136 623.987 437.018 669 505.183 669Z" fill="#2C002A"/>
+<footer class="foot">
+  <div class="foot-art"><svg class="rainbow" aria-hidden="true" focusable="false" viewBox="0 0 1654 1039" fill="none">
+<g clip-path="url(#rbf-0)">
+<g><g clip-path="url(#rbf-1)">
+<g><path d="M635.017 889.064C50.2772 889.064 -734.441 262.11 -739.779 -383.315C-745.554 -1081.53 -226.951 -1732.96 463.336 -1732.96C778.519 -1732.96 1115.42 -1608.83 1348.34 -1423.89C1625.54 -1203.78 1859.7 -952.288 1859.7 -486.054C1859.72 267.885 1292.12 889.064 635.017 889.064Z" fill="#FFBD7A"/>
+<path d="M594.596 866.627C196.147 866.627 -259.13 526.42 -477.364 241.335C-627.16 45.6507 -715.945 -201.412 -718.242 -478.192C-723.908 -1161.02 -167.7 -1710.52 510.964 -1710.52C820.84 -1710.52 1105.74 -1576.23 1334.73 -1395.36C1607.27 -1180.11 1837.47 -934.152 1837.47 -478.192C1837.47 259.134 1240.63 866.627 594.596 866.627Z" fill="#FF7AA0"/>
+<path d="M458.382 837.777C69.4684 837.777 -241.507 555.704 -454.519 270.563C-600.731 74.8412 -687.391 -172.27 -689.633 -449.104C-695.163 -1132.06 -152.265 -1681.67 510.159 -1681.67C1172.58 -1681.67 1735.88 -1197.81 1804.93 -449.104C1846.83 5.20974 1637.1 251.807 1400.38 454.179C1165.28 655.168 785.191 837.777 458.382 837.777Z" fill="#BA8BFF"/>
+<path d="M462.775 783.286C90.6842 783.286 -206.839 513.415 -410.637 240.608C-550.524 53.3523 -633.436 -183.07 -635.58 -447.928C-640.871 -1101.35 -121.458 -1627.18 512.312 -1627.18C1146.08 -1627.18 1685.01 -1164.25 1751.07 -447.928C1791.16 -13.2672 1590.51 222.663 1364.03 416.281C1139.09 608.576 775.447 783.286 462.775 783.286Z" fill="#4660E7"/>
+<path d="M628.963 783.286C91.4028 783.286 -629.991 206.917 -634.888 -386.432C-640.186 -1028.31 -163.417 -1627.18 471.174 -1627.18C760.927 -1627.18 1070.64 -1513.07 1284.77 -1343.05C1539.6 -1140.7 1754.86 -909.498 1754.86 -480.882C1754.86 212.226 1233.04 783.286 628.963 783.286Z" fill="#68CEA7"/>
+<path d="M653.078 703.755C411.1 703.755 33.7107 710.547 -200.647 527.993C-486.92 305 -632.189 -60.1743 -634.882 -386.432C-640.18 -1028.31 -163.41 -1627.18 471.181 -1627.18C760.934 -1627.18 1091.77 -1550.31 1305.89 -1380.29C1560.73 -1177.95 1754.87 -909.498 1754.87 -480.882C1754.86 212.226 1385.32 703.755 653.078 703.755Z" class="core"/>
 </g>
-<path d="M521.646 668.795C589.537 668.795 680.644 611.168 681.262 551.844C681.931 487.668 621.719 427.791 541.574 427.791C504.98 427.791 465.865 439.2 438.823 456.199C406.639 476.43 379.453 499.547 379.453 542.401C379.453 611.699 445.355 668.795 521.646 668.795Z" fill="#DEC3F5"/>
-<path d="M522.19 630.742C585.837 630.742 671.25 582.215 671.83 532.257C672.457 478.214 616.008 427.792 540.872 427.792C506.566 427.792 469.895 437.399 444.543 451.714C414.371 468.751 388.884 488.217 388.884 524.305C388.884 582.661 450.667 630.742 522.19 630.742Z" fill="#BA8BFF"/>
-<g opacity="0.16">
-<path d="M516.284 612C561.513 612 597.678 590.056 622.45 567.874C639.454 552.648 649.532 533.424 649.792 511.887C650.436 458.757 587.299 416 510.262 416C433.226 416 367.717 453.642 359.687 511.887C354.814 547.231 379.204 566.415 406.734 582.158C434.075 597.794 478.277 612 516.284 612Z" fill="#2C002A"/>
 </g>
-<path d="M510.635 612.795C557.627 612.795 595.202 585.813 620.941 558.537C638.608 539.815 649.079 516.177 649.35 489.695C650.018 424.365 584.419 371.791 504.379 371.791C424.338 371.791 356.274 418.076 347.931 489.695C342.869 533.154 368.21 556.743 396.813 576.101C425.22 595.327 471.146 612.795 510.635 612.795Z" fill="#FFDBB5"/>
-<path d="M509.867 574.742C553.922 574.742 589.149 552.02 613.279 529.051C629.841 513.285 639.658 493.379 639.912 471.079C640.539 416.064 579.04 371.792 504.002 371.792C428.963 371.792 365.154 410.768 357.333 471.079C352.586 507.676 376.344 527.54 403.159 543.842C429.791 560.032 472.846 574.742 509.867 574.742Z" fill="#FFBD7A"/>
-<path d="M385.97 472.633C385.97 455.175 390.67 442.714 403.92 442.715C417.171 442.714 421.871 455.175 421.871 472.633C421.871 490.09 417.171 502.551 403.92 502.55C390.67 502.551 385.97 490.09 385.97 472.633Z" fill="#2C002A"/>
-<path d="M486.034 465.869C486.034 442.529 492.319 425.868 510.034 425.869C527.75 425.868 534.034 442.529 534.034 465.869C534.034 489.21 527.75 505.87 510.034 505.869C492.319 505.87 486.034 489.21 486.034 465.869Z" fill="#2C002A"/></svg>
-    <div class="head">
-      <p><b>Pancake gives your agent the brain, the data and the tools to run your go-to-market.</b></p>
-      <p><a href="https://pancake.ai">pancake.ai</a> · <a href="https://github.com/get-pancake/full-stack">Source on GitHub</a> · Code MIT, recipe CC BY 4.0</p>
+</g>
+</g>
+<defs>
+<clipPath id="rbf-0">
+<rect width="1654" height="9632.58" fill="white" transform="translate(0 -8226.92)"/>
+</clipPath>
+<clipPath id="rbf-1">
+<rect width="2622" height="1039" fill="white" transform="translate(-272)"/>
+</clipPath>
+</defs>
+</svg></div>
+  <div class="foot-frame">
+    <div class="foot-brand">
+      <a class="foot-logo" href="https://pancake.ai" aria-label="Pancake"><svg viewBox="0 0 422 166" aria-hidden="true"><use href="#logo"/></svg></a>
+      <p class="foot-line">Pancake gives your agent the brain, the data and the tools to run your go-to-market.</p>
+      <p class="foot-legal">Code MIT · Recipe CC BY 4.0 · Flip it till you make it.</p>
     </div>
-    <span class="eyebrow">Flip it till you make it</span>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <p class="foot-head">The stack</p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/RECIPE.md">Recipe</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/STACKING.md">Build protocol</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/RULES.md">Rules</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/TESTLOG.md">Test log</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-head">Source</p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/get-pancake/full-stack">GitHub</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/calc.py">calc.py</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/issues/new?template=attempt-report.yml">Report an attempt</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-head">Pancake</p>
+        <ul class="foot-links">
+          <li><a href="https://pancake.ai">pancake.ai</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
 </footer>
 
-<script id="spec" type="application/json">{"spec":{"meta":{"version":"2.0.0","status":"chef-sheet","source":"Chef's quantity sheet, Oct 28, 2026 (Candido Blanco)"},"target":{"record_height_in":42.6,"slow_down_at_in":44.0,"build_to_in":45.0,"settle_ratio":0.05},"batter":{"density_g_per_ml":1.1,"rest_minutes":20,"ingredient":[{"key":"flour_all_purpose","amount":250,"unit":"g","why":"Structure"},{"key":"eggs","amount":1,"unit":"egg","why":"Binds and sets the crumb"},{"key":"sugar","amount":3,"unit":"tsp","why":"Color and taste"},{"key":"whole_milk","amount":1.5,"unit":"cup","why":"Thin, pourable batter that levels itself in the ring"},{"key":"water","amount":0.5,"unit":"cup","why":"Thins the batter without adding fat"}]},"cook":{"griddle_temp_f":[330,350],"grease":"cooking spray","spray_cans":6,"target_cooked_thickness_in":0.186,"reject_below_in":0.12,"reject_above_in":0.35,"cool_flat_minutes":18,"spare_ratio":0.07,"egg_weight_g":50},"size":[{"name":"base","ring_in":9,"in_tower":145,"per_batch":3},{"name":"top","ring_in":7,"in_tower":125,"per_batch":7}],"shopping":{"margin":0.05,"flour_bag_lb":5},"rules":{"max_diameter_in":9.84,"min_diameter_in":4.92,"max_thickness_in":0.39,"hold_seconds":5},"experimental":{"xanthan_gum":0.0,"methylcellulose":0.0,"vital_wheat_gluten":0.0}},"plan":{"attempts":1,"spare_ratio":0.07,"thickness_in":0.186,"sizes":[{"name":"base","ring_in":9,"in_tower":145,"per_batch":3,"batches":52,"to_cook":156,"dose_ml":241.3,"dose_fl_oz":8.16,"dose_cups":1.02,"dose_g":265.5,"raw_depth_mm":5.9,"tier_height_in":25.62},{"name":"top","ring_in":7,"in_tower":125,"per_batch":7,"batches":20,"to_cook":140,"dose_ml":103.4,"dose_fl_oz":3.5,"dose_cups":0.44,"dose_g":113.8,"raw_depth_mm":4.2,"tier_height_in":22.09}],"batches":72,"batch_g":796,"batch_ml":724,"pancakes_in_tower":270,"pancakes_to_cook":296,"batter_l":52.1,"batter_gal":13.8,"batter_kg":57.3,"shopping":[{"key":"flour_all_purpose","why":"Structure","per_batch":250,"unit":"g","total":18000,"pct":100.0,"g":18000,"buy":"9 \u00d7 5 lb bags"},{"key":"eggs","why":"Binds and sets the crumb","per_batch":1,"unit":"egg","total":72,"pct":20.0,"g":3600,"count":72,"buy":"7 dozen"},{"key":"sugar","why":"Color and taste","per_batch":3,"unit":"tsp","total":216,"pct":5.0,"g":907,"buy":"2 lb 2 oz"},{"key":"whole_milk","why":"Thin, pourable batter that levels itself in the ring","per_batch":1.5,"unit":"cup","total":108.0,"pct":146.2,"g":26318,"gal":6.75,"l":25.6,"buy":"8 gal"},{"key":"water","why":"Thins the batter without adding fat","per_batch":0.5,"unit":"cup","total":36.0,"pct":47.3,"g":8517,"gal":2.25,"l":8.5,"buy":"tap water"},{"key":"cooking_spray","why":"Griddle and rings","per_batch":null,"unit":"can","total":6,"pct":null,"g":null,"buy":"6 cans"}],"height_in":47.7,"pancakes_to_stop_line":255,"pancakes_to_record":242,"warnings":[]},"records":[{"year":2012,"cm":76.0,"pancakes":60,"place":"Melbourne","holder":"Andy Wrobel, Pancake Parlour","source":"https://www.rnz.co.nz/news/world/99066/new-record-for-pancake-stack"},{"year":2014,"cm":87.0,"place":"Fukuoka","holder":"Fukuoka Visionary Arts","source":"https://www.worldrecordacademy.com/food/tallest_pancake_stack_TNT_breaks_Guinness_World_Records_record_214084.html"},{"year":2014,"cm":87.4,"place":"New York","holder":"TNT, Times Square","source":"https://nexttv.com/news/tnt-stunt-makes-pancake-history-384385"},{"year":2014,"cm":91.2,"pancakes":242,"place":"Kaatsheuvel","holder":"Efteling","source":"https://www.efteling.com/en/press/efteling-breaks-the-guinness-world-records-title-for-the-tallest-stack-of-pancakes/"},{"year":2016,"cm":101.8,"pancakes":213,"place":"Rufford","holder":"Center Parcs Sherwood Forest","source":"https://www.guinnessworldrecords.com/news/2016/2/center-parcs-breaks-record-for-tallest-stack-of-pancakes-415871"},{"year":2025,"cm":108.3,"pancakes":230,"place":"Sydney","holder":"Pancakes On The Rocks","source":"https://www.guinnessworldrecords.com/world-records/tallest-stack-of-pancakes"}]}</script>
+<p class="sr-only" role="status" id="sr-status"></p>
+<div class="toast" id="toast" aria-hidden="true" hidden></div>
+
+<script id="spec" type="application/json">{"spec":{"meta":{"version":"2.0.0","status":"chef-sheet","source":"Chef's quantity sheet, Oct 28, 2026 (Candido Blanco)"},"event":{"start":"2026-10-29T17:00:00-07:00","date":"Oct 29, 2026","place":"San Francisco","live_hours":6},"target":{"record_height_in":42.6,"slow_down_at_in":44.0,"build_to_in":45.0,"settle_ratio":0.05},"batter":{"density_g_per_ml":1.1,"rest_minutes":20,"ingredient":[{"key":"flour_all_purpose","amount":250,"unit":"g","why":"Structure"},{"key":"eggs","amount":1,"unit":"egg","why":"Binds and sets the crumb"},{"key":"sugar","amount":3,"unit":"tsp","why":"Color and taste"},{"key":"whole_milk","amount":1.5,"unit":"cup","why":"Thin, pourable batter that levels itself in the ring"},{"key":"water","amount":0.5,"unit":"cup","why":"Thins the batter without adding fat"}]},"cook":{"griddle_temp_f":[330,350],"grease":"cooking spray","spray_cans":6,"target_cooked_thickness_in":0.186,"reject_below_in":0.12,"reject_above_in":0.35,"cool_flat_minutes":18,"spare_ratio":0.07,"egg_weight_g":50},"size":[{"name":"base","ring_in":9,"in_tower":145,"per_batch":3},{"name":"top","ring_in":7,"in_tower":125,"per_batch":7}],"shopping":{"margin":0.05,"flour_bag_lb":5},"rules":{"max_diameter_in":9.84,"min_diameter_in":4.92,"max_thickness_in":0.39,"hold_seconds":5},"experimental":{"xanthan_gum":0.0,"methylcellulose":0.0,"vital_wheat_gluten":0.0}},"plan":{"attempts":1,"spare_ratio":0.07,"thickness_in":0.186,"sizes":[{"name":"base","ring_in":9,"in_tower":145,"per_batch":3,"batches":52,"to_cook":156,"dose_ml":241.3,"dose_fl_oz":8.16,"dose_cups":1.02,"dose_g":265.5,"raw_depth_mm":5.9,"tier_height_in":25.62},{"name":"top","ring_in":7,"in_tower":125,"per_batch":7,"batches":20,"to_cook":140,"dose_ml":103.4,"dose_fl_oz":3.5,"dose_cups":0.44,"dose_g":113.8,"raw_depth_mm":4.2,"tier_height_in":22.09}],"batches":72,"batch_g":796,"batch_ml":724,"pancakes_in_tower":270,"pancakes_to_cook":296,"batter_l":52.1,"batter_gal":13.8,"batter_kg":57.3,"shopping":[{"key":"flour_all_purpose","why":"Structure","per_batch":250,"unit":"g","total":18000,"pct":100.0,"g":18000,"buy":"9 \u00d7 5 lb bags"},{"key":"eggs","why":"Binds and sets the crumb","per_batch":1,"unit":"egg","total":72,"pct":20.0,"g":3600,"count":72,"buy":"7 dozen"},{"key":"sugar","why":"Color and taste","per_batch":3,"unit":"tsp","total":216,"pct":5.0,"g":907,"buy":"2 lb 2 oz"},{"key":"whole_milk","why":"Thin, pourable batter that levels itself in the ring","per_batch":1.5,"unit":"cup","total":108.0,"pct":146.2,"g":26318,"gal":6.75,"l":25.6,"buy":"8 gal"},{"key":"water","why":"Thins the batter without adding fat","per_batch":0.5,"unit":"cup","total":36.0,"pct":47.3,"g":8517,"gal":2.25,"l":8.5,"buy":"tap water"},{"key":"cooking_spray","why":"Griddle and rings","per_batch":null,"unit":"can","total":6,"pct":null,"g":null,"buy":"6 cans"}],"height_in":47.7,"pancakes_to_stop_line":255,"pancakes_to_record":242,"warnings":[]},"records":[{"year":2012,"cm":76.0,"pancakes":60,"place":"Melbourne","holder":"Andy Wrobel, Pancake Parlour","source":"https://www.rnz.co.nz/news/world/99066/new-record-for-pancake-stack"},{"year":2014,"cm":87.0,"place":"Fukuoka","holder":"Fukuoka Visionary Arts","source":"https://www.worldrecordacademy.com/food/tallest_pancake_stack_TNT_breaks_Guinness_World_Records_record_214084.html"},{"year":2014,"cm":87.4,"place":"New York","holder":"TNT, Times Square","source":"https://nexttv.com/news/tnt-stunt-makes-pancake-history-384385"},{"year":2014,"cm":91.2,"pancakes":242,"place":"Kaatsheuvel","holder":"Efteling","source":"https://www.efteling.com/en/press/efteling-breaks-the-guinness-world-records-title-for-the-tallest-stack-of-pancakes/"},{"year":2016,"cm":101.8,"pancakes":213,"place":"Rufford","holder":"Center Parcs Sherwood Forest","source":"https://www.guinnessworldrecords.com/news/2016/2/center-parcs-breaks-record-for-tallest-stack-of-pancakes-415871"},{"year":2025,"cm":108.3,"pancakes":230,"place":"Sydney","holder":"Pancakes On The Rocks","source":"https://www.guinnessworldrecords.com/world-records/tallest-stack-of-pancakes"}]}</script>
 <script>
 (() => {
+  "use strict";
   const D = JSON.parse(document.getElementById("spec").textContent);
-  const S = D.spec, P = D.plan;
-  const T = S.target;
+  const S = D.spec, P = D.plan, T = S.target, E = S.event;
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce) document.documentElement.classList.add("motion");
   const NS = "http://www.w3.org/2000/svg";
-  const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) { const v = String(attrs[k]); if (v.startsWith("var(")) e.style.setProperty(k, v); else e.setAttribute(k, v); } if (parent) parent.appendChild(e); return e; };
-  const TIER = { base: ["#FF7AA0", "#FFBBC7"], body: ["#BA8BFF", "#DEC3F5"], top: ["#FFBD7A", "#FFDBB5"] };
-  const fmt = (n, d = 1) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
-
-  /* ---------- status + countdown ---------- */
-  document.getElementById("status").textContent = `v${S.meta.version} · ${S.meta.status}`;
-  const doors = new Date("2026-10-29T17:00:00-07:00");
-  const cd = document.getElementById("countdown");
-  const tick = () => {
-    const ms = doors - Date.now();
-    if (ms <= 0) { cd.textContent = Date.now() - doors < 6 * 3600e3 ? "Live now · San Francisco" : "Oct 29, 2026 · San Francisco"; return; }
-    const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
-    cd.textContent = `Attempt in ${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m · SF`;
+  // SVG presentation attributes can't take var(), so those go through style
+  const el = (tag, attrs = {}, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) {
+      const v = String(attrs[k]);
+      if (v.startsWith("var(")) e.style.setProperty(k, v); else e.setAttribute(k, v);
+    }
+    if (parent) parent.appendChild(e);
+    return e;
   };
-  tick(); setInterval(tick, 30e3);
+  const fmt = (n, d = 1) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const label = k => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+  const TONE = { base: ["var(--pink-30)", "var(--pink-20)"], body: ["var(--purple-30)", "var(--purple-20)"], top: ["var(--yellow-30)", "var(--yellow-20)"] };
+  const cakeSwatch = name => `<svg class="sw" aria-hidden="true" style="--cake-top:${TONE[name][0]};--cake-side:${TONE[name][1]}"><use href="#cake" width="100%" height="100%"/></svg>`;
 
-  /* ---------- hero tower, to scale ---------- */
-  const svg = document.getElementById("tower");
-  const W = 420, H = 560, base = 520, scale = 10, cx = 250;
-  const layer = P.thickness_in * (1 - T.settle_ratio) * scale;
-  const g = el("g", {}, svg);
-  // ruler
-  const rx = 132;
-  el("line", { x1: rx, x2: rx, y1: base, y2: base - 48 * scale, stroke: "currentColor", "stroke-width": 1.5, opacity: .55 }, g);
-  for (let i = 0; i <= 48; i += 6) {
-    el("line", { x1: rx - 8, x2: rx, y1: base - i * scale, y2: base - i * scale, stroke: "currentColor", "stroke-width": 1.5, opacity: .55 }, g);
-    const t = el("text", { x: rx - 14, y: base - i * scale + 4, "text-anchor": "end", "font-family": "var(--mono)", "font-size": 12, fill: "currentColor", opacity: .7 }, g); t.textContent = i;
+  /* one polite status line for screen readers; everything else stays quiet */
+  const status = $("#sr-status");
+  let sayTimer;
+  const say = (msg, delay = 0) => {
+    clearTimeout(sayTimer);
+    status.textContent = "";
+    sayTimer = setTimeout(() => { status.textContent = msg; }, Math.max(delay, 60));
+  };
+  const toastEl = $("#toast");
+  let toastTimer;
+  const toast = msg => {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    say(msg);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastEl.hidden = true; }, 2400);
+  };
+
+  /* ---------- nav: phones get a sticky bar that compacts, everyone narrow gets the menu ---------- */
+  const nav = $("#nav"), menu = $("#menu"), burger = $(".burger");
+  const phone = matchMedia("(max-width: 767px)");
+  let compact = false;
+  const onScroll = () => {
+    const y = scrollY;
+    if (!compact && y > 24) compact = true;
+    else if (compact && y < 8) compact = false;
+    nav.classList.toggle("is-scrolled", compact && phone.matches);
+  };
+  addEventListener("scroll", onScroll, { passive: true });
+  phone.addEventListener("change", onScroll);
+  onScroll();
+
+  if (typeof menu.showModal === "function") {
+    burger.addEventListener("click", () => { menu.showModal(); burger.setAttribute("aria-expanded", "true"); });
+    $(".menu-close").addEventListener("click", () => menu.close());
+    menu.addEventListener("close", () => burger.setAttribute("aria-expanded", "false"));
+    menu.addEventListener("click", e => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      e.preventDefault();
+      menu.close();
+      const target = document.querySelector(a.hash);
+      if (!target) return;
+      // wait for the scroll lock to lift, or the smooth scroll is cancelled
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+        const h = target.querySelector("h2") || target;
+        h.setAttribute("tabindex", "-1");
+        h.focus({ preventScroll: true });
+        history.replaceState(null, "", a.hash);
+      }));
+    });
+    matchMedia("(max-width: 960px)").addEventListener("change", e => { if (!e.matches && menu.open) menu.close(); });
+  } else {
+    burger.addEventListener("click", () => { location.hash = "#why"; });
   }
-  // pancakes
-  const cakes = [];
-  let y = base;
+
+  /* ---------- countdown, then "live", then the past tense ---------- */
+  const start = new Date(E.start).getTime();
+  const liveMs = E.live_hours * 36e5;
+  const cd = $("#countdown");
+  const day = E.date.replace(/,\s*\d{4}$/, "");
+  let timer;
+  const tick = () => {
+    const now = Date.now(), ms = start - now;
+    if (ms > 0) {
+      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
+      cd.textContent = `Attempt in ${d ? d + "d " : ""}${h}h ${String(m).padStart(2, "0")}m · ${E.place}`;
+    } else if (now - start < liveMs) {
+      cd.textContent = `Live now · ${E.place}`;
+      cd.dataset.live = "";
+    } else {
+      delete cd.dataset.live;
+      cd.textContent = `Attempted ${day} · results in the test log`;
+      const lede = $("#lede");
+      if (lede.dataset.past) lede.textContent = lede.dataset.past;
+      clearInterval(timer);
+    }
+  };
+  tick();
+  timer = setInterval(tick, 30e3);
+
+  /* ---------- buttons: the pancake.ai flood ---------- */
+  const FILLS = ["var(--yellow-30)", "var(--purple-30)", "var(--green-20)"];
+  const startFill = s => { let h = 0; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % FILLS.length; };
+  if (!reduce) $$(".button").forEach(b => {
+    const lbl = document.createElement("span"), l1 = document.createElement("span");
+    lbl.className = "lbl";
+    l1.append(...b.childNodes);
+    const l2 = l1.cloneNode(true);
+    l2.setAttribute("aria-hidden", "true");
+    lbl.append(l1, l2);
+    const fx = document.createElement("span"), c = document.createElement("i");
+    fx.className = "fx";
+    fx.setAttribute("aria-hidden", "true");
+    fx.append(c);
+    b.append(fx, lbl);
+    let n = startFill(l1.textContent.trim());
+    const place = e => {
+      const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2.35;
+      Object.assign(c.style, { width: `${d}px`, height: `${d}px`, left: `${e.clientX - r.left}px`, top: `${e.clientY - r.top}px` });
+    };
+    b.addEventListener("pointerenter", e => {
+      if (e.pointerType === "touch") return;
+      c.style.transition = "none";
+      place(e);
+      const fill = FILLS[n++ % FILLS.length];
+      c.style.background = fill;
+      b.style.setProperty("--fx-fill", fill);
+      void c.offsetWidth;
+      c.style.transition = "";
+      c.style.transform = "translate(-50%,-50%) scale(1)";
+      b.classList.add("is-fx");
+    });
+    b.addEventListener("pointerleave", e => {
+      if (e.pointerType === "touch") return;
+      place(e);
+      c.style.transform = "translate(-50%,-50%) scale(0)";
+      b.classList.remove("is-fx");
+    });
+  });
+  document.addEventListener("touchstart", () => {}, { passive: true }); // lets iOS show :active
+
+  /* ---------- the live tower, to scale ---------- */
+  const tower = $("#tower-live");
+  const base = 520, scale = 10, cx = 250, rx = 132;
+  const layer = P.thickness_in * (1 - T.settle_ratio) * scale;
+  const ruler = el("g", { opacity: .6 }, tower);
+  el("line", { x1: rx, x2: rx, y1: base, y2: base - 48 * scale, stroke: "currentColor", "stroke-width": 1.5 }, ruler);
+  for (let i = 0; i <= 48; i += 6) {
+    el("line", { x1: rx - 8, x2: rx, y1: base - i * scale, y2: base - i * scale, stroke: "currentColor", "stroke-width": 1.5 }, ruler);
+    el("text", { x: rx - 14, y: base - i * scale + 4, "text-anchor": "end", "font-family": "Geist, sans-serif", "font-size": 12, fill: "currentColor" }, ruler).textContent = i;
+  }
+  const cakesG = el("g", {}, tower);
+  const groups = [];
+  let y = base, count = 0, g;
   for (const z of P.sizes) {
     let n = z.in_tower;
     if (z.name === "top") n = Math.min(n, Math.round((T.build_to_in * scale - (base - y)) / layer));
     const w = z.ring_in * scale;
     for (let i = 0; i < n; i++) {
+      if (count % 10 === 0) { g = el("g", { class: "tg" }, cakesG); groups.push({ g, n: 0, h: 0 }); }
       y -= layer;
-      const r = el("rect", { x: cx - w / 2, y: y, width: w, height: layer + .35, rx: 1.5, fill: i % 10 === 9 ? TIER[z.name][1] : TIER[z.name][0] }, g);
-      cakes.push({ r, h: (base - y) / scale });
+      el("rect", { x: cx - w / 2, y, width: w, height: layer + .35, rx: 1.5, fill: i % 10 === 9 ? TONE[z.name][1] : TONE[z.name][0] }, g);
+      count++;
+      const last = groups[groups.length - 1];
+      last.n = count;
+      last.h = (base - y) / scale;
     }
   }
-  el("rect", { x: cx - 80, y: base, width: 236, height: 7, rx: 3.5, fill: "currentColor" }, g);
-  // lines
-  const lines = [[T.record_height_in, "var(--accent)", "record"], [T.build_to_in, "currentColor", "stop line"]];
-  for (const [v, c, lab] of lines) {
-    const yy = base - v * scale;
-    el("line", { x1: rx, x2: cx + 60, y1: yy, y2: yy, stroke: c, "stroke-width": 2, "stroke-dasharray": "6 5" }, g);
-    const t1 = el("text", { x: cx + 66, y: yy + (lab === "record" ? 16 : -4), "font-family": "var(--mono)", "font-size": 14, "font-weight": 700, fill: c }, g);
-    t1.textContent = `${v} in`;
-    const t2 = el("text", { x: cx + 66, y: yy + (lab === "record" ? 32 : 12), "font-family": "var(--mono)", "font-size": 12, fill: c }, g);
-    t2.textContent = lab;
+  el("rect", { x: cx - 80, y: base, width: 236, height: 7, rx: 3.5, fill: "currentColor" }, tower);
+  for (const [v, c, name] of [[T.record_height_in, "var(--pink-40)", "record"], [T.build_to_in, "currentColor", "stop line"]]) {
+    const yy = base - v * scale, below = name === "record";
+    el("line", { x1: rx, x2: cx + 60, y1: yy, y2: yy, stroke: c, "stroke-width": 2, "stroke-dasharray": "6 5" }, tower);
+    el("text", { x: cx + 66, y: yy + (below ? 16 : -4), "font-family": "Geist, sans-serif", "font-size": 14, "font-weight": 700, fill: "currentColor" }, tower).textContent = `${v} in`;
+    el("text", { x: cx + 66, y: yy + (below ? 32 : 12), "font-family": "Geist, sans-serif", "font-size": 12, fill: "currentColor", opacity: .75 }, tower).textContent = name;
   }
-  const m = el("g", { transform: `translate(${cx + 52} ${base - 88}) scale(${88 / 348}) translate(-340 -362)` }, g);
-  m.innerHTML = document.querySelector("footer .mascot").innerHTML;
-  svg.style.color = "var(--ink)";
-
-  const roH = document.getElementById("ro-h"), roN = document.getElementById("ro-n"), btn = document.getElementById("stack-btn");
-  const setReadout = (k) => { roN.textContent = k; roH.textContent = fmt(k ? cakes[k - 1].h : 0); };
-  setReadout(cakes.length);
-  let running = false;
-  btn.addEventListener("click", () => {
-    if (running) return;
-    if (reduce) { setReadout(cakes.length); return; }
-    running = true; btn.disabled = true;
-    cakes.forEach(c => c.r.style.opacity = 0);
-    const dur = 4200, t0 = performance.now();
-    const step = (now) => {
-      const p = Math.min(1, (now - t0) / dur);
-      const k = Math.round(cakes.length * (1 - Math.pow(1 - p, 1.6)));
-      for (let i = 0; i < k; i++) cakes[i].r.style.opacity = 1;
-      setReadout(k);
-      if (p < 1) requestAnimationFrame(step); else { running = false; btn.disabled = false; btn.textContent = "Stack it again"; }
+  const mascot = el("use", { href: "#mascot", x: cx + 52, y: base - 89, width: 88, height: 89, class: "mascot" }, tower);
+  mascot.style.transformOrigin = `${cx + 96}px ${base}px`;
+  const roH = $("#ro-h"), roN = $("#ro-n"), stackBtn = $("#stack-btn");
+  const readout = k => {
+    const grp = k ? groups[k - 1] : null;
+    roN.textContent = grp ? grp.n : 0;
+    roH.textContent = fmt(grp ? grp.h : 0);
+  };
+  readout(groups.length);
+  let building = false;
+  const build = () => {
+    if (building) return;
+    if (reduce) { readout(groups.length); return; }
+    building = true;
+    stackBtn.setAttribute("aria-disabled", "true");
+    tower.setAttribute("aria-busy", "true");
+    const step = Math.min(110, 2800 / groups.length), t0 = performance.now();
+    groups.forEach(({ g }, i) => g.animate(
+      [{ opacity: 0, transform: "translateY(-22px)" }, { opacity: 1, transform: "none" }],
+      { duration: 420, delay: i * step, easing: "cubic-bezier(.25,1.38,.42,1)", fill: "backwards" }));
+    const total = groups.length * step;
+    mascot.animate([{ opacity: 0, transform: "translateY(26px) scale(.7)" }, { opacity: 1, transform: "none" }],
+      { duration: 600, delay: total, easing: "cubic-bezier(.3,1.6,.5,1)", fill: "backwards" });
+    const frame = now => {
+      const k = Math.min(groups.length, Math.floor((now - t0) / step) + 1);
+      readout(k);
+      if (now - t0 < total + 200) requestAnimationFrame(frame);
+      else { building = false; stackBtn.removeAttribute("aria-disabled"); tower.removeAttribute("aria-busy"); readout(groups.length); }
     };
-    requestAnimationFrame(step);
+    requestAnimationFrame(frame);
+  };
+  if (reduce) stackBtn.hidden = true;
+  stackBtn.addEventListener("click", () => {
+    if (building) return;
+    build();
+    say(`${groups[groups.length - 1].n} pancakes, ${fmt(groups[groups.length - 1].h)} inches.`, 3200);
+  });
+  if (!reduce && "IntersectionObserver" in window) {
+    groups.forEach(({ g }) => { g.style.opacity = 0; });
+    mascot.style.opacity = 0;
+    const io = new IntersectionObserver(entries => {
+      if (!entries.some(e => e.isIntersecting)) return;
+      io.disconnect();
+      groups.forEach(({ g }) => { g.style.opacity = ""; });
+      mascot.style.opacity = "";
+      build();
+    }, { threshold: .5 });
+    io.observe(tower);
+  }
+
+  /* ---------- recipe: ratios and doses ---------- */
+  const pctOf = Object.fromEntries(P.shopping.map(x => [x.key, x.pct]));
+  $("#ratios").innerHTML = S.batter.ingredient.map(i => {
+    const v = pctOf[i.key];
+    return `<div class="ratio"><span class="name">${label(i.key)}</span><span class="track"><span class="bar" style="width:${Math.min(100, v / 150 * 100)}%"></span></span><span class="pct num">${Math.round(v)}</span><span class="why">${i.why}</span></div>`;
+  }).join("");
+  $("#doses").innerHTML = P.sizes.map(z =>
+    `<div class="dose"><svg aria-hidden="true" style="--in:${z.ring_in}"><use href="#cake" width="100%" height="100%"/></svg><b>${z.ring_in} in · ${fmt(z.dose_cups, 2)} cup</b><small>${Math.round(z.dose_ml)} ml · ${z.per_batch} per batch · ${z.name}</small></div>`).join("");
+
+  /* scrollable tables get a keyboard stop and a name (Safari doesn't focus scrollers) */
+  const markScrollers = () => $$(".table-wrap").forEach(w => {
+    const scrolls = w.scrollWidth > w.clientWidth + 1;
+    if (scrolls) {
+      w.tabIndex = 0;
+      w.setAttribute("role", "region");
+      w.setAttribute("aria-label", `${w.dataset.name || "Table"}, scrollable`);
+    } else { w.removeAttribute("tabindex"); w.removeAttribute("role"); w.removeAttribute("aria-label"); }
   });
 
-  /* ---------- stats ---------- */
-  document.querySelector('[data-k="count"]').textContent = `~${P.pancakes_in_tower}`;
-
-  /* ---------- ratios + doses ---------- */
-  const ratios = document.getElementById("ratios");
-  const pctOf = Object.fromEntries(P.shopping.map(x => [x.key, x.pct]));
-  const label = k => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
-  for (const i of S.batter.ingredient) {
-    const v = pctOf[i.key];
-    const row = document.createElement("div"); row.className = "ratio";
-    row.innerHTML = `<span>${label(i.key)}</span><span class="bar" style="width:${Math.min(100, v / 150 * 100)}%"></span><span class="pct num">${Math.round(v)}</span><span class="why">${i.why}</span>`;
-    ratios.appendChild(row);
-  }
-  const doses = document.getElementById("doses");
-  for (const z of P.sizes) {
-    const px = z.ring_in * 18;
-    const d = document.createElement("div"); d.className = "dose";
-    d.innerHTML = `<div class="disc" style="width:min(${px}px, 28vw);aspect-ratio:1;background:${TIER[z.name][0]}">${z.ring_in} in</div><b>${fmt(z.dose_cups, 2)} cup</b><small>${Math.round(z.dose_ml)} ml · ${z.per_batch} per batch · ${z.name}</small>`;
-    doses.appendChild(d);
-  }
-
   /* ---------- calculator (port of calc.py) ---------- */
+  const thick = $("#thick"), thickN = $("#thick-n"), settle = $("#settle"), spare = $("#spare");
+  const radios = name => $$(`input[name="${name}"]`);
   const state = { thick: P.thickness_in, settle: T.settle_ratio, spare: S.cook.spare_ratio, attempts: 1, units: "us" };
+  const defaults = { ...state };
+  // the browser clamps and snaps a value set on a range input; read it back
+  const snap = (input, v) => { input.value = String(v); return Number(input.value); };
+  const q = new URLSearchParams(location.search);
+  const num = k => { const raw = q.get(k); if (raw == null || !raw.trim()) return null; const v = Number(raw); return Number.isFinite(v) ? v : null; };
+  // the spec values stay exact; only a value from the URL goes through the input's clamp and step
+  thick.value = String(state.thick);
+  settle.value = String(Math.round(state.settle * 100));
+  spare.value = String(Math.round(state.spare * 100));
+  if (num("t") != null) state.thick = snap(thick, num("t"));
+  if (num("s") != null) state.settle = snap(settle, num("s")) / 100;
+  if (num("x") != null) state.spare = snap(spare, num("x")) / 100;
+  if (["1", "2", "3"].includes(q.get("a"))) state.attempts = Number(q.get("a"));
+  if (["us", "metric"].includes(q.get("u"))) state.units = q.get("u");
+  radios("attempts").forEach(r => { r.checked = Number(r.value) === state.attempts; });
+  radios("units").forEach(r => { r.checked = r.value === state.units; });
+
   const compute = () => {
     const settled = state.thick * (1 - state.settle);
     let ml = 0, cook = 0, tower = 0, batches = 0;
@@ -976,97 +1932,215 @@ footer b { color: var(--ink); }
     });
     return { sizes, ml, cook, tower, batches, height: tower * settled, toStop: Math.ceil(T.build_to_in / settled) };
   };
-  const lbOz = g => { const oz = g / 28.3495; const lb = Math.floor(oz / 16); return lb ? `${lb} lb ${Math.round(oz % 16)} oz` : `${fmt(oz)} oz`; };
-  const render = () => {
-    const r = compute();
-    document.getElementById("thick-o").textContent = `${state.thick.toFixed(3)} in`;
-    document.getElementById("settle-o").textContent = `${Math.round(state.settle * 100)}%`;
-    document.getElementById("spare-o").textContent = `${Math.round(state.spare * 100)}%`;
-    document.getElementById("attempts-o").textContent = state.attempts;
-    const max = 50;
-    document.getElementById("g-fill").style.width = `${Math.min(100, r.height / max * 100)}%`;
-    document.getElementById("g-rec").style.left = `${T.record_height_in / max * 100}%`;
-    document.getElementById("g-stop").style.left = `${T.build_to_in / max * 100}%`;
-    document.getElementById("g-leg").textContent = `record ${T.record_height_in} · stop ${T.build_to_in}`;
-    const v = document.getElementById("verdict");
-    const ok = r.height >= T.build_to_in;
-    v.className = "verdict " + (ok ? "ok" : "bad");
-    v.textContent = ok ? `${r.tower} pancakes reach ${fmt(r.height)} in. You stop at ${T.build_to_in}.`
-                       : `${r.tower} pancakes only reach ${fmt(r.height)} in. You need ${r.toStop}.`;
-    document.getElementById("t-cook").textContent = r.cook;
-    document.getElementById("t-batter").textContent = state.units === "us" ? `${fmt(r.ml / 3785.41)} gal` : `${fmt(r.ml / 1000)} L`;
-    document.getElementById("t-stop").textContent = r.toStop;
-    const us = state.units === "us";
-    document.getElementById("t-sizes").innerHTML = `<thead><tr><th>Ring</th><th class="r">In tower</th><th class="r">To cook</th><th class="r">Dose</th></tr></thead><tbody>` +
-      r.sizes.map(z => `<tr><td><span class="sw" style="background:${TIER[z.name][0]}"></span>${z.ring_in} in ${z.name}</td><td class="r num">${z.in_tower * state.attempts}</td><td class="r num">${z.n}</td><td class="r num">${us ? fmt(z.dose / 236.588, 2) + " cup" : Math.round(z.dose) + " ml"}</td></tr>`).join("") + "</tbody>";
-    const margin = (S.shopping && S.shopping.margin) || 0;
-    const shop = P.shopping.map(x => {
-      let q;
-      if (x.unit === "can") q = `${x.total} cans`;
+  const lbOz = g => {
+    const oz = g / 28.3495;
+    if (oz < 16) return `${fmt(oz)} oz`;
+    const t = Math.round(oz), lb = Math.floor(t / 16), r = t % 16;
+    return r ? `${lb} lb ${r} oz` : `${lb} lb`;
+  };
+  const shopping = r => {
+    const us = state.units === "us", margin = (S.shopping && S.shopping.margin) || 0;
+    return P.shopping.map(x => {
+      let qty;
+      if (x.unit === "can") qty = `${x.total * state.attempts} cans`;
       else {
         const tot = x.per_batch * r.batches, gr = x.g / P.batches * r.batches;
-        if (x.unit === "egg") q = `${tot} (${Math.ceil(tot * (1 + margin) / 12)} dozen)`;
-        else if (x.unit === "cup") q = us ? `${fmt(tot / 16, 2)} gal` : `${fmt(tot * 0.236588)} L`;
-        else if (x.unit === "tsp") q = us ? `${tot} tsp` : `${Math.round(gr)} g`;
-        else q = us ? lbOz(gr) : (gr >= 1000 ? `${fmt(gr / 1000, 1)} kg` : `${Math.round(gr)} g`);
+        if (x.unit === "egg") qty = `${tot} (${Math.ceil(tot * (1 + margin) / 12)} dozen)`;
+        else if (x.unit === "cup") qty = us ? `${fmt(tot / 16, 2)} gal` : `${fmt(tot * .236588)} L`;
+        else if (x.unit === "tsp") qty = us ? `${tot} tsp` : `${Math.round(gr)} g`;
+        else qty = us ? lbOz(gr) : (gr >= 1000 ? `${fmt(gr / 1000, 1)} kg` : `${Math.round(gr)} g`);
       }
-      return `<tr><td>${label(x.key)}</td><td class="r num">${q}</td></tr>`;
-    }).join("");
-    document.getElementById("t-shop").innerHTML = `<thead><tr><th>Shopping list</th><th class="r">Amount</th></tr></thead><tbody>${shop}</tbody>`;
-    const warns = [];
-    if (state.thick > S.cook.reject_above_in || state.thick < S.cook.reject_below_in) warns.push(`Outside the accepted thickness band. Fix the dose before you cook ${r.cook} of them.`);
-    document.getElementById("warns").innerHTML = warns.map(w => `<p class="warn">${w}</p>`).join("");
+      return [label(x.key), qty];
+    });
   };
-  const bindRange = (id, key, f = x => x) => { const i = document.getElementById(id); i.addEventListener("input", () => { state[key] = f(+i.value); render(); }); state[key] = f(+i.value); };
-  bindRange("thick", "thick");
-  bindRange("settle", "settle", x => x / 100);
-  bindRange("spare", "spare", x => x / 100);
-  const bindSeg = (id, key, f = x => x) => document.querySelectorAll(`#${id} button`).forEach(b => b.addEventListener("click", () => {
-    document.querySelectorAll(`#${id} button`).forEach(o => o.setAttribute("aria-pressed", o === b)); state[key] = f(b.dataset.v); render();
-  }));
-  bindSeg("attempts-seg", "attempts", Number);
-  bindSeg("units-seg", "units");
-  document.getElementById("calc-form").addEventListener("submit", e => e.preventDefault());
+  const OK = '<svg aria-hidden="true"><use href="#check"/></svg>';
+  const render = (announce = false) => {
+    const r = compute(), us = state.units === "us";
+    const pct = (input) => `${(input.value - input.min) / (input.max - input.min) * 100}%`;
+    thick.style.setProperty("--p", pct(thick));
+    settle.style.setProperty("--p", pct(settle));
+    spare.style.setProperty("--p", pct(spare));
+    if (document.activeElement !== thickN) thickN.value = state.thick.toFixed(3);
+    thick.setAttribute("aria-valuetext", `${state.thick.toFixed(3)} inches`);
+    $("#settle-o").textContent = `${Math.round(state.settle * 100)}%`;
+    settle.setAttribute("aria-valuetext", `${Math.round(state.settle * 100)} percent`);
+    $("#spare-o").textContent = `${Math.round(state.spare * 100)}%`;
+    spare.setAttribute("aria-valuetext", `${Math.round(state.spare * 100)} percent`);
+    const max = 50;
+    $("#g-fill").style.width = `${Math.min(100, r.height / max * 100)}%`;
+    $("#g-rec").style.left = `${T.record_height_in / max * 100}%`;
+    $("#g-stop").style.left = `${T.build_to_in / max * 100}%`;
+    const ok = r.height >= T.build_to_in;
+    const verdict = ok ? `${r.tower} pancakes reach ${fmt(r.height)} in. You stop at ${T.build_to_in}.`
+                       : `${r.tower} pancakes only reach ${fmt(r.height)} in. You need ${r.toStop}.`;
+    const v = $("#verdict");
+    v.className = `verdict ${ok ? "ok" : "bad"}`;
+    v.innerHTML = `${ok ? OK : ""}<span>${verdict}</span>`;
+    $("#t-cook").textContent = r.cook;
+    $("#t-batter").textContent = us ? `${fmt(r.ml / 3785.41)} gal` : `${fmt(r.ml / 1000)} L`;
+    $("#t-stop").textContent = r.toStop;
+    $("#t-sizes").innerHTML = `<caption class="sr-only">Pancakes per ring size</caption><thead><tr><th scope="col">Ring</th><th scope="col" class="r">In tower</th><th scope="col" class="r">To cook</th><th scope="col" class="r">Dose</th></tr></thead><tbody>` +
+      r.sizes.map(z => `<tr><td>${cakeSwatch(z.name)}${z.ring_in} in ${z.name}</td><td class="r">${z.in_tower * state.attempts}</td><td class="r">${z.n}</td><td class="r">${us ? fmt(z.dose / 236.588, 2) + " cup" : Math.round(z.dose) + " ml"}</td></tr>`).join("") + "</tbody>";
+    $("#t-shop").innerHTML = `<thead><tr><th scope="col">Shopping list</th><th scope="col" class="r">Amount</th></tr></thead><tbody>` +
+      shopping(r).map(([k, qty]) => `<tr><td>${k}</td><td class="r">${qty}</td></tr>`).join("") + "</tbody>";
+    const warns = [];
+    if (state.thick > S.cook.reject_above_in || state.thick < S.cook.reject_below_in) warns.push(`Outside the accepted thickness band (${S.cook.reject_below_in}–${S.cook.reject_above_in} in). Fix the dose before you cook ${r.cook} of them.`);
+    $("#warns").innerHTML = warns.map(w => `<p class="warn">${w}</p>`).join("");
+    markScrollers();
+    if (announce) say(verdict + (warns.length ? " " + warns[0] : ""), 600);
+    return r;
+  };
+
+  const planUrl = () => {
+    const p = new URLSearchParams();
+    if (state.thick !== defaults.thick) p.set("t", state.thick.toFixed(3));
+    if (state.settle !== defaults.settle) p.set("s", Math.round(state.settle * 100));
+    if (state.spare !== defaults.spare) p.set("x", Math.round(state.spare * 100));
+    if (state.attempts !== 1) p.set("a", state.attempts);
+    if (state.units !== "us") p.set("u", state.units);
+    const s = p.toString();
+    return location.pathname + (s ? `?${s}` : "") + "#calculator";
+  };
+  let urlTimer;
+  const saveUrl = () => {
+    clearTimeout(urlTimer);
+    urlTimer = setTimeout(() => { try { history.replaceState(null, "", planUrl()); } catch (e) { /* file:// or throttled */ } }, 300);
+  };
+
+  thick.addEventListener("input", () => { state.thick = Number(thick.value); render(true); });
+  settle.addEventListener("input", () => { state.settle = Number(settle.value) / 100; render(true); });
+  spare.addEventListener("input", () => { state.spare = Number(spare.value) / 100; render(true); });
+  thickN.addEventListener("input", () => {
+    const v = Number(thickN.value);
+    if (!thickN.value || !Number.isFinite(v) || v < Number(thick.min) || v > Number(thick.max)) return;
+    state.thick = snap(thick, v);
+    render(true);
+  });
+  thickN.addEventListener("change", () => {
+    const v = Number(thickN.value);
+    state.thick = snap(thick, Number.isFinite(v) && thickN.value ? v : state.thick);
+    thickN.value = state.thick.toFixed(3);
+    render(true);
+    saveUrl();
+  });
+  [thick, settle, spare].forEach(i => i.addEventListener("change", saveUrl));
+  radios("attempts").forEach(r => r.addEventListener("change", () => { state.attempts = Number(r.value); render(true); saveUrl(); }));
+  radios("units").forEach(r => r.addEventListener("change", () => { state.units = r.value; render(true); saveUrl(); }));
+  $("#calc-form").addEventListener("submit", e => e.preventDefault());
   render();
 
-  /* ---------- record chart ---------- */
-  const recs = D.records, rs = document.getElementById("rec-svg"), tip = document.getElementById("tip"), chart = document.getElementById("chart");
-  const X0 = 50, X1 = 990, YB = 340, YT = 30, sc = (YB - YT) / 48;
-  rs.style.color = "var(--ink)";
+  const copyText = (text, done) => {
+    const fallback = () => {
+      const prev = document.activeElement;
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.readOnly = true;
+      ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px";
+      document.body.append(ta);
+      ta.focus({ preventScroll: true });
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      ta.remove();
+      if (prev && prev.focus) prev.focus({ preventScroll: true });
+      if (ok) toast(done); else window.prompt("Copy this:", text);
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => toast(done), fallback);
+    else fallback();
+  };
+  $("#copy-shop").addEventListener("click", () => {
+    const r = compute();
+    const lines = shopping(r).map(([k, qty]) => `- ${k}: ${qty}`);
+    copyText(`Pancake Tower shopping list (${state.attempts} attempt${state.attempts > 1 ? "s" : ""}, ${r.batches} batches, ${state.thick.toFixed(3)} in)\n${lines.join("\n")}\n${location.origin}${planUrl()}`, "Shopping list copied");
+  });
+  $("#share-plan").addEventListener("click", () => {
+    try { history.replaceState(null, "", planUrl()); } catch (e) { /* ignore */ }
+    const url = location.origin + planUrl();
+    if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+      navigator.share({ title: "Our Pancake Tower plan", url }).catch(e => { if (!e || e.name !== "AbortError") copyText(url, "Link to this plan copied"); });
+    } else copyText(url, "Link to this plan copied");
+  });
+
+  /* ---------- record history: an SVG for wide cards, a list for narrow ones ---------- */
+  const recs = D.records, rs = $("#rec-svg"), tip = $("#tip"), chart = $("#chart");
+  const X0 = 52, X1 = 990, YB = 352, YT = 32, sc = (YB - YT) / 48;
   for (let v = 0; v <= 48; v += 12) {
-    el("line", { x1: X0, x2: X1, y1: YB - v * sc, y2: YB - v * sc, stroke: v ? "var(--line)" : "currentColor", "stroke-width": v ? 1 : 1.5 }, rs);
-    const t = el("text", { x: X0 - 10, y: YB - v * sc + 4, "text-anchor": "end", "font-family": "var(--mono)", "font-size": 12, fill: "var(--sub)" }, rs); t.textContent = v;
+    el("line", { x1: X0, x2: X1, y1: YB - v * sc, y2: YB - v * sc, stroke: v ? "#EFE4DC" : "#2C002A", "stroke-width": v ? 1 : 1.5 }, rs);
+    el("text", { x: X0 - 12, y: YB - v * sc + 4, "text-anchor": "end", "font-family": "Geist, sans-serif", "font-size": 13, fill: "#6C4B65" }, rs).textContent = v;
   }
-  const all = [...recs.map(r => ({ ...r, h: r.cm / 2.54 })), { year: 2026, place: "San Francisco", holder: "Pancake", h: T.build_to_in, ours: true }];
-  const band = (X1 - X0) / all.length, bw = Math.min(64, band * .55);
+  const all = [...recs.map(r => ({ ...r, h: r.cm / 2.54 })), { year: Number(E.start.slice(0, 4)), place: E.place, holder: "Pancake", h: T.build_to_in, ours: true }];
+  const band = (X1 - X0) / all.length, bw = Math.min(64, band * .56);
   const best = Math.max(...recs.map(r => r.cm));
+  const tipText = r => r.ours ? `<b>${E.date} · ${T.build_to_in} in?</b><br>Pancake, ${E.place}. Our stop line.`
+    : `<b>${r.year} · ${fmt(r.h)} in</b> (${r.cm} cm)<br>${r.holder}, ${r.place}${r.pancakes ? `<br>${r.pancakes} pancakes` : ""}`;
   all.forEach((r, i) => {
     const x = X0 + band * (i + .5), hh = r.h * sc;
-    const gB = el("g", { class: "bar", tabindex: 0, role: "img", "aria-label": `${r.year}, ${r.place}: ${fmt(r.h)} in` }, rs);
-    if (r.ours) el("rect", { x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 9, fill: "var(--purple-1)", stroke: "var(--accent-2)", "stroke-width": 2, "stroke-dasharray": "7 5" }, gB);
-    else el("rect", { class: "fill", x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 9, fill: "var(--pink)" }, gB);
-    const vt = el("text", { x, y: r.ours ? YB - hh - 10 : YB - hh + 22, "text-anchor": "middle", "font-family": "var(--mono)", "font-size": 13, "font-weight": r.cm === best || r.ours ? 700 : 500, fill: r.ours ? "var(--accent-2)" : "#2C002A" }, gB);
-    vt.textContent = r.ours ? `${r.h}?` : fmt(r.h);
-    const yt = el("text", { x, y: YB + 22, "text-anchor": "middle", "font-family": "var(--mono)", "font-size": 13, "font-weight": 700, fill: r.ours ? "var(--accent-2)" : "currentColor" }, rs); yt.textContent = r.ours ? "Oct 29, 2026" : r.year;
-    const pt = el("text", { x, y: YB + 40, "text-anchor": "middle", "font-family": "var(--sans)", "font-size": 12, fill: "var(--sub)" }, rs); pt.textContent = r.place;
-    const show = () => {
-      tip.innerHTML = r.ours ? `<b>Oct 29, 2026 · ${T.build_to_in} in?</b><br>Pancake, San Francisco. Our stop line.` :
-        `<b>${r.year} · ${fmt(r.h)} in</b> (${r.cm} cm)<br>${r.holder}, ${r.place}${r.pancakes ? `<br>${r.pancakes} pancakes` : ""}`;
+    const gB = el("g", { class: "bar-g" }, rs);
+    if (r.ours) el("rect", { x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 10, fill: "#EFDDF1", stroke: "#8D43FD", "stroke-width": 2, "stroke-dasharray": "7 5" }, gB);
+    else el("rect", { class: "fill", x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 10, fill: "#FF7AA0" }, gB);
+    el("text", { x, y: r.ours ? YB - hh - 10 : YB - hh + 22, "text-anchor": "middle", "font-family": "Geist, sans-serif", "font-size": 14, "font-weight": r.cm === best || r.ours ? 700 : 600, fill: r.ours ? "#8D43FD" : "#2C002A" }, gB).textContent = r.ours ? `${r.h}?` : fmt(r.h);
+    el("text", { x, y: YB + 24, "text-anchor": "middle", "font-family": "Geist, sans-serif", "font-size": 14, "font-weight": 700, fill: r.ours ? "#8D43FD" : "#2C002A" }, rs).textContent = r.ours ? day : r.year;
+    el("text", { x, y: YB + 44, "text-anchor": "middle", "font-family": "Geist, sans-serif", "font-size": 12, fill: "#6C4B65" }, rs).textContent = r.place;
+    gB.addEventListener("pointerenter", e => {
+      if (e.pointerType !== "mouse") return;
+      tip.innerHTML = tipText(r);
       tip.hidden = false;
       const box = chart.getBoundingClientRect(), b = gB.getBoundingClientRect();
-      tip.style.left = `${Math.min(box.width - 250, Math.max(8, b.left - box.left + chart.scrollLeft + b.width / 2 - 110))}px`;
+      tip.style.left = `${Math.min(box.width - 248, Math.max(8, b.left - box.left + b.width / 2 - 110))}px`;
       tip.style.top = `${b.top - box.top - tip.offsetHeight - 10}px`;
-    };
-    gB.addEventListener("mouseenter", show); gB.addEventListener("focus", show);
-    gB.addEventListener("mouseleave", () => tip.hidden = true); gB.addEventListener("blur", () => tip.hidden = true);
+    });
+    gB.addEventListener("pointerleave", () => { tip.hidden = true; });
   });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") tip.hidden = true; });
   const ry = YB - T.record_height_in * sc;
-  el("line", { x1: X0, x2: X1, y1: ry, y2: ry, stroke: "var(--accent)", "stroke-width": 1.5, "stroke-dasharray": "6 5" }, rs);
-  const rl = el("text", { x: X0 + 6, y: ry - 8, "font-family": "var(--mono)", "font-size": 12, "font-weight": 700, fill: "var(--accent)" }, rs);
-  rl.textContent = `record to beat · ${T.record_height_in} in`;
-  document.getElementById("rec-table").innerHTML = `<thead><tr><th>Year</th><th>Where</th><th>Who</th><th class="r">Height</th><th class="r">Pancakes</th></tr></thead><tbody>` +
-    recs.map(r => `<tr><td class="num">${r.year}</td><td>${r.place}</td><td><a href="${r.source}">${r.holder}</a></td><td class="r num">${fmt(r.cm / 2.54)} in</td><td class="r num">${r.pancakes ?? "–"}</td></tr>`).join("") + "</tbody>";
+  el("line", { x1: X0, x2: X1, y1: ry, y2: ry, stroke: "#E33A6A", "stroke-width": 2, "stroke-dasharray": "6 5" }, rs);
+  el("text", { x: X0 + 8, y: ry - 9, "font-family": "Geist, sans-serif", "font-size": 13, "font-weight": 600, fill: "#2C002A" }, rs).textContent = `Record to beat · ${T.record_height_in} in`;
+  $("#rec-list").innerHTML = all.map(r =>
+    `<li${r.ours ? ' class="ours"' : ""} style="--w:${(r.h / 50 * 100).toFixed(1)}"><span class="yr">${r.ours ? day : r.year}</span><span class="bar">${r.ours ? `${r.h}?` : fmt(r.h)} in</span><span class="place">${r.place}${r.pancakes ? ` · ${r.pancakes} pancakes` : ""}${r.ours ? " · our stop line" : ""}</span></li>`).join("");
+  $("#rec-table").innerHTML = `<thead><tr><th scope="col">Year</th><th scope="col">Where</th><th scope="col">Who</th><th scope="col" class="r">Height</th><th scope="col" class="r">Pancakes</th></tr></thead><tbody>` +
+    recs.map(r => `<tr><td class="num">${r.year}</td><td>${r.place}</td><td><a href="${r.source}">${r.holder}</a></td><td class="r">${fmt(r.cm / 2.54)} in</td><td class="r">${r.pancakes ?? "–"}</td></tr>`).join("") + "</tbody>";
+
+  markScrollers();
+  if ("ResizeObserver" in window) { const ro = new ResizeObserver(() => markScrollers()); $$(".table-wrap").forEach(w => ro.observe(w)); }
+  $$("details").forEach(d => d.addEventListener("toggle", markScrollers));
+  if (document.fonts) document.fonts.ready.then(markScrollers);
+
+  /* ---------- reveal once: visible by default, animated only when it scrolls in ---------- */
+  const reveal = (items, animate) => items.forEach((it, i) => {
+    it.classList.remove("pending");
+    if (animate) { it.style.setProperty("--d", `${i * 64}ms`); it.classList.add("in"); }
+  });
+  if (!reduce && "IntersectionObserver" in window) {
+    const pending = new Set();
+    const io = new IntersectionObserver(entries => {
+      const now = entries.filter(e => e.isIntersecting && pending.has(e.target)).map(e => e.target);
+      now.forEach(t => { pending.delete(t); io.unobserve(t); });
+      reveal(now, true);
+    }, { rootMargin: "0px 0px -12% 0px" });
+    $$("[data-reveal]").forEach(it => {
+      if (it.getBoundingClientRect().top > innerHeight * .92) { it.classList.add("pending"); pending.add(it); io.observe(it); }
+    });
+    // anything already above the viewport (restored scroll, anchor jumps) shows at once
+    const sweep = () => {
+      const passed = [...pending].filter(it => it.getBoundingClientRect().bottom < 0);
+      passed.forEach(t => { pending.delete(t); io.unobserve(t); });
+      reveal(passed, false);
+      if (!pending.size) removeEventListener("scroll", onSweep);
+    };
+    let swept = false;
+    const onSweep = () => { if (!swept) { swept = true; requestAnimationFrame(() => { swept = false; sweep(); }); } };
+    addEventListener("scroll", onSweep, { passive: true });
+    addEventListener("load", sweep);
+  }
+  addEventListener("beforeprint", () => {
+    reveal($$("[data-reveal].pending"), false);
+    $$("details").forEach(d => { d.open = true; });
+    groups.forEach(({ g }) => { g.style.opacity = ""; });
+    mascot.style.opacity = "";
+  });
 })();
+
 </script>
 </body>
 </html>

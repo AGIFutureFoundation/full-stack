@@ -4,679 +4,404 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pancake Tower</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. Oct 29, 2026, San Francisco.">
+<meta name="description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. {{spec.event.date}}, {{spec.event.place}}.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FBF6F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1F0A1D" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://get-pancake.github.io/full-stack/">
 <meta property="og:title" content="We're open-sourcing our full stack">
-<meta property="og:description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. Oct 29, 2026, San Francisco.">
-<meta property="og:image" content="https://raw.githubusercontent.com/get-pancake/full-stack/main/assets/social-preview.png">
+<meta property="og:description" content="Pancake's open-source recipe, build protocol and calculator for the tallest pancake stack ever built. {{spec.event.date}}, {{spec.event.place}}.">
+<meta property="og:image" content="https://raw.githubusercontent.com/get-pancake/full-stack/main/assets/social-preview.png?v={{spec.meta.version}}">
 <meta property="og:image:width" content="1280">
 <meta property="og:image:height" content="640">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..700&family=Mona+Sans:wdth,wght@75,500..700&display=swap">
 <style>
-/* Layout: a spec sheet you can scroll. Left-aligned bands, one live tower drawn to scale. */
-:root {
-  --bg: #FBF6F1;          /* page cream */
-  --paper: #FFFCF8;       /* cards, inputs */
-  --ink: #2C002A;         /* text, rules */
-  --sub: #85687C;         /* secondary text */
-  --line: #DDCFCD;        /* strokes */
-  --faint: #EFE4DC;       /* grids */
-  --accent: #E33A6A;      /* record, emphasis */
-  --accent-2: #8D43FD;    /* our target, links */
-  --pink: #FF7AA0; --pink-2: #FFBBC7; --pink-1: #FFD9DA;
-  --purple: #BA8BFF; --purple-2: #DEC3F5; --purple-1: #EFDDF1;
-  --yellow: #FFBD7A; --yellow-2: #FFDBB5; --yellow-1: #FFE9D1;
-  --green: #68CEA7; --blue: #4660E7;
-  --on-accent: #FFFCF8;
-  --sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --step--1: .875rem; --step-0: 1rem; --step-1: 1.25rem; --step-2: 1.75rem; --step-3: 2.5rem; --step-4: clamp(2.6rem, 6vw, 4.6rem);
-  --r-sm: 12px; --r-md: 18px; --r-lg: 24px;
-  --wrap: 1180px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #1F0A1D; --paper: #2C002A; --ink: #FFF7EC; --sub: #BBA8AE; --line: #6C4B65; --faint: #3A1838;
-    --accent: #FF7AA0; --accent-2: #BA8BFF; --on-accent: #2C002A; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #1F0A1D; --paper: #2C002A; --ink: #FFF7EC; --sub: #BBA8AE; --line: #6C4B65; --faint: #3A1838;
-  --accent: #FF7AA0; --accent-2: #BA8BFF; --on-accent: #2C002A; color-scheme: dark;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-0)/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
-a { color: var(--accent-2); text-underline-offset: 3px; }
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 2px; border-radius: 6px; }
-h1, h2, h3 { text-wrap: balance; margin: 0; letter-spacing: -.02em; line-height: 1.05; }
-h2 { font-size: var(--step-3); font-weight: 800; }
-h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
-p { margin: 0; max-width: 62ch; }
-.mono { font-family: var(--mono); }
-.num { font-variant-numeric: tabular-nums; }
-.eyebrow { font: 500 var(--step--1)/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sub); }
-.band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: clamp(56px, 8vw, 104px); }
-.band.alt { background: var(--paper); border-block: 1px solid var(--line); }
-.wrap { max-width: var(--wrap); margin: 0 auto; display: grid; gap: 40px; min-width: 0; }
-.head { display: grid; gap: 14px; }
-.head p { color: var(--sub); font-size: var(--step-1); line-height: 1.45; }
-
-/* nav */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.nav .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
-.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-.brand svg { height: 30px; width: auto; display: block; }
-.brand span { font: 500 var(--step--1) var(--mono); color: var(--sub); border-left: 1px solid var(--line); padding-left: 12px; }
-.nav ul { display: flex; gap: 22px; list-style: none; margin: 0 0 0 auto; padding: 0; }
-.nav ul a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: var(--step--1); }
-.nav ul a:hover { color: var(--accent-2); }
-@media (max-width: 760px) { .nav ul li:not(:last-child) { display: none; } }
-
-/* buttons, pills */
-.btn { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 20px; border-radius: var(--r-md); font: 600 var(--step-0) var(--sans); text-decoration: none; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
-.btn.brand-btn { background: var(--pink); border-color: var(--pink); color: #2C002A; }
-.btn:hover { transform: translateY(-1px); }
-.btn.sm { height: 40px; padding: 0 16px; font-size: var(--step--1); }
-.pill { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); font: 500 .8125rem var(--mono); color: var(--ink); white-space: nowrap; }
-.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-
-/* hero */
-.hero { padding-block: clamp(40px, 6vw, 72px) 0; }
-.hero .wrap { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: end; gap: 24px; }
-.hero h1 { font-size: var(--step-4); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
-.hero h1 em { font-style: normal; color: var(--accent); display: block; }
-.hero .copy { display: grid; gap: 26px; padding-bottom: clamp(40px, 6vw, 80px); min-width: 0; }
-.hero .lede { font-size: var(--step-1); color: var(--sub); line-height: 1.45; max-width: 44ch; }
-.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-.countdown { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.ribbon { display: block; width: 100%; height: clamp(72px, 9vw, 128px); margin-top: clamp(24px, 4vw, 48px); }
-.stage { display: grid; justify-items: center; gap: 10px; min-width: 0; }
-.stage svg { width: 100%; max-width: 420px; height: auto; display: block; }
-.readout { display: flex; gap: 18px; font: 500 var(--step--1) var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 16px; align-items: center; }
-.readout b { font-weight: 700; }
-.readout .btn { height: 32px; padding: 0 14px; border-radius: 999px; }
-@media (max-width: 860px) {
-  .hero .wrap { grid-template-columns: 1fr; }
-  .hero .copy { padding-bottom: 8px; }
-}
-
-/* stat strip */
-.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); }
-.stat { padding: 20px 20px 4px 0; display: grid; gap: 6px; border-right: 1px solid var(--line); padding-left: 20px; }
-.stat:first-child { padding-left: 0; }
-.stat:last-child { border-right: 0; }
-.stat b { font: 800 clamp(2rem, 4.4vw, 3.2rem)/1 var(--sans); letter-spacing: -.03em; }
-.stat b small { font: 600 .45em var(--mono); letter-spacing: 0; margin-left: 4px; color: var(--sub); }
-.stat span { color: var(--sub); font-size: var(--step--1); }
-@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(3) { padding-left: 0; } }
-
-/* failure modes */
-.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.mode { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 24px; border-radius: var(--r-lg); background: var(--bg); border: 1px solid var(--line); min-width: 0; }
-.mode svg { width: 100%; height: 92px; }
-.mode .fix { font: 500 var(--step--1)/1.45 var(--mono); color: var(--ink); border-top: 1px dashed var(--line); padding-top: 12px; }
-.mode .fix::before { content: "FIX  "; color: var(--accent-2); font-weight: 700; }
-.mode p { color: var(--sub); }
-@media (max-width: 860px) { .modes { grid-template-columns: 1fr; } }
-
-/* recipe */
-.recipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
-.ratios { display: grid; gap: 10px; }
-.ratio { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 3.4rem; align-items: center; gap: 12px; font-size: var(--step--1); }
-.ratio .bar { height: 14px; border-radius: 4px; background: var(--yellow); min-width: 3px; }
-.ratio .why { grid-column: 1 / -1; color: var(--sub); font-size: .8125rem; margin-top: -6px; }
-.ratio .pct { font-family: var(--mono); text-align: right; }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: s; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 12px; align-items: start; }
-.steps li::before { content: counter(s); font: 700 var(--step--1)/2rem var(--mono); width: 2rem; height: 2rem; text-align: center; border-radius: 50%; border: 1.5px solid var(--ink); }
-.steps b { display: block; }
-.steps span { color: var(--sub); }
-.doses { display: flex; flex-wrap: wrap; gap: 28px; align-items: end; }
-.dose { display: grid; justify-items: center; gap: 8px; text-align: center; }
-.dose .disc { border-radius: 50%; display: grid; place-items: center; font: 700 var(--step-0) var(--mono); color: #2C002A; }
-.dose small { font: 500 var(--step--1) var(--mono); color: var(--sub); }
-@media (max-width: 860px) { .recipe { grid-template-columns: 1fr; } }
-
-/* drawing */
-.figure { border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: #FBF6F1; }
-.scroll-x { overflow-x: auto; }
-.figure svg { display: block; width: 100%; height: auto; min-width: 640px; }
-.roles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.role { border-top: 1.5px solid var(--ink); padding-top: 12px; display: grid; gap: 6px; }
-.role span { color: var(--sub); font-size: var(--step--1); }
-@media (max-width: 860px) { .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-
-/* calculator */
-.calc { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 24px; align-items: start; }
-.controls, .results { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 24px; display: grid; gap: 22px; min-width: 0; }
-.field { display: grid; gap: 8px; }
-.field label { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
-.field label output { font: 700 var(--step-0) var(--mono); color: var(--accent-2); }
-.field small { color: var(--sub); font-size: .8125rem; }
-input[type=range] { width: 100%; accent-color: var(--accent-2); height: 28px; }
-.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: var(--r-sm); overflow: hidden; }
-.seg button { font: 600 var(--step--1) var(--sans); padding: 8px 14px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.gauge { display: grid; gap: 8px; }
-.gauge-track { position: relative; height: 40px; border-radius: 10px; background: var(--faint); overflow: hidden; }
-.gauge-fill { position: absolute; inset: 0 auto 0 0; background: var(--purple); border-radius: 10px; transition: width .4s cubic-bezier(.2,.8,.2,1); }
-.gauge-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; }
-.gauge-mark.rec { background: var(--accent); } .gauge-mark.stop { background: var(--ink); }
-.gauge-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font: 500 .8125rem var(--mono); color: var(--sub); }
-.verdict { font: 700 var(--step-1)/1.3 var(--sans); }
-.verdict.ok { color: var(--ink); } .verdict.bad { color: var(--accent); }
-table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
-th, td { text-align: left; padding: 9px 8px 9px 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
-th { font: 600 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--sub); }
-td.r, th.r { text-align: right; padding-right: 0; }
-td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: 0; }
-.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.totals div { display: grid; gap: 2px; }
-.totals b { font: 800 var(--step-2)/1.1 var(--sans); letter-spacing: -.02em; }
-.totals span { color: var(--sub); font-size: .8125rem; }
-.warn { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; color: var(--accent); font-weight: 600; font-size: var(--step--1); }
-@media (max-width: 860px) { .calc { grid-template-columns: 1fr; } }
-
-/* record chart */
-.chart { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 20px 20px 12px; }
-.chart svg { display: block; width: 100%; height: auto; min-width: 560px; overflow: visible; }
-.chart .bar { cursor: pointer; }
-.chart .bar:hover rect.fill, .chart .bar:focus rect.fill { fill: var(--accent); }
-.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 12px; padding: 10px 12px; font-size: .8125rem; line-height: 1.4; max-width: 240px; box-shadow: 0 8px 24px rgba(44,0,42,.18); }
-.tip b { font-family: var(--mono); }
-details { border-top: 1px solid var(--line); padding-top: 12px; }
-summary { cursor: pointer; font-weight: 600; }
-
-/* rules */
-.rules { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
-.rules ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; }
-.rules ul li::marker { color: var(--accent-2); }
-.untested { display: grid; gap: 10px; padding: 20px; border-radius: var(--r-lg); background: var(--pink-1); color: #2C002A; border: 1px solid var(--pink-2); }
-.untested a { color: #2C002A; }
-@media (max-width: 860px) { .rules { grid-template-columns: 1fr; } }
-
-/* footer */
-footer .wrap { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 24px; }
-footer .mascot { width: 84px; height: auto; }
-footer p { color: var(--sub); }
-footer b { color: var(--ink); }
-@media (max-width: 760px) { footer .wrap { grid-template-columns: 1fr; } }
+{{TOKENS_CSS}}
+{{CSS}}
 </style>
 </head>
 <body>
+{{SPRITE}}
+<a class="skip" href="#main">Skip to content</a>
 
-<header class="nav">
-  <div class="wrap">
-    <a class="brand" href="https://pancake.ai" aria-label="Pancake">
-      <svg viewBox="0 0 422 166" aria-hidden="true"><path fill="currentColor" d="{{LOGO_PATH}}"/></svg>
-      <span>full-stack</span>
-    </a>
-    <ul>
-      <li><a href="#why">Why towers fall</a></li>
-      <li><a href="#recipe">Recipe</a></li>
-      <li><a href="#tower-sec">Tower</a></li>
-      <li><a href="#calculator">Calculator</a></li>
-      <li><a href="#record">Record</a></li>
-      <li><a class="btn sm" href="https://github.com/get-pancake/full-stack">GitHub</a></li>
-    </ul>
+<header class="nav" id="nav">
+  <div class="nav-bar">
+    <a class="nav-logo" href="https://pancake.ai" aria-label="Pancake"><svg viewBox="0 0 422 166" aria-hidden="true"><use href="#logo"/></svg></a>
+    <span class="chip nav-tag">full-stack</span>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#why">Why towers fall</a>
+      <a href="#recipe">Recipe</a>
+      <a href="#tower">Tower</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#record">Record</a>
+    </nav>
+    <div class="nav-ctas">
+      <a class="button" data-size="sm" href="https://github.com/get-pancake/full-stack">GitHub</a>
+      <button class="burger" type="button" aria-label="Menu" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
   </div>
 </header>
 
-<main>
-<section class="band hero" aria-labelledby="h1">
-  <div class="wrap">
-    <div class="copy">
-      <div class="countdown">
-        <span class="pill"><span class="dot"></span><span id="status">v0.1.0 · untested</span></span>
-        <span class="pill num" id="countdown">Oct 29, 2026 · San Francisco</span>
-      </div>
-      <h1 id="h1">We promised a world record. <em>Here’s the recipe.</em></h1>
-      <p class="lede">Pancake hit #1 on Product Hunt. So we're open-sourcing our full stack: on Oct 29 we stack pancakes in San Francisco, live, and everything we know is here first.</p>
-      <div class="cta">
-        <a class="btn brand-btn" href="#calculator">Run the numbers</a>
-        <a class="btn" href="https://github.com/get-pancake/full-stack">Fork the recipe</a>
-      </div>
-    </div>
-    <div class="stage">
-      <svg id="tower" viewBox="0 0 420 560" role="img" aria-label="The tower, to scale"></svg>
-      <div class="readout" aria-live="polite">
-        <span><b class="num" id="ro-h">45.0</b> in</span>
-        <span><b class="num" id="ro-n">296</b> pancakes</span>
-        <button class="btn sm" id="stack-btn" type="button">Watch it stack</button>
+<dialog class="menu" id="menu" aria-label="Menu">
+  <div class="menu-head">
+    <svg class="menu-logo" viewBox="0 0 422 166" aria-hidden="true"><use href="#logo"/></svg>
+    <button class="menu-close" type="button" aria-label="Close menu"><span></span><span></span></button>
+  </div>
+  <nav class="menu-links" aria-label="Sections">
+    <a href="#why">Why towers fall</a>
+    <a href="#recipe">Recipe</a>
+    <a href="#tower">Tower</a>
+    <a href="#calculator">Calculator</a>
+    <a href="#record">Record</a>
+    <a href="#rules">Rules</a>
+  </nav>
+  <div class="menu-foot">
+    <a class="button" href="https://github.com/get-pancake/full-stack">Fork the recipe</a>
+    <a class="button" data-variant="tinted" href="https://pancake.ai">pancake.ai</a>
+  </div>
+</dialog>
+
+<main id="main">
+<section class="hero" aria-labelledby="h1">
+  <div class="hero-art"><div class="hero-art-clip">{{ART_HERO}}</div></div>
+  <div class="hero-inner">
+    <h1 id="h1" class="hero-title display"><span>We promised a world record.</span> <span>Here’s the recipe.</span></h1>
+    <div class="hero-aside">
+      <p class="hero-meta">
+        <span class="chip"><span class="dot" aria-hidden="true"></span>v{{spec.meta.version}} · {{spec.meta.status}}</span>
+        <time class="chip num" id="countdown" datetime="{{spec.event.start}}">{{spec.event.date}} · {{spec.event.place}}</time>
+      </p>
+      <p class="hero-lede" id="lede" data-past="Pancake hit #1 on Product Hunt. So we open-sourced our full stack: on {{spec.event.date}} we stacked pancakes in {{spec.event.place}}, live. Everything we know is here.">Pancake hit #1 on Product Hunt. So we’re open-sourcing our full stack: on {{spec.event.date}} we stack pancakes in {{spec.event.place}}, live. Everything we know is here first.</p>
+      <div class="buttons">
+        <a class="button" href="#calculator">Run the numbers</a>
+        <a class="button" data-variant="tinted" href="https://github.com/get-pancake/full-stack">Fork the recipe</a>
       </div>
     </div>
   </div>
 </section>
-<svg class="ribbon" viewBox="0 0 1440 128" preserveAspectRatio="none" aria-hidden="true">
-  <g fill="none" stroke-linecap="butt" vector-effect="non-scaling-stroke">
-    <path d="M0 74 C 420 70, 900 44, 1440 4" stroke="#68CEA7" stroke-width="16" vector-effect="non-scaling-stroke"/>
-    <path d="M0 87 C 420 83, 900 57, 1440 17" stroke="#4660E7" stroke-width="7" vector-effect="non-scaling-stroke"/>
-    <path d="M0 98 C 420 94, 900 68, 1440 28" stroke="#BA8BFF" stroke-width="16" vector-effect="non-scaling-stroke"/>
-    <path d="M0 113 C 420 109, 900 83, 1440 43" stroke="#FF7AA0" stroke-width="16" vector-effect="non-scaling-stroke"/>
-    <path d="M0 128 C 420 124, 900 98, 1440 58" stroke="#FFBD7A" stroke-width="16" vector-effect="non-scaling-stroke"/>
-  </g>
-</svg>
 
-<section class="band" aria-label="Key numbers">
+<section class="stage-sec" aria-labelledby="stage-h">
   <div class="wrap">
-    <div class="stats">
-      <div class="stat"><b class="num" data-k="record">42.6<small>in</small></b><span>to beat. Sydney, 2025</span></div>
-      <div class="stat"><b class="num" data-k="stop">45<small>in</small></b><span>our stop line</span></div>
-      <div class="stat"><b class="num" data-k="count">~300</b><span>pancakes, two sizes</span></div>
-      <div class="stat"><b class="num">5<small>s</small></b><span>standing, hands off</span></div>
+    <div class="stage card" data-reveal>
+      <figure class="stage-tower">
+        <svg id="tower-live" viewBox="0 0 420 560" role="img" aria-label="The tower to scale: {{spec.size.0.in_tower}} pancakes at {{spec.size.0.ring_in}} in, then {{spec.size.1.ring_in}} in pancakes up to the {{spec.target.build_to_in|g}} in stop line."></svg>
+        <figcaption class="readout">
+          <span class="chip num"><b id="ro-h">{{spec.target.build_to_in|.1f}}</b>&nbsp;in</span>
+          <span class="chip num"><b id="ro-n">{{plan.pancakes_to_stop_line}}</b>&nbsp;pancakes</span>
+          <button class="button" data-variant="tinted" data-size="sm" id="stack-btn" type="button">Stack it again</button>
+        </figcaption>
+      </figure>
+      <div class="stage-copy">
+        <p class="eyebrow">Live, to scale</p>
+        <h2 id="stage-h" class="stage-title display">Every pancake, drawn from the recipe.</h2>
+        <dl class="stats">
+          <div class="stat"><dt>to beat. {{best.place}}, {{best.year}}</dt><dd class="display num">{{spec.target.record_height_in}}<small>in</small></dd></div>
+          <div class="stat"><dt>our stop line</dt><dd class="display num">{{spec.target.build_to_in|g}}<small>in</small></dd></div>
+          <div class="stat"><dt>pancakes to the stop line</dt><dd class="display num">~{{plan.pancakes_to_stop_line}}</dd></div>
+          <div class="stat"><dt>standing, hands off</dt><dd class="display num">{{spec.rules.hold_seconds}}<small>s</small></dd></div>
+        </dl>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="band alt" id="why" aria-labelledby="why-h">
+<section class="section" id="why" aria-labelledby="why-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Failure modes</span>
-      <h2 id="why-h">Why towers fall</h2>
-      <p>Most attempts die on construction, not taste. Three ways it goes wrong, and what we do about each.</p>
-    </div>
-    <div class="modes">
-      <article class="mode">
-        <svg viewBox="0 0 240 92" aria-hidden="true">
-          <g fill="#FFBD7A"><rect x="70" y="10" width="100" height="16" rx="8"/><rect x="66" y="30" width="108" height="14" rx="7"/><rect x="62" y="48" width="116" height="11" rx="5.5"/><rect x="56" y="63" width="128" height="8" rx="4"/><rect x="50" y="75" width="140" height="6" rx="3"/></g>
-          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <h3>It squashes</h3>
-        <p>Fluffy pancakes compress under 40 in of weight, unevenly. The tower sinks and tilts while you build.</p>
-        <div class="fix">Thin batter, no leavening. About 0.18 in cooked.</div>
-      </article>
-      <article class="mode">
-        <svg viewBox="0 0 240 92" aria-hidden="true">
-          <g fill="#BA8BFF"><rect x="78" y="70" width="84" height="10" rx="5"/><rect x="82" y="58" width="84" height="10" rx="5"/><rect x="87" y="46" width="84" height="10" rx="5"/><rect x="93" y="34" width="84" height="10" rx="5"/><rect x="100" y="22" width="84" height="10" rx="5"/><rect x="108" y="10" width="84" height="10" rx="5"/></g>
-          <line x1="120" x2="120" y1="4" y2="84" stroke="#8D43FD" stroke-width="1.5" stroke-dasharray="2 4"/>
-          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <h3>It leans</h3>
-        <p>Each pancake is a hair off. Three hundred hairs add up to a lean you can't fix at the top.</p>
-        <div class="fix">¼ turn per pancake. Two lasers. Drift called every 10.</div>
-      </article>
-      <article class="mode">
-        <svg viewBox="0 0 240 92" aria-hidden="true">
-          <g fill="#FF7AA0"><rect x="80" y="62" width="80" height="20" rx="6"/><rect x="84" y="40" width="72" height="20" rx="6"/><rect x="88" y="18" width="64" height="20" rx="6"/></g>
-          <rect x="128" y="2" width="54" height="13" rx="6" fill="#FF7AA0" transform="rotate(14 155 8)"/>
-          <line x1="20" x2="220" y1="22" y2="22" stroke="#E33A6A" stroke-width="1.5" stroke-dasharray="5 4"/>
-          <line x1="20" x2="220" y1="85" y2="85" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <h3>It gets greedy</h3>
-        <p>The record is in reach, so you add five more. The fifth one is the one that falls.</p>
-        <div class="fix">Slow at 44 in. Stop at 45 in. Hands off.</div>
-      </article>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Failure modes</p>
+      <h2 id="why-h" class="title">Why towers fall.</h2>
+      <p class="head-lede">Most attempts die on construction, not taste. Three ways it goes wrong, and what we do about each.</p>
+    </header>
+    <ol class="steps">
+      <li class="step" data-tone="purple" data-reveal>
+        <div class="step-text card">
+          <span class="step-n display" aria-hidden="true">01</span>
+          <hr>
+          <h3 class="step-title display">It squashes.</h3>
+          <p>Fluffy pancakes compress under {{spec.target.build_to_in|g}} in of stack, unevenly. The tower sinks and tilts while you build.</p>
+          <p class="fix"><span class="chip">Fix</span><span>Thin batter, no leavening. About {{spec.cook.target_cooked_thickness_in|.2f}} in cooked.</span></p>
+        </div>
+        <div class="step-media">{{ART_STEP_SQUASH}}</div>
+      </li>
+      <li class="step" data-tone="pink" data-reveal>
+        <div class="step-text card">
+          <span class="step-n display" aria-hidden="true">02</span>
+          <hr>
+          <h3 class="step-title display">It leans.</h3>
+          <p>Each pancake sits a hair off. {{plan.pancakes_in_tower}} hairs add up to a lean you can’t fix at the top.</p>
+          <p class="fix"><span class="chip">Fix</span><span>¼ turn per pancake. Two lasers. Drift called every 10.</span></p>
+        </div>
+        <div class="step-media">{{ART_STEP_LEAN}}</div>
+      </li>
+      <li class="step" data-tone="yellow" data-reveal>
+        <div class="step-text card">
+          <span class="step-n display" aria-hidden="true">03</span>
+          <hr>
+          <h3 class="step-title display">It gets greedy.</h3>
+          <p>The record is in reach, so you add five more. The fifth one is the one that falls.</p>
+          <p class="fix"><span class="chip">Fix</span><span>Slow at {{spec.target.slow_down_at_in|g}} in. Stop at {{spec.target.build_to_in|g}} in. Hands off.</span></p>
+        </div>
+        <div class="step-media">{{ART_STEP_GREEDY}}</div>
+      </li>
+    </ol>
   </div>
 </section>
 
-<section class="band" id="recipe" aria-labelledby="recipe-h">
+<section class="section section-tight" id="recipe" aria-labelledby="recipe-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Recipe</span>
-      <h2 id="recipe-h">A pancake built to carry weight</h2>
-      <p>Still a real pancake: edible, cooked on both sides, served after the attempt. One batch is 250 g of flour; ratios by weight, flour = 100.</p>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Recipe</p>
+      <h2 id="recipe-h" class="title">A pancake built to carry weight.</h2>
+      <p class="head-lede">Still a real pancake: edible, cooked on both sides, served after the attempt. One batch is {{spec.batter.ingredient.0.amount}} g of flour.</p>
+    </header>
     <div class="recipe">
-      <div class="ratios" id="ratios"></div>
-      <ol class="steps">
-        <li><div><b>Weigh, whisk, rest 20 min.</b><span>One batch at a time, so every batch is the same.</span></div></li>
-        <li><div><b>Griddle at 330–350 °F, checked.</b><span>A surface thermometer, not the dial. Heat is what thickens the batter.</span></div></li>
-        <li><div><b>Ring down, one cup in.</b><span>About 1 cup for 9 in, a scant ½ cup for 7 in. Don't spread, don't press.</span></div></li>
-        <li><div><b>Flip once, when the top goes matte.</b><span>Pale golden, not brown.</span></div></li>
-        <li><div><b>Cool flat on a rack, 18 min.</b><span>Never stack warm. Trapped steam turns into a slippery film.</span></div></li>
-        <li><div><b>Stack 10, measure.</b><span>About 1.8 in. Re-plan the count from what you measure.</span></div></li>
-      </ol>
+      <div class="card" data-reveal>
+        <h3 class="card-title display">Ratios by weight.</h3>
+        <p class="card-sub">Flour = 100.</p>
+        <div class="ratios" id="ratios"></div>
+      </div>
+      <div class="card" data-reveal>
+        <h3 class="card-title display">Method.</h3>
+        <ol class="method">
+          <li><b>Weigh, whisk, rest {{spec.batter.rest_minutes}} min.</b><span>One batch at a time, so every batch is the same.</span></li>
+          <li><b>Griddle at {{spec.cook.griddle_temp_f.0}}–{{spec.cook.griddle_temp_f.1}} °F, checked.</b><span>A surface thermometer, not the dial. Heat is what thickens the batter.</span></li>
+          <li><b>Ring down, one dose in.</b><span>{{plan.sizes.0.dose_cups|.2f}} cup for {{spec.size.0.ring_in}} in, {{plan.sizes.1.dose_cups|.2f}} cup for {{spec.size.1.ring_in}} in. Don’t spread, don’t press.</span></li>
+          <li><b>Flip once, when the top goes matte.</b><span>Pale golden, not brown.</span></li>
+          <li><b>Cool flat on a rack, {{spec.cook.cool_flat_minutes}} min.</b><span>Never stack warm. Trapped steam turns into a slippery film.</span></li>
+          <li><b>Stack 10, measure.</b><span>About {{calc.stack10_in}} in. Re-plan the count from what you measure.</span></li>
+        </ol>
+      </div>
     </div>
-    <div class="head">
-      <h3>Doses, drawn to scale</h3>
-      <p>Same ring, same cup, every time. The 9 in pancakes come out a little thicker.</p>
-    </div>
-    <div class="doses" id="doses"></div>
-  </div>
-</section>
-
-<section class="band alt" id="tower-sec" aria-labelledby="tower-h">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Build protocol</span>
-      <h2 id="tower-h">The tower, to scale</h2>
-      <p>Nothing touches it but pancakes. Lasers read plumb. A freestanding gauge reads height.</p>
-    </div>
-    <div class="figure scroll-x">{{TOWER_SVG}}</div>
-    <div class="roles">
-      <div class="role"><h3>Stacker</h3><span>Places every pancake. Same person at every rehearsal.</span></div>
-      <div class="role"><h3>Passer</h3><span>Hands each one over on a thin spatula, at stack height.</span></div>
-      <div class="role"><h3>Spotters ×2</h3><span>One per laser. Call the drift every 10 pancakes.</span></div>
-      <div class="role"><h3>Zone guard</h3><span>Silence. No traffic, no robot, nobody near the table.</span></div>
+    <div class="card doses-card" data-reveal>
+      <div class="doses-copy">
+        <h3 class="card-title display">Doses, drawn to scale.</h3>
+        <p class="card-sub">Same ring, same cup, every time. The {{spec.size.0.ring_in}} in pancakes come out a little thicker.</p>
+      </div>
+      <div class="doses" id="doses"></div>
     </div>
   </div>
 </section>
 
-<section class="band" id="calculator" aria-labelledby="calc-h">
+<section class="sky on-light" id="tower" aria-labelledby="tower-h">
+  {{ART_HILL_TOP}}
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Calculator</span>
-      <h2 id="calc-h">Run the numbers</h2>
-      <p>Same math as <span class="mono">calc.py</span>. Change your measured thickness and watch the plan move.</p>
+    <div class="sky-clouds" aria-hidden="true">{{ART_CLOUD_A}}{{ART_CLOUD_B}}</div>
+    <header class="head" data-reveal>
+      <p class="kicker">Build protocol</p>
+      <h2 id="tower-h" class="title">The tower, to scale.</h2>
+      <p class="head-lede">Nothing touches it but pancakes. Lasers read plumb. A freestanding gauge reads height.</p>
+    </header>
+    <figure class="sheet" data-reveal>
+      <div class="sheet-art">{{TOWER_SVG}}</div>
+      <figcaption class="sheet-cap">
+        <span>Drawn from <code>recipe.toml</code> by <code>tools/render.py</code>.</span>
+        <a class="button" data-variant="tinted" data-size="sm" href="tower.svg">View full size</a>
+      </figcaption>
+    </figure>
+    <div class="facts">
+      <div class="card" data-reveal>
+        <p class="eyebrow">The stack</p>
+        <ul class="fact-list">
+          <li><b class="num">{{spec.size.0.in_tower}}</b> pancakes at {{spec.size.0.ring_in}} in, the base</li>
+          <li><b class="num">{{spec.size.1.in_tower}}</b> pancakes at {{spec.size.1.ring_in}} in, the top</li>
+          <li>Slow at <b class="num">{{spec.target.slow_down_at_in|g}} in</b>. Stop at <b class="num">{{spec.target.build_to_in|g}} in</b>.</li>
+          <li>Hold <b class="num">{{spec.rules.hold_seconds}} s</b>, hands off. Then measure.</li>
+        </ul>
+      </div>
+      <div class="card" data-reveal>
+        <p class="eyebrow">The moves</p>
+        <ul class="fact-list">
+          <li>Nothing touches the tower but pancakes.</li>
+          <li>Lower each one from an edge. Never slide.</li>
+          <li>A ¼ turn per pancake.</li>
+          <li>Spotters call drift every 10 pancakes.</li>
+        </ul>
+      </div>
     </div>
+    <ul class="roles">
+      <li class="card" data-reveal><h3 class="card-title display">Stacker.</h3><p>Places every pancake. Same person at every rehearsal.</p></li>
+      <li class="card" data-reveal><h3 class="card-title display">Passer.</h3><p>Hands each one over on a thin spatula, at stack height.</p></li>
+      <li class="card" data-reveal><h3 class="card-title display">Spotters ×2.</h3><p>One per laser. They call the drift every 10 pancakes.</p></li>
+      <li class="card" data-reveal><h3 class="card-title display">Zone guard.</h3><p>Keeps it silent. No traffic, nobody near the table.</p></li>
+    </ul>
+  </div>
+  {{ART_HILL_BOTTOM}}
+</section>
+
+<section class="section" id="calculator" aria-labelledby="calc-h">
+  <div class="wrap">
+    <header class="head" data-reveal>
+      <p class="kicker">Calculator</p>
+      <h2 id="calc-h" class="title">Run the numbers.</h2>
+      <p class="head-lede">Same math as <code>calc.py</code>. Measure your stack of 10, set the thickness, and the plan follows.</p>
+    </header>
+    <noscript><p class="noscript">The calculator, the chart and the live tower need JavaScript. Every number in the text comes straight from <code>recipe.toml</code>, and <code>python3 calc.py</code> runs the same math.</p></noscript>
     <div class="calc">
-      <form class="controls" id="calc-form">
+      <form class="card controls" id="calc-form" data-reveal>
         <div class="field">
-          <label for="thick">Cooked thickness <output id="thick-o" class="num">0.186 in</output></label>
-          <input type="range" id="thick" min="0.120" max="0.260" step="0.002" value="0.186">
-          <small>From your stack-of-10 test, divided by 10.</small>
-        </div>
-        <div class="field">
-          <label for="settle">Settling while stacking <output id="settle-o" class="num">5%</output></label>
-          <input type="range" id="settle" min="0" max="10" step="1" value="5">
-          <small>Height lost to compression. Measure it at the rehearsal.</small>
-        </div>
-        <div class="field">
-          <label for="spare">Spares <output id="spare-o" class="num">7%</output></label>
-          <input type="range" id="spare" min="0" max="40" step="1" value="7">
-          <small>Rejects and tests. Rounded up to whole batches.</small>
-        </div>
-        <div class="field">
-          <label for="attempts-seg">Attempts to cook for <output id="attempts-o" class="num">1</output></label>
-          <div class="seg" id="attempts-seg" role="group" aria-label="Attempts">
-            <button type="button" data-v="1" aria-pressed="true">1</button>
-            <button type="button" data-v="2" aria-pressed="false">2</button>
-            <button type="button" data-v="3" aria-pressed="false">3</button>
+          <div class="field-head">
+            <label for="thick">Cooked thickness</label>
+            <span class="value"><input class="input-num num" id="thick-n" type="number" inputmode="decimal" min="{{calc.thick_min}}" max="{{spec.rules.max_thickness_in}}" step="0.001" value="{{plan.thickness_in}}" aria-label="Cooked thickness, inches"><span aria-hidden="true">in</span></span>
           </div>
+          <input type="range" id="thick" min="{{calc.thick_min}}" max="{{spec.rules.max_thickness_in}}" step="0.001" value="{{plan.thickness_in}}" aria-describedby="thick-help">
+          <small id="thick-help">Your stack of 10, divided by 10.</small>
         </div>
         <div class="field">
-          <label for="units-seg">Units</label>
-          <div class="seg" id="units-seg" role="group" aria-label="Units">
-            <button type="button" data-v="us" aria-pressed="true">US</button>
-            <button type="button" data-v="metric" aria-pressed="false">Metric</button>
-          </div>
+          <div class="field-head"><label for="settle">Settling while stacking</label><span class="value num" id="settle-o" aria-hidden="true">{{calc.settle_pct}}%</span></div>
+          <input type="range" id="settle" min="0" max="10" step="1" value="{{calc.settle_pct}}" aria-describedby="settle-help">
+          <small id="settle-help">Height lost to compression. Measure it at the rehearsal.</small>
         </div>
+        <div class="field">
+          <div class="field-head"><label for="spare">Spares</label><span class="value num" id="spare-o" aria-hidden="true">{{calc.spare_pct}}%</span></div>
+          <input type="range" id="spare" min="0" max="40" step="1" value="{{calc.spare_pct}}" aria-describedby="spare-help">
+          <small id="spare-help">Rejects and tests. Rounded up to whole batches.</small>
+        </div>
+        <fieldset class="field">
+          <legend>Attempts to cook for</legend>
+          <div class="seg">
+            <label><input type="radio" name="attempts" value="1" checked><span>1</span></label>
+            <label><input type="radio" name="attempts" value="2"><span>2</span></label>
+            <label><input type="radio" name="attempts" value="3"><span>3</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Units</legend>
+          <div class="seg">
+            <label><input type="radio" name="units" value="us" checked><span>US</span></label>
+            <label><input type="radio" name="units" value="metric"><span>Metric</span></label>
+          </div>
+        </fieldset>
       </form>
-      <div class="results" aria-live="polite">
+      <div class="card results" data-reveal>
         <div class="gauge">
-          <div class="verdict" id="verdict"></div>
-          <div class="gauge-track"><div class="gauge-fill" id="g-fill"></div><div class="gauge-mark rec" id="g-rec"></div><div class="gauge-mark stop" id="g-stop"></div></div>
-          <div class="gauge-legend"><span>0 in</span><span id="g-leg"></span><span>50 in</span></div>
+          <p class="verdict" id="verdict"></p>
+          <div class="gauge-track" aria-hidden="true"><div class="gauge-fill" id="g-fill"></div><div class="gauge-mark rec" id="g-rec"></div><div class="gauge-mark stop" id="g-stop"></div></div>
+          <div class="gauge-legend" aria-hidden="true"><span>0 in</span><span><i class="key rec"></i>record {{spec.target.record_height_in}}</span><span><i class="key stop"></i>stop {{spec.target.build_to_in|g}}</span><span>50 in</span></div>
         </div>
         <div class="totals">
-          <div><b class="num" id="t-cook">296</b><span>pancakes to cook</span></div>
-          <div><b class="num" id="t-batter">13.8 gal</b><span>of batter</span></div>
-          <div><b class="num" id="t-stop">255</b><span>to reach the stop line</span></div>
+          <div><b class="display num" id="t-cook">{{plan.pancakes_to_cook}}</b><span>pancakes to cook</span></div>
+          <div><b class="display num" id="t-batter">{{plan.batter_gal}} gal</b><span>of batter</span></div>
+          <div><b class="display num" id="t-stop">{{plan.pancakes_to_stop_line}}</b><span>to reach the stop line</span></div>
         </div>
-        <div class="scroll-x"><table id="t-sizes"></table></div>
-        <div class="scroll-x"><table id="t-shop"></table></div>
+        <div class="table-wrap" data-name="Pancakes per ring size"><table id="t-sizes"></table></div>
+        <div class="table-wrap" data-name="Shopping list"><table id="t-shop"></table></div>
         <div id="warns"></div>
+        <div class="calc-actions">
+          <button class="button" data-variant="tinted" data-size="sm" type="button" id="copy-shop">Copy shopping list</button>
+          <button class="button" data-variant="outline" data-size="sm" type="button" id="share-plan">Share this plan</button>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="band alt" id="record" aria-labelledby="rec-h">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">History</span>
-      <h2 id="rec-h">Every record since 2012</h2>
-      <p>Tallest stack of pancakes, height in inches. Hover a stack for who, where and how many.</p>
+<section class="section section-panel" id="record" aria-labelledby="rec-h">
+  <div class="panel panel-yellow on-light">
+    <div class="wrap">
+      <header class="head" data-reveal>
+        <p class="kicker">History</p>
+        <h2 id="rec-h" class="title">Every record since {{first.year}}.</h2>
+        <p class="head-lede">Tallest stack of pancakes, height in inches.</p>
+      </header>
+      <figure class="chart" id="chart" data-reveal>
+        <figcaption class="chart-cap">{{first.in}} in in {{first.year}}. {{best.in}} in in {{best.year}}. We stop at {{spec.target.build_to_in|g}} in.</figcaption>
+        <svg class="chart-v" id="rec-svg" viewBox="0 0 1000 420" aria-hidden="true" focusable="false"></svg>
+        <ol class="chart-h" id="rec-list"></ol>
+        <div class="tip" id="tip" hidden></div>
+      </figure>
+      <details class="rec-details">
+        <summary>Show as a table</summary>
+        <div class="table-wrap" data-name="Record history"><table id="rec-table"></table></div>
+      </details>
     </div>
-    <div class="chart scroll-x" id="chart"><svg id="rec-svg" viewBox="0 0 1000 400" role="img" aria-label="Record heights from 2012 to 2025, and our target"></svg><div class="tip" id="tip" hidden></div></div>
-    <details><summary>Show as a table</summary><div class="scroll-x"><table id="rec-table"></table></div></details>
   </div>
 </section>
 
-<section class="band" id="rules" aria-labelledby="rules-h">
+<section class="section" id="rules" aria-labelledby="rules-h">
   <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Rules</span>
-      <h2 id="rules-h">Inside the rules, with margin</h2>
-    </div>
+    <header class="head" data-reveal>
+      <p class="kicker">Rules</p>
+      <h2 id="rules-h" class="title">Inside the rules, with margin.</h2>
+    </header>
     <div class="rules">
-      <ul>
-        <li>Each pancake 4.9 to 9.84 in across, measured before stacking. We use 7 and 9 in.</li>
-        <li>0.39 in thick at most. Ours are about 0.18 in.</li>
-        <li>Freestanding. No support inside or out, nothing holding layers together. Standard ingredients only.</li>
-        <li>Stands 5 seconds after the last pancake.</li>
-        <li>Edible, and eaten or donated. Nothing in the trash.</li>
+      <ul class="checks card" data-reveal>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Each pancake {{spec.rules.min_diameter_in}} to {{spec.rules.max_diameter_in}} in across, measured before stacking. We use {{spec.size.1.ring_in}} and {{spec.size.0.ring_in}} in.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>{{spec.rules.max_thickness_in}} in thick at most. Ours are about {{spec.cook.target_cooked_thickness_in|.2f}} in.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Freestanding. No support inside or out, nothing holding layers together. Standard ingredients only.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Stands {{spec.rules.hold_seconds}} seconds after the last pancake.</span></li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg><span>Edible, and eaten or donated. Nothing in the trash.</span></li>
       </ul>
-      <div class="untested">
-        <b>v2 is our chef's sheet.</b>
-        <p>Quantities are the ones we cook on Oct 29. Thickness is the chef's estimate until the stack-of-10 on the day. Measured values land in the <a href="https://github.com/get-pancake/full-stack/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
+      <aside class="card brand-card on-light" data-reveal>
+        <h3 class="card-title display">v{{calc.major}} is our chef’s sheet.</h3>
+        <p>These are the quantities we cook on {{spec.event.date}}. Thickness is the chef’s estimate until the stack of 10 on the day. Measured values land in the <a class="link" href="https://github.com/get-pancake/full-stack/blob/main/TESTLOG.md">test log</a>, and this page updates from the same spec.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec" aria-labelledby="cta-h">
+  <div class="cta" data-reveal>
+    {{ART_CTA_LEFT}}{{ART_CTA_RIGHT}}
+    <div class="cta-content">
+      <div class="cta-text">
+        <h2 id="cta-h" class="cta-title display">Copy it. Beat us.</h2>
+        <p>Fork the recipe, cook it, measure it. Then tell us how high you got. Better numbers win.</p>
+      </div>
+      <div class="buttons">
+        <a class="button" href="https://github.com/get-pancake/full-stack/fork">Fork on GitHub</a>
+        <a class="button" data-variant="tinted" href="https://github.com/get-pancake/full-stack/issues/new?template=attempt-report.yml">Report your attempt</a>
       </div>
     </div>
   </div>
 </section>
 </main>
 
-<footer class="band alt">
-  <div class="wrap">
-    <svg class="mascot" viewBox="340 362 348 352" aria-hidden="true">{{MASCOT}}</svg>
-    <div class="head">
-      <p><b>Pancake gives your agent the brain, the data and the tools to run your go-to-market.</b></p>
-      <p><a href="https://pancake.ai">pancake.ai</a> · <a href="https://github.com/get-pancake/full-stack">Source on GitHub</a> · Code MIT, recipe CC BY 4.0</p>
+<footer class="foot">
+  <div class="foot-art">{{ART_FOOTER}}</div>
+  <div class="foot-frame">
+    <div class="foot-brand">
+      <a class="foot-logo" href="https://pancake.ai" aria-label="Pancake"><svg viewBox="0 0 422 166" aria-hidden="true"><use href="#logo"/></svg></a>
+      <p class="foot-line">Pancake gives your agent the brain, the data and the tools to run your go-to-market.</p>
+      <p class="foot-legal">Code MIT · Recipe CC BY 4.0 · Flip it till you make it.</p>
     </div>
-    <span class="eyebrow">Flip it till you make it</span>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <p class="foot-head">The stack</p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/RECIPE.md">Recipe</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/STACKING.md">Build protocol</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/RULES.md">Rules</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/TESTLOG.md">Test log</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-head">Source</p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/get-pancake/full-stack">GitHub</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/blob/main/calc.py">calc.py</a></li>
+          <li><a href="https://github.com/get-pancake/full-stack/issues/new?template=attempt-report.yml">Report an attempt</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <p class="foot-head">Pancake</p>
+        <ul class="foot-links">
+          <li><a href="https://pancake.ai">pancake.ai</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
 </footer>
 
+<p class="sr-only" role="status" id="sr-status"></p>
+<div class="toast" id="toast" aria-hidden="true" hidden></div>
+
 <script id="spec" type="application/json">{{SPEC_JSON}}</script>
 <script>
-(() => {
-  const D = JSON.parse(document.getElementById("spec").textContent);
-  const S = D.spec, P = D.plan;
-  const T = S.target;
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const NS = "http://www.w3.org/2000/svg";
-  const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) { const v = String(attrs[k]); if (v.startsWith("var(")) e.style.setProperty(k, v); else e.setAttribute(k, v); } if (parent) parent.appendChild(e); return e; };
-  const TIER = { base: ["#FF7AA0", "#FFBBC7"], body: ["#BA8BFF", "#DEC3F5"], top: ["#FFBD7A", "#FFDBB5"] };
-  const fmt = (n, d = 1) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
-
-  /* ---------- status + countdown ---------- */
-  document.getElementById("status").textContent = `v${S.meta.version} · ${S.meta.status}`;
-  const doors = new Date("2026-10-29T17:00:00-07:00");
-  const cd = document.getElementById("countdown");
-  const tick = () => {
-    const ms = doors - Date.now();
-    if (ms <= 0) { cd.textContent = Date.now() - doors < 6 * 3600e3 ? "Live now · San Francisco" : "Oct 29, 2026 · San Francisco"; return; }
-    const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
-    cd.textContent = `Attempt in ${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m · SF`;
-  };
-  tick(); setInterval(tick, 30e3);
-
-  /* ---------- hero tower, to scale ---------- */
-  const svg = document.getElementById("tower");
-  const W = 420, H = 560, base = 520, scale = 10, cx = 250;
-  const layer = P.thickness_in * (1 - T.settle_ratio) * scale;
-  const g = el("g", {}, svg);
-  // ruler
-  const rx = 132;
-  el("line", { x1: rx, x2: rx, y1: base, y2: base - 48 * scale, stroke: "currentColor", "stroke-width": 1.5, opacity: .55 }, g);
-  for (let i = 0; i <= 48; i += 6) {
-    el("line", { x1: rx - 8, x2: rx, y1: base - i * scale, y2: base - i * scale, stroke: "currentColor", "stroke-width": 1.5, opacity: .55 }, g);
-    const t = el("text", { x: rx - 14, y: base - i * scale + 4, "text-anchor": "end", "font-family": "var(--mono)", "font-size": 12, fill: "currentColor", opacity: .7 }, g); t.textContent = i;
-  }
-  // pancakes
-  const cakes = [];
-  let y = base;
-  for (const z of P.sizes) {
-    let n = z.in_tower;
-    if (z.name === "top") n = Math.min(n, Math.round((T.build_to_in * scale - (base - y)) / layer));
-    const w = z.ring_in * scale;
-    for (let i = 0; i < n; i++) {
-      y -= layer;
-      const r = el("rect", { x: cx - w / 2, y: y, width: w, height: layer + .35, rx: 1.5, fill: i % 10 === 9 ? TIER[z.name][1] : TIER[z.name][0] }, g);
-      cakes.push({ r, h: (base - y) / scale });
-    }
-  }
-  el("rect", { x: cx - 80, y: base, width: 236, height: 7, rx: 3.5, fill: "currentColor" }, g);
-  // lines
-  const lines = [[T.record_height_in, "var(--accent)", "record"], [T.build_to_in, "currentColor", "stop line"]];
-  for (const [v, c, lab] of lines) {
-    const yy = base - v * scale;
-    el("line", { x1: rx, x2: cx + 60, y1: yy, y2: yy, stroke: c, "stroke-width": 2, "stroke-dasharray": "6 5" }, g);
-    const t1 = el("text", { x: cx + 66, y: yy + (lab === "record" ? 16 : -4), "font-family": "var(--mono)", "font-size": 14, "font-weight": 700, fill: c }, g);
-    t1.textContent = `${v} in`;
-    const t2 = el("text", { x: cx + 66, y: yy + (lab === "record" ? 32 : 12), "font-family": "var(--mono)", "font-size": 12, fill: c }, g);
-    t2.textContent = lab;
-  }
-  const m = el("g", { transform: `translate(${cx + 52} ${base - 88}) scale(${88 / 348}) translate(-340 -362)` }, g);
-  m.innerHTML = document.querySelector("footer .mascot").innerHTML;
-  svg.style.color = "var(--ink)";
-
-  const roH = document.getElementById("ro-h"), roN = document.getElementById("ro-n"), btn = document.getElementById("stack-btn");
-  const setReadout = (k) => { roN.textContent = k; roH.textContent = fmt(k ? cakes[k - 1].h : 0); };
-  setReadout(cakes.length);
-  let running = false;
-  btn.addEventListener("click", () => {
-    if (running) return;
-    if (reduce) { setReadout(cakes.length); return; }
-    running = true; btn.disabled = true;
-    cakes.forEach(c => c.r.style.opacity = 0);
-    const dur = 4200, t0 = performance.now();
-    const step = (now) => {
-      const p = Math.min(1, (now - t0) / dur);
-      const k = Math.round(cakes.length * (1 - Math.pow(1 - p, 1.6)));
-      for (let i = 0; i < k; i++) cakes[i].r.style.opacity = 1;
-      setReadout(k);
-      if (p < 1) requestAnimationFrame(step); else { running = false; btn.disabled = false; btn.textContent = "Stack it again"; }
-    };
-    requestAnimationFrame(step);
-  });
-
-  /* ---------- stats ---------- */
-  document.querySelector('[data-k="count"]').textContent = `~${P.pancakes_in_tower}`;
-
-  /* ---------- ratios + doses ---------- */
-  const ratios = document.getElementById("ratios");
-  const pctOf = Object.fromEntries(P.shopping.map(x => [x.key, x.pct]));
-  const label = k => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
-  for (const i of S.batter.ingredient) {
-    const v = pctOf[i.key];
-    const row = document.createElement("div"); row.className = "ratio";
-    row.innerHTML = `<span>${label(i.key)}</span><span class="bar" style="width:${Math.min(100, v / 150 * 100)}%"></span><span class="pct num">${Math.round(v)}</span><span class="why">${i.why}</span>`;
-    ratios.appendChild(row);
-  }
-  const doses = document.getElementById("doses");
-  for (const z of P.sizes) {
-    const px = z.ring_in * 18;
-    const d = document.createElement("div"); d.className = "dose";
-    d.innerHTML = `<div class="disc" style="width:min(${px}px, 28vw);aspect-ratio:1;background:${TIER[z.name][0]}">${z.ring_in} in</div><b>${fmt(z.dose_cups, 2)} cup</b><small>${Math.round(z.dose_ml)} ml · ${z.per_batch} per batch · ${z.name}</small>`;
-    doses.appendChild(d);
-  }
-
-  /* ---------- calculator (port of calc.py) ---------- */
-  const state = { thick: P.thickness_in, settle: T.settle_ratio, spare: S.cook.spare_ratio, attempts: 1, units: "us" };
-  const compute = () => {
-    const settled = state.thick * (1 - state.settle);
-    let ml = 0, cook = 0, tower = 0, batches = 0;
-    const sizes = S.size.map(z => {
-      const dose = P.batch_ml / z.per_batch;
-      const b = Math.ceil(Math.ceil(z.in_tower * state.attempts * (1 + state.spare)) / z.per_batch);
-      const n = b * z.per_batch;
-      ml += dose * n; cook += n; tower += z.in_tower; batches += b;
-      return { ...z, n, dose, b };
-    });
-    return { sizes, ml, cook, tower, batches, height: tower * settled, toStop: Math.ceil(T.build_to_in / settled) };
-  };
-  const lbOz = g => { const oz = g / 28.3495; const lb = Math.floor(oz / 16); return lb ? `${lb} lb ${Math.round(oz % 16)} oz` : `${fmt(oz)} oz`; };
-  const render = () => {
-    const r = compute();
-    document.getElementById("thick-o").textContent = `${state.thick.toFixed(3)} in`;
-    document.getElementById("settle-o").textContent = `${Math.round(state.settle * 100)}%`;
-    document.getElementById("spare-o").textContent = `${Math.round(state.spare * 100)}%`;
-    document.getElementById("attempts-o").textContent = state.attempts;
-    const max = 50;
-    document.getElementById("g-fill").style.width = `${Math.min(100, r.height / max * 100)}%`;
-    document.getElementById("g-rec").style.left = `${T.record_height_in / max * 100}%`;
-    document.getElementById("g-stop").style.left = `${T.build_to_in / max * 100}%`;
-    document.getElementById("g-leg").textContent = `record ${T.record_height_in} · stop ${T.build_to_in}`;
-    const v = document.getElementById("verdict");
-    const ok = r.height >= T.build_to_in;
-    v.className = "verdict " + (ok ? "ok" : "bad");
-    v.textContent = ok ? `${r.tower} pancakes reach ${fmt(r.height)} in. You stop at ${T.build_to_in}.`
-                       : `${r.tower} pancakes only reach ${fmt(r.height)} in. You need ${r.toStop}.`;
-    document.getElementById("t-cook").textContent = r.cook;
-    document.getElementById("t-batter").textContent = state.units === "us" ? `${fmt(r.ml / 3785.41)} gal` : `${fmt(r.ml / 1000)} L`;
-    document.getElementById("t-stop").textContent = r.toStop;
-    const us = state.units === "us";
-    document.getElementById("t-sizes").innerHTML = `<thead><tr><th>Ring</th><th class="r">In tower</th><th class="r">To cook</th><th class="r">Dose</th></tr></thead><tbody>` +
-      r.sizes.map(z => `<tr><td><span class="sw" style="background:${TIER[z.name][0]}"></span>${z.ring_in} in ${z.name}</td><td class="r num">${z.in_tower * state.attempts}</td><td class="r num">${z.n}</td><td class="r num">${us ? fmt(z.dose / 236.588, 2) + " cup" : Math.round(z.dose) + " ml"}</td></tr>`).join("") + "</tbody>";
-    const margin = (S.shopping && S.shopping.margin) || 0;
-    const shop = P.shopping.map(x => {
-      let q;
-      if (x.unit === "can") q = `${x.total} cans`;
-      else {
-        const tot = x.per_batch * r.batches, gr = x.g / P.batches * r.batches;
-        if (x.unit === "egg") q = `${tot} (${Math.ceil(tot * (1 + margin) / 12)} dozen)`;
-        else if (x.unit === "cup") q = us ? `${fmt(tot / 16, 2)} gal` : `${fmt(tot * 0.236588)} L`;
-        else if (x.unit === "tsp") q = us ? `${tot} tsp` : `${Math.round(gr)} g`;
-        else q = us ? lbOz(gr) : (gr >= 1000 ? `${fmt(gr / 1000, 1)} kg` : `${Math.round(gr)} g`);
-      }
-      return `<tr><td>${label(x.key)}</td><td class="r num">${q}</td></tr>`;
-    }).join("");
-    document.getElementById("t-shop").innerHTML = `<thead><tr><th>Shopping list</th><th class="r">Amount</th></tr></thead><tbody>${shop}</tbody>`;
-    const warns = [];
-    if (state.thick > S.cook.reject_above_in || state.thick < S.cook.reject_below_in) warns.push(`Outside the accepted thickness band. Fix the dose before you cook ${r.cook} of them.`);
-    document.getElementById("warns").innerHTML = warns.map(w => `<p class="warn">${w}</p>`).join("");
-  };
-  const bindRange = (id, key, f = x => x) => { const i = document.getElementById(id); i.addEventListener("input", () => { state[key] = f(+i.value); render(); }); state[key] = f(+i.value); };
-  bindRange("thick", "thick");
-  bindRange("settle", "settle", x => x / 100);
-  bindRange("spare", "spare", x => x / 100);
-  const bindSeg = (id, key, f = x => x) => document.querySelectorAll(`#${id} button`).forEach(b => b.addEventListener("click", () => {
-    document.querySelectorAll(`#${id} button`).forEach(o => o.setAttribute("aria-pressed", o === b)); state[key] = f(b.dataset.v); render();
-  }));
-  bindSeg("attempts-seg", "attempts", Number);
-  bindSeg("units-seg", "units");
-  document.getElementById("calc-form").addEventListener("submit", e => e.preventDefault());
-  render();
-
-  /* ---------- record chart ---------- */
-  const recs = D.records, rs = document.getElementById("rec-svg"), tip = document.getElementById("tip"), chart = document.getElementById("chart");
-  const X0 = 50, X1 = 990, YB = 340, YT = 30, sc = (YB - YT) / 48;
-  rs.style.color = "var(--ink)";
-  for (let v = 0; v <= 48; v += 12) {
-    el("line", { x1: X0, x2: X1, y1: YB - v * sc, y2: YB - v * sc, stroke: v ? "var(--line)" : "currentColor", "stroke-width": v ? 1 : 1.5 }, rs);
-    const t = el("text", { x: X0 - 10, y: YB - v * sc + 4, "text-anchor": "end", "font-family": "var(--mono)", "font-size": 12, fill: "var(--sub)" }, rs); t.textContent = v;
-  }
-  const all = [...recs.map(r => ({ ...r, h: r.cm / 2.54 })), { year: 2026, place: "San Francisco", holder: "Pancake", h: T.build_to_in, ours: true }];
-  const band = (X1 - X0) / all.length, bw = Math.min(64, band * .55);
-  const best = Math.max(...recs.map(r => r.cm));
-  all.forEach((r, i) => {
-    const x = X0 + band * (i + .5), hh = r.h * sc;
-    const gB = el("g", { class: "bar", tabindex: 0, role: "img", "aria-label": `${r.year}, ${r.place}: ${fmt(r.h)} in` }, rs);
-    if (r.ours) el("rect", { x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 9, fill: "var(--purple-1)", stroke: "var(--accent-2)", "stroke-width": 2, "stroke-dasharray": "7 5" }, gB);
-    else el("rect", { class: "fill", x: x - bw / 2, y: YB - hh, width: bw, height: hh, rx: 9, fill: "var(--pink)" }, gB);
-    const vt = el("text", { x, y: r.ours ? YB - hh - 10 : YB - hh + 22, "text-anchor": "middle", "font-family": "var(--mono)", "font-size": 13, "font-weight": r.cm === best || r.ours ? 700 : 500, fill: r.ours ? "var(--accent-2)" : "#2C002A" }, gB);
-    vt.textContent = r.ours ? `${r.h}?` : fmt(r.h);
-    const yt = el("text", { x, y: YB + 22, "text-anchor": "middle", "font-family": "var(--mono)", "font-size": 13, "font-weight": 700, fill: r.ours ? "var(--accent-2)" : "currentColor" }, rs); yt.textContent = r.ours ? "Oct 29, 2026" : r.year;
-    const pt = el("text", { x, y: YB + 40, "text-anchor": "middle", "font-family": "var(--sans)", "font-size": 12, fill: "var(--sub)" }, rs); pt.textContent = r.place;
-    const show = () => {
-      tip.innerHTML = r.ours ? `<b>Oct 29, 2026 · ${T.build_to_in} in?</b><br>Pancake, San Francisco. Our stop line.` :
-        `<b>${r.year} · ${fmt(r.h)} in</b> (${r.cm} cm)<br>${r.holder}, ${r.place}${r.pancakes ? `<br>${r.pancakes} pancakes` : ""}`;
-      tip.hidden = false;
-      const box = chart.getBoundingClientRect(), b = gB.getBoundingClientRect();
-      tip.style.left = `${Math.min(box.width - 250, Math.max(8, b.left - box.left + chart.scrollLeft + b.width / 2 - 110))}px`;
-      tip.style.top = `${b.top - box.top - tip.offsetHeight - 10}px`;
-    };
-    gB.addEventListener("mouseenter", show); gB.addEventListener("focus", show);
-    gB.addEventListener("mouseleave", () => tip.hidden = true); gB.addEventListener("blur", () => tip.hidden = true);
-  });
-  const ry = YB - T.record_height_in * sc;
-  el("line", { x1: X0, x2: X1, y1: ry, y2: ry, stroke: "var(--accent)", "stroke-width": 1.5, "stroke-dasharray": "6 5" }, rs);
-  const rl = el("text", { x: X0 + 6, y: ry - 8, "font-family": "var(--mono)", "font-size": 12, "font-weight": 700, fill: "var(--accent)" }, rs);
-  rl.textContent = `record to beat · ${T.record_height_in} in`;
-  document.getElementById("rec-table").innerHTML = `<thead><tr><th>Year</th><th>Where</th><th>Who</th><th class="r">Height</th><th class="r">Pancakes</th></tr></thead><tbody>` +
-    recs.map(r => `<tr><td class="num">${r.year}</td><td>${r.place}</td><td><a href="${r.source}">${r.holder}</a></td><td class="r num">${fmt(r.cm / 2.54)} in</td><td class="r num">${r.pancakes ?? "–"}</td></tr>`).join("") + "</tbody>";
-})();
+{{JS}}
 </script>
 </body>
 </html>

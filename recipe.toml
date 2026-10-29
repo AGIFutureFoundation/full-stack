@@ -7,8 +7,14 @@ version = "2.0.0"
 status = "chef-sheet"        # the chef's numbers for Oct 29. Set "validated" once the stack-of-10 is measured
 source = "Chef's quantity sheet, Oct 28, 2026 (Candido Blanco)"
 
+[event]
+start = "2026-10-29T17:00:00-07:00"   # doors open, San Francisco time. A string, so the page can parse it
+date = "Oct 29, 2026"
+place = "San Francisco"
+live_hours = 6                # the page says "live now" for this long after the start
+
 [target]
-record_height_in = 42.6       # 108.3 cm, the height to beat
+record_height_in = 42.6      # 108.3 cm, the height to beat
 slow_down_at_in = 44.0        # stacker slows down, last ~10 top pancakes
 build_to_in = 45.0            # STOP line. Stop on height, never on pancake count
 settle_ratio = 0.05           # expected height loss while stacking (measure it)
